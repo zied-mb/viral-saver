@@ -1,7 +1,7 @@
 export const ADS = {
-  topBanner: "28754928",     
-  middleBanner: "28754847",     
-  sidebarAd1: "28754985",      
-  sidebarAd2: "5647181",       
-  footerBanner: "PASTE_FOOTER_ID", 
+  topBanner: "PASTE_ADSTERRA_CODE_OR_LINK",
+  middleBanner: "PASTE_ADSTERRA_CODE_OR_LINK",
+  sidebarAd1: "PASTE_ADSTERRA_CODE_OR_LINK",
+  sidebarAd2: "PASTE_ADSTERRA_CODE_OR_LINK",
+  footerBanner: "PASTE_ADSTERRA_CODE_OR_LINK",
 };
