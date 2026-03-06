@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface AdsBannerProps {
   code: string;
@@ -6,34 +6,45 @@ interface AdsBannerProps {
   className?: string;
 }
 
-const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: number; label: string }> = {
-  top: { width: 728, height: 90, label: "728×90" },
-  middle: { width: 728, height: 90, label: "728×90" },
-  "sidebar-sm": { width: 300, height: 250, label: "300×250" },
-  "sidebar-lg": { width: 300, height: 600, label: "300×600" },
-  footer: { width: 970, height: 90, label: "970×90" },
+const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
+  const adRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Law ken femma code w mouch placeholder, n-injectiw el script
+    if (adRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
+      adRef.current.innerHTML = ""; // Nadhfou el blasa
+      
+      const range = document.createRange();
+      const documentFragment = range.createContextualFragment(code);
+      
+      // React ma i-executich script tags, donc lazemna n-forcey-hom manually
+      const scripts = documentFragment.querySelectorAll("script");
+      scripts.forEach((oldScript) => {
+        const newScript = document.createElement("script");
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        adRef.current?.appendChild(newScript);
+      });
+
+      // Nzidu el ba9iya (kima el div mte3 Native Ads)
+      const otherContent = Array.from(documentFragment.childNodes).filter(node => node.nodeName !== "SCRIPT");
+      otherContent.forEach(node => adRef.current?.appendChild(node));
+    }
+  }, [code]);
+
+  if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
+    return (
+      <div className={`hidden sm:flex items-center justify-center border border-white/5 bg-white/[0.02] text-[10px] text-white/10 uppercase font-bold rounded-xl ${className}`} 
+           style={{ minHeight: '90px', width: '100%' }}>
+        Ad Space
+      </div>
+    );
+  }
+
+  return <div ref={adRef} className={`w-full flex justify-center overflow-hidden min-h-[50px] ${className}`} />;
 };
 
-const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
-  const dim = AD_DIMENSIONS[type];
-  const isPlaceholder =
-    !code ||
-    code === "PASTE_ADSTERRA_CODE_OR_LINK";
-
-  return (
-    <div
-      className={`flex items-center justify-center overflow-hidden ${className}`}
-      style={{ minHeight: dim.height, maxWidth: "100%" }}
-    >
-      {isPlaceholder ? (
-        <div
-          className="flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 text-xs text-white/30 font-mono select-none"
-          style={{ width: Math.min(dim.width, 728), height: dim.height }}
-        >
-          Ad Space · {dim.label}
-        </div>
-      ) : code.startsWith("http") ? (
-        <iframe
+export default AdsBanner;
           src={code}
           width={dim.width}
           height={dim.height}
