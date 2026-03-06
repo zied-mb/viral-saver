@@ -1,5 +1,5 @@
 export const ADS = {
-  // Banner 728x90 (Top walla Middle)
+  // Banner 728x90 (Top/Middle)
   topBanner: `
     <script type="text/javascript">
       atOptions = {
@@ -34,6 +34,21 @@ export const ADS = {
         'key' : '818f4bad5f670e1e6a184b2928a959fa',
         'format' : 'iframe',
         'height' : 600,
+        'width' : 160,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/818f4bad5f670e1e6a184b2928a959fa/invoke.js"></script>
+  `,
+
+  // Native Banner (4 items)
+  footerBanner: `
+    <script async="async" data-cfasync="false" src="//heavinessslight.com/dd0ed183c97a13585589697f3ce39af/invoke.js"></script>
+    <div id="container-dd0ed183c97a13585589697f3ce39af"></div>
+  `,
+
+  sidebarAd2: "PASTE_ADSTERRA_CODE_OR_LINK"
+};
         'width' : 160,
         'params' : {}
       };
