@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 interface AdsBannerProps {
-  code: string;
+  code: string; 
   type: "top" | "middle" | "sidebar-sm" | "sidebar-lg" | "footer";
   className?: string;
 }
@@ -10,7 +10,7 @@ const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: num
   top: { width: 728, height: 90, label: "728×90" },
   middle: { width: 728, height: 90, label: "728×90" },
   "sidebar-sm": { width: 300, height: 250, label: "300×250" },
-  "sidebar-lg": { width: 300, height: 600, label: "300×600" },
+  "sidebar-lg": { width: 160, height: 600, label: "160×600" },
   footer: { width: 970, height: 90, label: "970×90" },
 };
 
@@ -19,9 +19,16 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
   const dim = AD_DIMENSIONS[type];
 
   useEffect(() => {
-    if (containerRef.current && code) {
-      containerRef.current.innerHTML = code;
-    }
+    if (!code || !containerRef.current) return;
+
+    containerRef.current.innerHTML = "";
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = `https://ad.adsterra.com/show.js?id=${code}`;
+    script.async = true;
+
+    containerRef.current.appendChild(script);
   }, [code]);
 
   return (
