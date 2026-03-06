@@ -10,34 +10,31 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
   const adRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (adRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
-      // Nadhfou el blasa 9bal ma nloadiw
-      adRef.current.innerHTML = "";
-      
-      const container = document.createElement("div");
-      container.innerHTML = code;
+  let isMounted = true;
 
-      // React ma i-executich script tags dlakhel innerHTML, 
-      // donc lazem n-creaw script tag jdid manually
-      const scripts = container.querySelectorAll("script");
-      scripts.forEach((oldScript) => {
-        const newScript = document.createElement("script");
-        
-        // Copier les attributs (src, async, etc.)
-        Array.from(oldScript.attributes).forEach(attr => 
-          newScript.setAttribute(attr.name, attr.value)
-        );
-        
-        // Copier el content dlakhel el script (el key wel options)
-        newScript.innerHTML = oldScript.innerHTML;
-        adRef.current?.appendChild(newScript);
-      });
+  if (adRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
+    adRef.current.innerHTML = "";
+    
+    const range = document.createRange();
+    const fragment = range.createContextualFragment(code);
+    const scripts = fragment.querySelectorAll("script");
 
-      // Nzidu el HTML el ba9i (kima el div mte3 Native Ads)
-      const otherNodes = Array.from(container.childNodes).filter(n => n.nodeName !== "SCRIPT");
-      otherNodes.forEach(node => adRef.current?.appendChild(node.cloneNode(true)));
-    }
-  }, [code]);
+    scripts.forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      newScript.innerHTML = oldScript.innerHTML;
+      if (isMounted) adRef.current?.appendChild(newScript);
+    });
+
+    const others = Array.from(fragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
+    others.forEach(node => {
+      if (isMounted) adRef.current?.appendChild(node.cloneNode(true));
+    });
+  }
+
+  return () => { isMounted = false; };
+}, [code]);
+
 
   if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
     return (
