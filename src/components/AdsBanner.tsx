@@ -11,39 +11,35 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
 
   useEffect(() => {
     if (containerRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
-      // 1. Nadhfou el blasa dima 9bal ma nloadiw
       containerRef.current.innerHTML = "";
       
-      // 2. N-creaw element jdid lel ad
       const wrapper = document.createElement("div");
-      wrapper.id = `ad-wrapper-${Math.random().toString(36).substr(2, 9)}`;
+      wrapper.id = `ad-wrapper-${Math.random().toString(36).substring(2, 9)}`;
       containerRef.current.appendChild(wrapper);
 
       try {
         const range = document.createRange();
         range.selectNode(document.body);
-        const documentFragment = range.createContextualFragment(code);
+        const fragment = range.createContextualFragment(code);
         
-        // 3. N-forcey-iw el scripts bech yet-loadiw 100%
-        const scripts = documentFragment.querySelectorAll("script");
+        const scripts = fragment.querySelectorAll("script");
         scripts.forEach((s) => {
           const newScript = document.createElement("script");
-          Array.from(s.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          Array.from(s.attributes).forEach(attr => 
+            newScript.setAttribute(attr.name, attr.value)
+          );
           newScript.innerHTML = s.innerHTML;
           wrapper.appendChild(newScript);
         });
 
-        // 4. Nzidu el HTML el ba9i (kima el div mte3 Native Ads)
-        const others = Array.from(documentFragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
+        const others = Array.from(fragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
         others.forEach(n => wrapper.appendChild(n.cloneNode(true)));
-
       } catch (e) {
         console.error("Ad Injection Error:", e);
       }
     }
   }, [code]);
 
-  // Itha mafemma chay, n-warriw blasa fergha mrigla
   if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
     return (
       <div className={`hidden sm:flex items-center justify-center border border-white/5 bg-white/[0.02] text-[10px] text-white/10 uppercase font-bold rounded-xl ${className}`} 
@@ -59,90 +55,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
       className={`w-full flex justify-center items-center my-4 overflow-hidden ${className}`} 
       style={{ minHeight: '90px' }}
     />
-  );
-};
-
-export default AdsBanner;
-        // Nzidu el div mte3 Native Ads kima fil tsawer
-        const others = Array.from(documentFragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
-        others.forEach(n => wrapper.appendChild(n.cloneNode(true)));
-
-      } catch (e) {
-        console.error("Adsterra Injection Error:", e);
-      }
-    }
-  }, [code]);
-
-  return (
-    <div 
-      ref={containerRef} 
-      className={`w-full flex justify-center items-center my-4 overflow-hidden ${className}`} 
-      style={{ minHeight: '90px' }}
-    />
-  );
-};
-
-export default AdsBanner;
-        `);
-        iframeDoc.close();
-      }
-    }
-  }, [code, type]);
-
-  if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
-    return null; // Ma n-affichiw chay ken mafemma chay
-  }
-
-  return (
-    <div 
-      ref={adRef} 
-      className={`w-full flex justify-center items-center my-4 ${className}`} 
-      style={{ minHeight: '50px' }}
-    />
-  );
-};
-
-export default AdsBanner;
-
-
-  if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
-    return (
-      <div className="hidden sm:flex items-center justify-center border border-white/5 bg-white/[0.02] text-[10px] text-white/10 uppercase rounded-xl min-h-[90px] w-full">
-        Ad Space
-      </div>
-    );
-  }
-
-  return <div ref={adRef} className={`w-full flex justify-center overflow-hidden min-h-[50px] ${className}`} />;
-};
-
-export default AdsBanner;
-      <div className={`hidden sm:flex items-center justify-center border border-white/5 bg-white/[0.02] text-[10px] text-white/10 uppercase font-bold rounded-xl ${className}`} 
-           style={{ minHeight: '90px', width: '100%' }}>
-        Ad Space
-      </div>
-    );
-  }
-
-  return <div ref={adRef} className={`w-full flex justify-center overflow-hidden min-h-[50px] ${className}`} />;
-};
-
-export default AdsBanner;
-          src={code}
-          width={dim.width}
-          height={dim.height}
-          scrolling="no"
-          frameBorder="0"
-          style={{ border: "none", maxWidth: "100%" }}
-          title={`ad-${type}`}
-        />
-      ) : (
-        <div
-          dangerouslySetInnerHTML={{ __html: code }}
-          style={{ maxWidth: "100%" }}
-        />
-      )}
-    </div>
   );
 };
 
