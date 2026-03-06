@@ -11,23 +11,26 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // --- Adsterra Social Bar Injection ---
+    // 1. Inject Adsterra Social Bar (same uploaded picture product)
     const adsterraScript = document.createElement("script");
     adsterraScript.src = "https://heavinessslight.com/a8/56/22/a85622f541fd32b2627da5b38052d23d.js";
     adsterraScript.async = true;
     document.body.appendChild(adsterraScript);
 
-    // --- PopAds Script Injection ---
-    // Note: Ba3d ma PopAds ya3mlou verification lel meta tag, 
-    // bech ya3tiwak script akher fih "Website ID", 7otto hna:
+    // 2. Inject PopAds Script
     const popScript = document.createElement("script");
-    popScript.src = "//c1.popads.net/pop.js"; // Hedha script el base
+    popScript.src = "//c1.popads.net/pop.js"; 
     popScript.async = true;
     document.body.appendChild(popScript);
 
+    // 3. Cleanup bech ma n-khalouch el scripts m3awdin
     return () => {
-      document.body.removeChild(adsterraScript);
-      document.body.removeChild(popScript);
+      if (document.body.contains(adsterraScript)) {
+        document.body.removeChild(adsterraScript);
+      }
+      if (document.body.contains(popScript)) {
+        document.body.removeChild(popScript);
+      }
     };
   }, []);
 
@@ -39,6 +42,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
