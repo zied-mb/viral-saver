@@ -40,22 +40,39 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
         </div>
 
         <div className="flex flex-col gap-4 items-center overflow-hidden">
-          {/* Video Player - Saghart fil size mte3ou mli7 */}
-          <div className="w-full max-w-[240px] sm:max-w-[280px] shrink-0">
-             <div className="relative rounded-xl overflow-hidden bg-black border border-white/5 aspect-auto shadow-2xl">
-                {previewVideo ? (
-                  <video
-                    key={previewVideo}
-                    src={previewVideo}
-                    autoPlay loop  controls
-                    className="w-full h-auto max-h-[320px] sm:max-h-[480px] object-contain"
-                  />
-                ) : (
-                  <img src={result.thumbnail} className="w-full h-auto" alt="thumb" />
-                )}
-             </div>
-          </div>
+{/* Video Player Section */}
+<div className="w-full max-w-[240px] sm:max-w-[280px] shrink-0">
+    <div className="relative rounded-xl overflow-hidden bg-black border border-white/5 aspect-auto shadow-2xl">
+        {previewVideo ? (
+            <video
+                key={previewVideo}
+                src={previewVideo}
+                autoPlay 
+                loop  
+                controls
+                className="w-full h-auto max-h-[320px] sm:max-h-[480px] object-contain"
+                // ✨ FIX: إذا الفيديو ما خدمش، أظهر الـ Thumbnail
+                onError={(e) => {
+                    const target = e.target as HTMLVideoElement;
+                    target.style.display = 'none'; // خبي الـ player المكسر
+                }}
+            />
+        ) : null}
 
+        {/* ✨ Thumbnail Proxy Fix ✨ */}
+        {(result.thumbnail && (!previewVideo)) && (
+            <img 
+                src={`https://wsrv.nl/?url=${encodeURIComponent(result.thumbnail)}&default=https://viralsaver.app/og-image.jpg`} 
+                className="w-full h-auto object-cover" 
+                alt="Video Preview"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/og-image.jpg"; // Placeholder إذا كل شي فشل
+                }}
+            />
+        )}
+    </div>
+</div>
           {/* Text Section - Break words fixed */}
           <div className="w-full min-w-0 text-center">
             <h3 className="text-sm sm:text-xl font-black text-white mb-2 leading-tight break-words line-clamp-2 px-1">
