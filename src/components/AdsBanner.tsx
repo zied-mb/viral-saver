@@ -10,7 +10,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
+    if (containerRef.current && code) {
       containerRef.current.innerHTML = "";
       
       const wrapper = document.createElement("div");
@@ -40,7 +40,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
     }
   }, [code]);
 
-  if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
+  if (!code) {
     return (
       <div className={`hidden sm:flex items-center justify-center border border-white/5 bg-white/[0.02] text-[10px] text-white/10 uppercase font-bold rounded-xl ${className}`} 
            style={{ minHeight: '90px', width: '100%' }}>
