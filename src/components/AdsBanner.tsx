@@ -7,33 +7,53 @@ interface AdsBannerProps {
 }
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
-  const adRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (adRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
-      // 1. Nadhfou el container
-      adRef.current.innerHTML = "";
+    if (containerRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
+      // 1. Nadhfou el blasa
+      containerRef.current.innerHTML = "";
       
-      // 2. N-creaw iframe bech n-isoliw el script mte3 Adsterra
-      const iframe = document.createElement("iframe");
-      iframe.style.width = "100%";
-      iframe.style.border = "none";
-      iframe.style.overflow = "hidden";
-      // El hauteur n-ajustiwha 7asb el type
-      iframe.height = type.includes("sidebar") ? "600" : "90"; 
-      
-      adRef.current.appendChild(iframe);
+      // 2. N-creaw element jdid
+      const wrapper = document.createElement("div");
+      wrapper.id = `ad-wrapper-${Math.random().toString(36).substr(2, 9)}`;
+      containerRef.current.appendChild(wrapper);
 
-      // 3. N-injectiw el script dlakhel el iframe
-      const iframeDoc = iframe.contentWindow?.document;
-      if (iframeDoc) {
-        iframeDoc.open();
-        iframeDoc.write(`
-          <html>
-            <body style="margin:0; padding:0; display:flex; justify-content:center;">
-              ${code}
-            </body>
-          </html>
+      // 3. N-executiw el code b'tari9a "Native"
+      try {
+        const range = document.createRange();
+        range.selectNode(document.body);
+        const documentFragment = range.createContextualFragment(code);
+        
+        // N-forcey-iw el scripts bech yet-loadiw 100%
+        const scripts = documentFragment.querySelectorAll("script");
+        scripts.forEach((s) => {
+          const newScript = document.createElement("script");
+          Array.from(s.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.innerHTML = s.innerHTML;
+          wrapper.appendChild(newScript);
+        });
+
+        // Nzidu el div mte3 Native Ads kima fil tsawer
+        const others = Array.from(documentFragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
+        others.forEach(n => wrapper.appendChild(n.cloneNode(true)));
+
+      } catch (e) {
+        console.error("Adsterra Injection Error:", e);
+      }
+    }
+  }, [code]);
+
+  return (
+    <div 
+      ref={containerRef} 
+      className={`w-full flex justify-center items-center my-4 overflow-hidden ${className}`} 
+      style={{ minHeight: '90px' }}
+    />
+  );
+};
+
+export default AdsBanner;
         `);
         iframeDoc.close();
       }
