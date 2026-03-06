@@ -337,8 +337,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── Downloader Section ── */}
-      <section id="downloader" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
+      <section id="downloader" className="py-12 sm:py-20 px-2 sm:px-4 overflow-hidden">
+  <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -358,16 +358,19 @@ const Home: React.FC = () => {
           </motion.div>
 
           <div className="flex gap-8 items-start justify-center">
-            <div className="flex-1 max-w-2xl">
-              <DownloaderBox />
-            </div>
-            <div className="hidden xl:block flex-shrink-0 sticky top-24">
-              <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
-            </div>
-          </div>
-        </div>
-      </section>
+          <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
+      {/* Hna el fix: w-full bech el card tal9a ra7etha */}
+      <div className="w-full max-w-2xl mx-auto min-w-0">
+        <DownloaderBox />
+      </div>
 
+      {/* Sidebar Ad - block barka fil desktop */}
+      <div className="hidden xl:block flex-shrink-0 sticky top-24">
+        <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
+      </div>
+    </div>
+  </div>
+</section>
       {/* ── How It Works ── */}
       <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
