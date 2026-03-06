@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface AdsBannerProps {
   code: string;
@@ -15,38 +15,44 @@ const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: num
 };
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const dim = AD_DIMENSIONS[type];
-  const isPlaceholder =
-    !code ||
-    code === "PASTE_ADSTERRA_CODE_OR_LINK";
+
+  useEffect(() => {
+    if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") return;
+
+    // نظف أي سكريبت سابق
+    const scripts = containerRef.current?.querySelectorAll("script");
+    scripts?.forEach(s => s.remove());
+
+    // أضف السكريبت الجديد
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.async = true;
+
+    // نجيب src من الكود إذا موجود
+    const match = code.match(/src=["']([^"']+)["']/);
+    if (match && match[1]) {
+      script.src = match[1];
+      containerRef.current?.appendChild(script);
+    }
+  }, [code]);
+
+  const isPlaceholder = !code || code === "PASTE_ADSTERRA_CODE_OR_LINK";
 
   return (
     <div
+      ref={containerRef}
       className={`flex items-center justify-center overflow-hidden ${className}`}
       style={{ minHeight: dim.height, maxWidth: "100%" }}
     >
-      {isPlaceholder ? (
+      {isPlaceholder && (
         <div
           className="flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 text-xs text-white/30 font-mono select-none"
           style={{ width: Math.min(dim.width, 728), height: dim.height }}
         >
           Ad Space · {dim.label}
         </div>
-      ) : code.startsWith("http") ? (
-        <iframe
-          src={code}
-          width={dim.width}
-          height={dim.height}
-          scrolling="no"
-          frameBorder="0"
-          style={{ border: "none", maxWidth: "100%" }}
-          title={`ad-${type}`}
-        />
-      ) : (
-        <div
-          dangerouslySetInnerHTML={{ __html: code }}
-          style={{ maxWidth: "100%" }}
-        />
       )}
     </div>
   );
