@@ -10,30 +10,50 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => 
   const adRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-  let isMounted = true;
+    if (adRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
+      // 1. Nadhfou el container
+      adRef.current.innerHTML = "";
+      
+      // 2. N-creaw iframe bech n-isoliw el script mte3 Adsterra
+      const iframe = document.createElement("iframe");
+      iframe.style.width = "100%";
+      iframe.style.border = "none";
+      iframe.style.overflow = "hidden";
+      // El hauteur n-ajustiwha 7asb el type
+      iframe.height = type.includes("sidebar") ? "600" : "90"; 
+      
+      adRef.current.appendChild(iframe);
 
-  if (adRef.current && code && code !== "PASTE_ADSTERRA_CODE_OR_LINK") {
-    adRef.current.innerHTML = "";
-    
-    const range = document.createRange();
-    const fragment = range.createContextualFragment(code);
-    const scripts = fragment.querySelectorAll("script");
+      // 3. N-injectiw el script dlakhel el iframe
+      const iframeDoc = iframe.contentWindow?.document;
+      if (iframeDoc) {
+        iframeDoc.open();
+        iframeDoc.write(`
+          <html>
+            <body style="margin:0; padding:0; display:flex; justify-content:center;">
+              ${code}
+            </body>
+          </html>
+        `);
+        iframeDoc.close();
+      }
+    }
+  }, [code, type]);
 
-    scripts.forEach((oldScript) => {
-      const newScript = document.createElement("script");
-      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-      newScript.innerHTML = oldScript.innerHTML;
-      if (isMounted) adRef.current?.appendChild(newScript);
-    });
-
-    const others = Array.from(fragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
-    others.forEach(node => {
-      if (isMounted) adRef.current?.appendChild(node.cloneNode(true));
-    });
+  if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
+    return null; // Ma n-affichiw chay ken mafemma chay
   }
 
-  return () => { isMounted = false; };
-}, [code]);
+  return (
+    <div 
+      ref={adRef} 
+      className={`w-full flex justify-center items-center my-4 ${className}`} 
+      style={{ minHeight: '50px' }}
+    />
+  );
+};
+
+export default AdsBanner;
 
 
   if (!code || code === "PASTE_ADSTERRA_CODE_OR_LINK") {
