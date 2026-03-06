@@ -1,51 +1,81 @@
 export const ADS = {
-  // Banner 728x90 (Top/Middle)
+  // HilltopAds MultiTag - Top Banner
   topBanner: `
-    <script type="text/javascript">
-      atOptions = {
-        'key' : 'b5262129d29f40842476176aedd8035b',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
+    <script>
+    (function(qnpk){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.settings = qnpk || {};
+    s.src = "\\/\\/selfassured-celebration.com\\/b.XjVVsGdDG\\/l\\/0\\/YNWFcT\\/neam-9quKZSUMlgkXP\\/TNYj4bNSDjcB1ANxjeUGt\\/NBjLgV0WNdzPUo2\\/OqQG";
+    s.async = true;
+    s.referrerPolicy = 'no-referrer-when-downgrade';
+    l.parentNode.insertBefore(s, l);
+    })({})
     </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/b5262129d29f40842476176aedd8035b/invoke.js"></script>
   `,
 
-  // Banner 468x60
+  // HilltopAds Popunder Script - Middle
   middleBanner: `
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '068c2bb993cf5727eb61b719f35a5fd5',
-        'format' : 'iframe',
-        'height' : 60,
-        'width' : 468,
-        'params' : {}
-      };
+    <script>
+    (function(msnibcb){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.settings = msnibcb || {};
+    s.src = "\\/\\/plasticdamage.com\\/c.D\\/9G6Ybk2c5FljSWWkQ\\/9nNmj-gh0pNoziUb4wOSSb0o2MOvDxQc3vN-TJkdzO";
+    s.async = true;
+    s.referrerPolicy = 'no-referrer-when-downgrade';
+    l.parentNode.insertBefore(s, l);
+    })({})
     </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/068c2bb993cf5727eb61b719f35a5fd5/invoke.js"></script>
   `,
 
-  // Sidebar 160x600
+  // HilltopAds In-page Push - Sidebar 1
   sidebarAd1: `
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '818f4bad5f670e1e6a184b2928a959fa',
-        'format' : 'iframe',
-        'height' : 600,
-        'width' : 160,
-        'params' : {}
-      };
+    <script>
+    (function(inf){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.settings = inf || {};
+    s.src = "\\/\\/selfassured-celebration.com\\/bIX.VrsQdQGAls0-YgWwcU\\/ieomv9huKZBUOlIk\\/PGTuYz4KNSD-cy2RMDjPU\\/tPNnjGgP0LN\\/zDY_y\\/ORQG";
+    s.async = true;
+    s.referrerPolicy = 'no-referrer-when-downgrade';
+    l.parentNode.insertBefore(s, l);
+    })({})
     </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/818f4bad5f670e1e6a184b2928a959fa/invoke.js"></script>
   `,
 
-  // Native Banner (same uploaded picture product)
+  // HilltopAds MultiTag (Small) - Sidebar 2
+  sidebarAd2: `
+    <script>
+    (function(hzvbcz){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.settings = hzvbcz || {};
+    s.src = "\\/\\/selfassured-celebration.com\\/bQX.VysGdLGZle0kYcWmcL\\/veCm\\/9\\/ubZmUglQkIP-TJY\\/4YNPD\\/cz2LNUDLEuttNZjEg\\/0uNhzIYR0aNEQ_";
+    s.async = true;
+    s.referrerPolicy = 'no-referrer-when-downgrade';
+    l.parentNode.insertBefore(s, l);
+    })({})
+    </script>
+  `,
+
+  // HilltopAds Video Slider - Footer
   footerBanner: `
-    <script async="async" data-cfasync="false" src="//heavinessslight.com/dd0ed183c97a13585589697f3ce39af/invoke.js"></script>
-    <div id="container-dd0ed183c97a13585589697f3ce39af"></div>
-  `,
-
-  sidebarAd2: "PASTE_ADSTERRA_CODE_OR_LINK"
+    <script>
+    (function(hdw){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.settings = hdw || {};
+    s.src = "\\/\\/selfassured-celebration.com\\/bwX\\/V.sYdVG\\/lQ0KYEWMcf\\/weom\\/9uuUZKUzlXkePATKYI4zNBDJcC2\\/NnjjEPt_NRjPgK0\\/Ncz\\/Yz2ANCQz";
+    s.async = true;
+    s.referrerPolicy = 'no-referrer-when-downgrade';
+    l.parentNode.insertBefore(s, l);
+    })({})
+    </script>
+  `
 };
