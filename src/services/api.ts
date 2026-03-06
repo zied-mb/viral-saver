@@ -30,7 +30,14 @@ export const fetchDownload = async (url: string): Promise<DownloadResult> => {
       },
     }
   );
-  return response.data;
+
+  const data = response.data;
+
+  if (detectPlatform(url) === "instagram" && data.thumbnail) {
+    data.thumbnail = data.thumbnail.split('&')[0]; 
+  }
+
+  return data;
 };
 
 export const detectPlatform = (url: string): string => {
@@ -47,7 +54,7 @@ export const detectPlatform = (url: string): string => {
 
 export const isValidUrl = (url: string): boolean => {
   try {
-    new URL(url);
+    const parsed = new URL(url);
     const platform = detectPlatform(url);
     return platform !== "" && platform !== "unknown";
   } catch {
