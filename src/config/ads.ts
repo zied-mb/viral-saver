@@ -1,7 +1,7 @@
 export const ADS = {
-  topBanner: `<script type="text/javascript" src="https://ad.adsterra.com/show.js?id=28753765"></script>`,
-  middleBanner: `<script type="text/javascript" src="https://ad.adsterra.com/show.js?id=28754928"></script>`,
-  sidebarAd1: `<script type="text/javascript" src="https://ad.adsterra.com/show.js?id=28754985"></script>`,
-  sidebarAd2: `<script type="text/javascript" src="https://ad.adsterra.com/show.js?id=28754847"></script>`,
-  footerBanner: `<script type="text/javascript" src="https://ad.adsterra.com/show.js?id=28754958"></script>`,
+  topBanner: "28754928",     
+  middleBanner: "28754847",     
+  sidebarAd1: "28754985",      
+  sidebarAd2: "5647181",       
+  footerBanner: "PASTE_FOOTER_ID", 
 };
