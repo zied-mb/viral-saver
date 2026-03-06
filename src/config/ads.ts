@@ -41,26 +41,11 @@ export const ADS = {
     <script type="text/javascript" src="//www.highperformanceformat.com/818f4bad5f670e1e6a184b2928a959fa/invoke.js"></script>
   `,
 
-  // Native Banner (4 items)
+  // Native Banner (same uploaded picture product)
   footerBanner: `
     <script async="async" data-cfasync="false" src="//heavinessslight.com/dd0ed183c97a13585589697f3ce39af/invoke.js"></script>
     <div id="container-dd0ed183c97a13585589697f3ce39af"></div>
   `,
 
-  sidebarAd2: "PASTE_ADSTERRA_CODE_OR_LINK"
-};
-        'width' : 160,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/818f4bad5f670e1e6a184b2928a959fa/invoke.js"></script>
-  `,
-
-  // Native Banner (El 4 tsawer elli ijiw m3a ba3dh-hom)
-  footerBanner: `
-    <script async="async" data-cfasync="false" src="//heavinessslight.com/dd0ed183c97a13585589697f3ce39af/invoke.js"></script>
-    <div id="container-dd0ed183c97a13585589697f3ce39af"></div>
-  `,
-  
   sidebarAd2: "PASTE_ADSTERRA_CODE_OR_LINK"
 };
