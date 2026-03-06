@@ -47,7 +47,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                   <video
                     key={previewVideo}
                     src={previewVideo}
-                    autoPlay loop muted controls
+                    autoPlay loop  controls
                     className="w-full h-auto max-h-[320px] sm:max-h-[480px] object-contain"
                   />
                 ) : (
