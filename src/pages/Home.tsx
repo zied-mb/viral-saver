@@ -337,40 +337,52 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── Downloader Section ── */}
-      <section id="downloader" className="py-12 sm:py-20 px-2 sm:px-4 overflow-hidden">
-  <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
-              — Try it now —
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-3">
-              Paste Your Link &{" "}
-              <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-                Download Instantly
-              </span>
-            </h2>
-            <p className={`text-base ${darkMode ? "text-white/40" : "text-slate-400"}`}>No login. No subscription. Just paste and go.</p>
-          </motion.div>
+<section id="downloader" className="py-12 sm:py-20 px-4 overflow-hidden">
+  <div className="max-w-7xl mx-auto flex flex-col items-center">
+    
+    {/* Header Section */}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="text-center mb-8 sm:mb-12 w-full max-w-2xl"
+    >
+      <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
+        — Try it now —
+      </p>
+      <h2 className="text-2xl sm:text-4xl font-black mb-3 px-2 leading-tight">
+        Paste Your Link &{" "}
+        <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+          Download Instantly
+        </span>
+      </h2>
+      <p className={`text-sm sm:text-base px-4 ${darkMode ? "text-white/40" : "text-slate-400"}`}>
+        No login. No subscription. Just paste and go.
+      </p>
+    </motion.div>
 
-          <div className="flex gap-8 items-start justify-center">
-          <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
-      {/* Hna el fix: w-full bech el card tal9a ra7etha */}
-      <div className="w-full max-w-2xl mx-auto min-w-0">
-        <DownloaderBox />
+    {/* Main Content Area */}
+    <div className="w-full flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
+      
+      {/* Downloader Column - Hedhi elli fiha el ResultCard dlakhel */}
+      <div className="w-full max-w-2xl flex flex-col gap-6 min-w-0">
+        <div className="w-full">
+          <DownloaderBox />
+        </div>
+        
+        {/* Hna el ResultCard dima iji dlakhel el max-w-2xl 
+            bech mayfoutech el width mte3 el input box */}
       </div>
 
-      {/* Sidebar Ad - block barka fil desktop */}
+      {/* Sidebar Ad - Appears only on Large Screens */}
       <div className="hidden xl:block flex-shrink-0 sticky top-24">
         <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
       </div>
+
     </div>
   </div>
 </section>
+
       {/* ── How It Works ── */}
       <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
