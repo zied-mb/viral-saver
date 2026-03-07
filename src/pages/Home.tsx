@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, useScroll, useTransform, animatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
    Download, Zap, Shield, Globe, ChevronDown,
   ArrowRight, CheckCircle2, Star, TrendingUp
