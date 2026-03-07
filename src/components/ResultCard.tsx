@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Globe, MousePointer2 } from "lucide-react";
 import { DownloadResult } from "@/types";
+import AdsBanner from "./AdsBanner"; // 👈 ناديلو لهنا
 
 interface ResultCardProps {
   result: DownloadResult;
@@ -28,7 +29,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
 
   const previewVideo = bestVideo?.url || null;
 
-  // إذا ما فماش فيديو، ما نخرجوش الكارت هذي جملة
   if (!previewVideo) return null;
 
   return (
@@ -37,11 +37,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
       animate={{ opacity: 1, y: 0 }}
       className="relative w-[95%] sm:w-full max-w-4xl mx-auto mt-6 overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 bg-[#0f0720]/80 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl"
     >
-      {/* Rainbow line */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
 
       <div className="p-6 sm:p-8 md:p-10">
-        {/* Header Section */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -79,21 +77,30 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
               {result.title || "Video Ready for Download! 🚀"}
             </h3>
             
-            <p className="text-white/50 text-sm sm:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-md mx-auto lg:mx-0 leading-relaxed">
               The video is processed successfully. Use the player options below to save the file. ✅
             </p>
 
-            {/* Quick Save Guide */}
-            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 shadow-inner">
-               <div className="flex items-center justify-center lg:justify-start gap-2 mb-3 text-cyan-400">
-                  <MousePointer2 className="w-4 h-4" />
-                  <span className="text-xs font-bold tracking-widest uppercase">Quick Save Guide:</span>
+            {/* Quick Save Guide + Ad Container */}
+            <div className="flex flex-col gap-4">
+               {/* Guide Card */}
+               <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 shadow-inner">
+                  <div className="flex items-center justify-center lg:justify-start gap-2 mb-3 text-cyan-400">
+                     <MousePointer2 className="w-4 h-4" />
+                     <span className="text-xs font-bold tracking-widest uppercase">Quick Save Guide:</span>
+                  </div>
+                  <p className="text-white/70 text-sm sm:text-base italic leading-relaxed">
+                   "Click the <span className="text-white font-bold text-lg mx-1">⋮</span> menu on the video and select 
+                   <span className="font-bold ml-1 text-emerald-400 underline decoration-emerald-400/30 underline-offset-4 cursor-pointer">Download</span>."
+                  </p>
                </div>
-               <p className="text-white/70 text-sm sm:text-base italic leading-relaxed">
-                "Click the <span className="text-white font-bold text-lg mx-1">⋮</span> menu on the video and select 
-                <span className="font-bold ml-1 text-emerald-400 underline decoration-emerald-400/30 underline-offset-4 cursor-pointer">Download</span>."
-               </p>
+
+               {/* 🎯 الإشهار في المربع الأخضر اللي سطرتهولي */}
+               <div className="mt-2">
+                 <AdsBanner type="result-inline" className="py-0" />
+               </div>
             </div>
+
           </div>
         </div>
       </div>
