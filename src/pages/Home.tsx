@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-   Download, Zap, Shield, Globe, ChevronDown,
+  Download, Zap, Shield, Globe, ChevronDown,
   ArrowRight, CheckCircle2, Star, TrendingUp
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
@@ -92,7 +92,7 @@ const faqs = [
 ];
 
 const Home: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
@@ -116,12 +116,6 @@ const Home: React.FC = () => {
           transition={{ duration: 26, repeat: Infinity, ease: "easeInOut", delay: 4 }}
           className="absolute -top-40 -right-60 w-[600px] h-[600px] rounded-full bg-pink-600/15 blur-[120px]"
         />
-        <motion.div
-          animate={{ x: [0, 50, -30, 0], y: [0, -40, 50, 0] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 8 }}
-          className="absolute bottom-20 left-1/3 w-[600px] h-[600px] rounded-full bg-cyan-600/12 blur-[130px]"
-        />
-        {/* Grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.025]"
           style={{
@@ -135,239 +129,81 @@ const Home: React.FC = () => {
       <motion.nav
         initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className={`sticky top-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4 backdrop-blur-2xl border-b ${darkMode ? "border-white/5 bg-black/40" : "border-slate-200/60 bg-white/80"
-          }`}
+        className={`sticky top-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4 backdrop-blur-2xl border-b ${darkMode ? "border-white/5 bg-black/40" : "border-slate-200/60 bg-white/80"}`}
       >
-        {/* Logo */}
         <a href="/" className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="ViralSaver logo"
-              className="w-7 h-7 object-contain"
-            />
-
-            <span className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              ViralSaver
-            </span>
+            <img src="/logo.png" alt="ViralSaver logo" className="w-7 h-7 object-contain" />
+            <span className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent"> ViralSaver </span>
           </div>
         </a>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           {["Downloader", "Features", "How It Works", "FAQ"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`transition-colors duration-200 ${darkMode ? "text-white/40 hover:text-white" : "text-slate-400 hover:text-slate-800"}`}
-            >
-              {item}
-            </a>
+            <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, "-")}`} className="text-white/40 hover:text-white transition-colors"> {item} </a>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          
-          <motion.a
-            href="#downloader"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-pink-500 hover:from-violet-500 hover:to-pink-400 shadow-lg shadow-violet-500/25 transition-all duration-200"
-          >
-            Start Downloading
-            <ArrowRight className="w-3.5 h-3.5" />
-          </motion.a>
-        </div>
+        <motion.a
+          href="#downloader"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-pink-500 shadow-lg"
+        >
+          Start Downloading <ArrowRight className="w-3.5 h-3.5" />
+        </motion.a>
       </motion.nav>
 
-      {/* ── Top Banner Ad ── */}
+      {/* ── Top Ads ── */}
       <div className="flex justify-center py-3 px-4 overflow-x-auto">
         <AdsBanner code={ADS.topBanner} type="top" />
       </div>
 
-      {/* ── Hero Section ── */}
-      <section className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-10 pb-20">
-        {/* Hero background image */}
-        <motion.div
-          style={{ opacity: heroOpacity, y: heroY }}
-          className="absolute inset-0 -z-10"
-        >
-          <div
-            className="absolute inset-0 opacity-[0.07]"
-            style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
-          />
+      {/* ── Hero ── */}
+      <section className="relative min-h-[85vh] flex flex-col items-center justify-center px-4 pt-10 pb-20">
+        <motion.div style={{ opacity: heroOpacity, y: heroY }} className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover" }} />
           <div className="absolute inset-0 bg-gradient-to-b from-[#06060f]/60 via-transparent to-[#06060f]" />
         </motion.div>
 
         <div className="max-w-7xl w-full mx-auto">
           <div className="flex flex-col xl:flex-row gap-16 items-center">
-            {/* Left: text + CTA */}
             <div className="flex-1 text-center xl:text-left">
-              {/* Live badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-gradient-to-r from-violet-500/10 to-pink-500/10 border border-violet-400/20 text-violet-300 text-xs font-bold tracking-widest uppercase mb-8"
-              >
-                <span className="flex h-2 w-2">
-                  <span className="animate-ping absolute h-2 w-2 rounded-full bg-violet-400 opacity-75" />
-                  <span className="relative h-2 w-2 rounded-full bg-violet-400" />
-                </span>
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-300 text-xs font-bold uppercase mb-8">
                 Free · No Watermark · No Account Needed
               </motion.div>
-
-              {/* Headline */}
-              <motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.7 }}
-                className="text-5xl sm:text-6xl lg:text-7xl xl:text-7xl font-black leading-[1.05] tracking-tight mb-6"
-              >
-                Save Any Video
-                <br />
-                <span
-                  className="bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-300 bg-clip-text text-transparent"
-                  style={{ WebkitTextStroke: "0px" }}
-                >
-                  In Seconds.
-                </span>
+              <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-6">
+                Save Any Video <br /> <span className="bg-gradient-to-r from-violet-400 to-cyan-300 bg-clip-text text-transparent">In Seconds.</span>
               </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className={`text-lg sm:text-xl max-w-xl xl:max-w-lg mx-auto xl:mx-0 mb-10 leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}
-              >
-                Paste any link from Instagram, TikTok, YouTube, Facebook, Twitter and more. Get HD, SD, or MP3 instantly — no signup, no watermarks, always free.
-              </motion.p>
-
-              {/* Trust bullets */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.45 }}
-                className="flex flex-wrap justify-center xl:justify-start gap-x-6 gap-y-2 mb-10"
-              >
-                {["HD Quality Downloads", "10+ Platforms", "Instant & Free"].map((item) => (
-                  <span key={item} className={`inline-flex items-center gap-1.5 text-sm font-medium ${darkMode ? "text-white/50" : "text-slate-500"}`}>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    {item}
-                  </span>
-                ))}
-              </motion.div>
-
-              {/* Supported platforms */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.55 }}
-                className="flex flex-wrap justify-center xl:justify-start gap-3"
-              >
-                {[
-                  { icon: FaInstagram, label: "Instagram", bg: "from-purple-600 via-pink-500 to-orange-400" },
-                  { icon: FaTiktok, label: "TikTok", bg: "from-slate-800 to-[#69C9D0]" },
-                  { icon: FaFacebook, label: "Facebook", bg: "from-blue-700 to-blue-400" },
-                  { icon: FaYoutube, label: "YouTube", bg: "from-red-700 to-red-400" },
-                  { icon: FaTwitter, label: "Twitter", bg: "from-sky-600 to-sky-400" },
-                ].map(({ icon: Icon, label, bg }) => (
-                  <motion.span
-                    key={label}
-                    whileHover={{ scale: 1.06, y: -2 }}
-                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border ${darkMode ? "border-white/8 bg-white/5 hover:bg-white/10 text-white/60" : "border-slate-200 bg-white text-slate-600"} text-sm font-semibold cursor-default transition-all duration-200`}
-                  >
-                    <span className={`w-5 h-5 rounded-md bg-gradient-to-br ${bg} flex items-center justify-center flex-shrink-0`}>
-                      <Icon className="text-white text-[10px]" />
-                    </span>
-                    {label}
-                  </motion.span>
-                ))}
-              </motion.div>
+              <p className="text-lg text-white/45 max-w-xl mx-auto xl:mx-0 mb-10">
+                Download HD content from Instagram, TikTok, and more instantly. No watermarks, no limits. 🚀
+              </p>
             </div>
-
-            {/* Right: sidebar ad (desktop) */}
-            <div className="hidden xl:block flex-shrink-0">
+            <div className="hidden xl:block">
               <AdsBanner code={ADS.sidebarAd1} type="sidebar-sm" />
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className={`text-xs font-medium tracking-widest uppercase ${darkMode ? "text-white/25" : "text-slate-300"}`}>Scroll</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center"
-          >
-            <ChevronDown className="w-3 h-3 text-white/40" />
-          </motion.div>
-        </motion.div>
       </section>
 
-      {/* ── Stats Bar ── */}
-      <section className={`py-6 border-y ${darkMode ? "border-white/5 bg-white/2" : "border-slate-100 bg-slate-50"}`}>
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((s, i) => {
-              const Icon = s.icon;
-              return (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="flex flex-col items-center text-center gap-1 py-4"
-                >
-                  <Icon className={`w-4 h-4 mb-1 ${darkMode ? "text-violet-400" : "text-violet-500"}`} />
-                  <p className="text-3xl font-black text-white">{s.value}</p>
-                  <p className={`text-xs font-medium ${darkMode ? "text-white/35" : "text-slate-400"}`}>{s.label}</p>
-                </motion.div>
-              );
-            })}
-          </div>
+      {/* ── Stats ── */}
+      <section className="py-6 border-y border-white/5 bg-white/2">
+        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
+          {stats.map((s, i) => (
+            <div key={i} className="text-center py-4">
+              <p className="text-3xl font-black text-white">{s.value}</p>
+              <p className="text-xs font-medium text-white/35 uppercase tracking-widest">{s.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ── Downloader Section ── */}
+      {/* ── Downloader Box ── */}
       <section id="downloader" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
-              — Try it now —
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-3">
-              Paste Your Link &{" "}
-              <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-                Download Instantly
-              </span>
-            </h2>
-            <p className={`text-base ${darkMode ? "text-white/40" : "text-slate-400"}`}>No login. No subscription. Just paste and go.</p>
-          </motion.div>
-
-          <div className="flex gap-8 items-start justify-center">
-            <div className="flex-1 max-w-2xl">
-              <DownloaderBox />
-            </div>
-            <div className="hidden xl:block flex-shrink-0 sticky top-24">
-              <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
-            </div>
-          </div>
+        <div className="max-w-4xl mx-auto">
+          <DownloaderBox />
         </div>
       </section>
-
       {/* ── How It Works ── */}
       <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
