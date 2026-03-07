@@ -160,14 +160,19 @@ const DownloaderBox: React.FC = () => {
       <div className="flex flex-col md:flex-row items-center gap-6 p-6 sm:p-10">
         
         {/* 🎥 الكادر (Clean Phone Frame) */}
-        <div className="relative flex-shrink-0 w-[140px] h-[200px] rounded-[1.5rem] bg-black/40 border border-white/5 flex items-center justify-center shadow-inner">
-          <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent rounded-[1.5rem]" />
-          <div className="relative z-10 flex flex-col items-center gap-2">
-            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-              <Lock className="w-6 h-6 text-red-500/80" />
-            </div>
-          </div>
-        </div>
+  <div className="relative flex-shrink-0 w-[140px] h-[200px] rounded-2xl bg-black border-2 border-red-500/5 flex items-center justify-center">
+  {/* Corner Accents */}
+  <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-red-500/40" />
+  <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-red-500/40" />
+  
+  <div className="flex flex-col items-center gap-4">
+    <div className="relative">
+       <div className="absolute -inset-1 bg-red-500/10 blur rounded-full" />
+       <Lock className="relative w-7 h-7 text-red-600/90" />
+    </div>
+    <div className="h-[1px] w-8 bg-white/10" />
+  </div>
+</div>
 
         {/* 📝 المحتوى (Minimalist Text) */}
         <div className="flex-1 text-center md:text-left space-y-3">
