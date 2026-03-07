@@ -408,25 +408,26 @@ const Home: React.FC = () => {
         </div>
 
         {/* ✨ الميساج السمح يظهر هوني تحت الـ Input طول ✨ */}
-        <AnimatePresence>
-          {errorMessage && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="w-full overflow-hidden"
-            >
-              <div className="p-4 rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex items-center gap-3">
-                <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
-                  <AlertCircle size={18} />
-                </div>
-                <p className="text-white/80 text-xs sm:text-sm font-medium italic">
-                  {errorMessage}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+   <AnimatePresence mode="wait">
+  {errorMessage && (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: -10 }}
+      transition={{ duration: 0.2 }}
+      className="w-full"
+    >
+      <div className="p-4 rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex items-center gap-3">
+        <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
+          <AlertCircle size={18} />
+        </div>
+        <p className="text-white/80 text-xs sm:text-sm font-medium italic">
+          {errorMessage}
+        </p>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
         
         {/* الـ ResultCard باش تظهر هوني أوتوماتيكيا كي يبدأ فما فيديو صحيح */}
       </div>
