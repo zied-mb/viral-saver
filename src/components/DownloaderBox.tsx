@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Clipboard, X, Loader2, AlertCircle, Sparkles, Lock, ShieldAlert, AlertTriangle } from "lucide-react";
+import { Download, Clipboard, X, Loader2, AlertCircle, Sparkles, Lock, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { fetchDownload, detectPlatform, isValidUrl } from "@/services/api";
 import { DownloadResult } from "@/types";
@@ -24,7 +24,7 @@ const DownloaderBox: React.FC = () => {
       setResult(null);
       inputRef.current?.focus();
     } catch {
-      toast.error("Clipboard access denied. Please paste manually.");
+      toast.error("Clipboard access denied.");
     }
   };
 
@@ -41,7 +41,7 @@ const DownloaderBox: React.FC = () => {
       return;
     }
     if (!isValidUrl(url.trim())) {
-      setError("Please enter a valid Instagram, TikTok, Facebook, or YouTube URL.");
+      setError("Please enter a valid URL.");
       return;
     }
 
@@ -51,21 +51,16 @@ const DownloaderBox: React.FC = () => {
 
     try {
       const data = await fetchDownload(url.trim());
-
-      // 🛡️ التثبت من الـ Private أو الـ Error 404
       if (data && (data.error === true || data.status === 404 || data.message === "Not found data")) {
-        // نبعثو كلمة سبيسيال للـ error باش الكود يفيق ويظهر الـ "Faza"
         setError("PRIVATE_ACCOUNT_DETECTED");
         setLoading(false);
         return;
       }
-
       if (data) {
         setResult(data);
         toast.success("Media fetched successfully!");
       }
     } catch (err: any) {
-      console.error("API error:", err);
       setError("Unable to fetch media. Please check your link. ⚠️");
     } finally {
       setLoading(false);
@@ -112,8 +107,7 @@ const DownloaderBox: React.FC = () => {
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Paste Instagram / TikTok / Facebook link..."
-                className="w-full px-5 py-4 rounded-2xl text-white placeholder-white/25 text-sm focus:outline-none transition-all duration-200"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+                className="w-full px-5 py-4 rounded-2xl text-white placeholder-white/25 text-sm focus:outline-none transition-all duration-200 bg-white/5 border border-white/10"
               />
               <AnimatePresence>
                 {url && (
@@ -148,60 +142,58 @@ const DownloaderBox: React.FC = () => {
             disabled={loading}
             className="relative mt-5 w-full py-4 rounded-2xl font-black text-white text-base overflow-hidden group transition-all"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 group-hover:from-violet-500 transition-all" />
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500" />
             <span className="relative flex items-center justify-center gap-2.5">
               {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Fetching...</> : <><Download className="w-5 h-5" /> Download Now</>}
             </span>
           </motion.button>
 
+          {/* ── 🛡️ New Placement for Error/Private Card ── */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 20 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className={`overflow-hidden rounded-2xl border transition-all duration-500 ${
+                  error === "PRIVATE_ACCOUNT_DETECTED" 
+                    ? "border-red-500/30 bg-red-500/10 shadow-[0_10px_30px_rgba(239,68,68,0.1)]" 
+                    : "border-red-500/20 bg-red-500/5 px-4 py-3 flex items-center gap-3"
+                }`}
+              >
+                {error === "PRIVATE_ACCOUNT_DETECTED" ? (
+                  <div className="p-6 flex flex-col items-center text-center gap-4">
+                    <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center border border-red-500/30">
+                      <Lock className="w-6 h-6 text-red-500 animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-white uppercase tracking-tight italic">
+                        PRIVATE CONTENT DETECTED 🔒
+                      </h3>
+                      <p className="text-red-200/50 text-[13px] font-medium max-w-sm mx-auto leading-relaxed mt-1">
+                        This account is private. Please make sure the link is public or follow the user to access their content. 🛡️
+                      </p>
+                    </div>
+                    <div className="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500/20 flex items-center gap-2 text-[9px] font-black text-red-400 uppercase tracking-widest">
+                      <ShieldAlert size={12} />
+                      Access Restricted
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <AlertCircle className="w-5 h-5 text-red-400" />
+                    <span className="text-red-300 text-sm font-medium">{error}</span>
+                  </>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
         </div>
       </motion.div>
 
-      {/* ── Error & Private Area (THE FAZA) ── */}
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className={`overflow-hidden rounded-[2rem] border backdrop-blur-3xl shadow-2xl transition-all duration-500 ${
-              error === "PRIVATE_ACCOUNT_DETECTED" 
-                ? "border-red-500/30 bg-[#1a0b0b]/80 shadow-[0_20px_50px_rgba(239,68,68,0.2)]" 
-                : "border-red-500/20 bg-red-500/5 px-4 py-3 flex items-center gap-3"
-            }`}
-          >
-            {error === "PRIVATE_ACCOUNT_DETECTED" ? (
-              // 🎨 Design المزيان اللي حبيته
-              <div className="p-8 flex flex-col items-center text-center gap-5">
-                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                  <Lock className="w-8 h-8 text-red-500 animate-pulse" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2 italic">
-                    same uploaded picture product 🔒
-                  </h3>
-                  <p className="text-red-200/60 text-sm font-medium max-w-xs mx-auto leading-relaxed">
-                    This account is private. Please make sure the link is public or follow the user to access their content. 🛡️
-                  </p>
-                </div>
-                <div className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-2 text-[10px] font-black text-red-400 uppercase tracking-widest">
-                  <ShieldAlert size={14} />
-                  Access Restricted
-                </div>
-              </div>
-            ) : (
-              // مساج الغلط العادي (مثلا رابط غلط)
-              <>
-                <AlertCircle className="w-5 h-5 text-red-400" />
-                <span className="text-red-300 text-sm font-medium">{error}</span>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Result Card (Success Only) ── */}
+      {/* ── Result Card (Shows below the Main Card on Success) ── */}
       <AnimatePresence>
         {result && !loading && <ResultCard result={result} platform={platform} />}
       </AnimatePresence>
