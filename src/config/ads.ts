@@ -1,4 +1,5 @@
 export const ADS = {
-  topBanner: "2429655", // الـ ID اللي في الكود متاعك
-  middleBanner: "2429661",
+  topBanner: "2429655",
+  
+  sidebarAd1: "2429661",
 };
