@@ -1,4 +1,4 @@
-xport const ADS = {
+export const ADS = {
 
   // HilltopAds MultiTag - Top Banner
 
