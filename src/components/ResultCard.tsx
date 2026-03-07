@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Globe, MousePointer2 } from "lucide-react";
+import { CheckCircle2, Globe, MousePointer2, Lock, AlertTriangle } from "lucide-react";
 import { DownloadResult } from "@/types";
 
 interface ResultCardProps {
@@ -28,6 +28,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
 
   const previewVideo = bestVideo?.url || null;
 
+  // ✨ Logic جديد: ثبتنا هل الفيديو موجود فعلاً وإلا لا؟ ✨
+  const isPrivate = !previewVideo && result.thumbnail;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -39,10 +42,10 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
       <div className="p-6 sm:p-8 md:p-10">
         {/* Header Section */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
-            <span className="text-emerald-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-shadow-glow">
-              Ready to Download
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${isPrivate ? "bg-orange-500/10 border-orange-500/20" : "bg-emerald-500/10 border-emerald-500/20"}`}>
+            {isPrivate ? <Lock className="w-3.5 h-3.5 text-orange-400" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+            <span className={`${isPrivate ? "text-orange-400" : "text-emerald-400"} text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-shadow-glow`}>
+              {isPrivate ? "Private Content Detected" : "Ready to Download"}
             </span>
           </div>
           <div className="flex items-center gap-2 text-white/40 bg-white/5 px-3 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase border border-white/5">
@@ -53,58 +56,62 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start overflow-hidden">
           
-          {/* 1. Video Player Section */}
+          {/* 1. Video/Thumbnail Section */}
           <div className="relative w-full sm:w-[80%] lg:w-[320px] shrink-0 mx-auto lg:mx-0">
-             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 group aspect-auto">
+             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 min-h-[200px] flex items-center justify-center">
                 {previewVideo ? (
                   <video
                     key={previewVideo}
                     src={previewVideo}
                     autoPlay
                     loop
+                    muted
                     controls
+                    playsInline
                     className="w-full h-auto max-h-[450px] sm:max-h-[520px] object-contain"
                   />
                 ) : (
-                  <img src={result.thumbnail} className="w-full h-auto object-contain" alt="thumbnail" />
+                  <div className="relative w-full h-full">
+                    <img src={result.thumbnail} className="w-full h-auto object-contain opacity-40 blur-[2px]" alt="thumbnail" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                       <Lock className="w-10 h-10 text-white/20 mb-2" />
+                       <span className="text-white/40 text-[10px] font-bold uppercase tracking-tighter">Preview Locked</span>
+                    </div>
+                  </div>
                 )}
-                
-                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1.5 shadow-lg">
-                   <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                   <span className="text-[9px] text-white/90 font-bold uppercase">
-                    {bestVideo?.quality || "HD"} No Watermark
-                   </span>
-                </div>
              </div>
           </div>
 
-          {/* 2. Content & Guide Section - Fixed Overflow here */}
+          {/* 2. Content Section */}
           <div className="flex-1 w-full min-w-0 text-center lg:text-left">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-4 leading-tight tracking-tight break-words px-2 lg:px-0">
-              {result.title || "Found your same uploaded picture product video! 🚀"}
+              {isPrivate ? "This Account is Private 🔒" : (result.title || "Found your same uploaded picture product video! 🚀")}
             </h3>
             
             <p className="text-white/50 text-sm sm:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed px-4 lg:px-0">
-              Video is processed. Use the player options below to save the file to your device. ✅
+              {isPrivate 
+                ? "We found the post, but it's from a private profile. We can't fetch the download link for private videos due to security restrictions. 🛡️" 
+                : "Video is processed. Use the player options below to save the file to your device. ✅"}
             </p>
 
-            {/* Instruction Card */}
-            <div className="flex flex-col items-center lg:items-start p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 shadow-inner mx-4 lg:mx-0">
-               <div className="flex items-center gap-2 mb-3 text-cyan-400">
-                  <MousePointer2 className="w-4 h-4" />
-                  <span className="text-xs font-bold tracking-widest uppercase">Quick Save Guide:</span>
-               </div>
-               <p className="text-white/70 text-sm sm:text-base italic leading-relaxed">
-                "Click the <span className="text-white font-bold text-lg mx-1">⋮</span> menu on the video and select 
-                <span className="font-bold ml-1 text-emerald-400 underline decoration-emerald-400/30 underline-offset-4 cursor-pointer">Download</span>."
-               </p>
-            </div>
-
-            <p className="mt-6 text-[10px] text-white/20 uppercase tracking-tighter block lg:hidden font-medium">
-              Scroll if menu is hidden
-            </p>
+            {/* Conditional Guide Card */}
+            {!isPrivate ? (
+              <div className="flex flex-col items-center lg:items-start p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 shadow-inner mx-4 lg:mx-0">
+                 <div className="flex items-center gap-2 mb-3 text-cyan-400">
+                    <MousePointer2 className="w-4 h-4" />
+                    <span className="text-xs font-bold tracking-widest uppercase">Quick Save Guide:</span>
+                 </div>
+                 <p className="text-white/70 text-sm sm:text-base italic leading-relaxed">
+                  "Click the <span className="text-white font-bold text-lg mx-1">⋮</span> menu on the video and select 
+                  <span className="font-bold ml-1 text-emerald-400 underline decoration-emerald-400/30 underline-offset-4">Download</span>."
+                 </p>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/20 text-orange-300 text-xs font-medium italic">
+                Tip: Ask the owner to make the post public, then try again!
+              </div>
+            )}
           </div>
-
         </div>
       </div>
     </motion.div>
