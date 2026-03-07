@@ -38,7 +38,15 @@ const DownloaderBox: React.FC = () => {
   };
 
 const handleDownload = async () => {
-    // ... التثبت من الـ URL يبقى هو بيدو ...
+    if (!url.trim()) {
+      setError("Please paste a social media link to continue.");
+      return;
+    }
+    if (!isValidUrl(url.trim())) {
+      setError("Please enter a valid Instagram, TikTok, Facebook, or YouTube URL.");
+      return;
+    }
+
     setError("");
     setResult(null);
     setLoading(true);
@@ -46,25 +54,26 @@ const handleDownload = async () => {
     try {
       const data = await fetchDownload(url.trim());
 
-      // ✅ المرة هذي نبعثو الداتا حتى لو فيها Error 404
-      // باش الـ ResultCard يظهر الـ Private Mode
+      // 🛡️ التثبت من الـ Private أو الـ Error 404
+      if (data && (data.error === true || data.status === 404 || data.message === "Not found data")) {
+        // ❌ هنا نحينا الجملة القديمة وعوضناها بميساج يفهمو أي حد
+        setError("This content is private or unavailable. Please check the link and try again. 🔒");
+        setLoading(false);
+        return;
+      }
+
       if (data) {
         setResult(data);
-        
-        if (data.error || data.status === 404) {
-          toast.error("This account is private 🔒");
-        } else {
-          toast.success("Media fetched successfully! 🚀");
-        }
+        toast.success("Media fetched successfully!");
       }
     } catch (err: any) {
       console.error("API error:", err);
-      setError("Unable to connect to the service. Please try again. ⚠️");
+      // ❌ حتى هنا نحيناها
+      setError("Unable to fetch media. The profile might be private or the link is broken. ⚠️");
     } finally {
       setLoading(false);
     }
-  };  
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  };  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleDownload();
   };
 
