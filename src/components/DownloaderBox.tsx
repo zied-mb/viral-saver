@@ -47,28 +47,31 @@ const handleDownload = async () => {
       return;
     }
 
-    // 🛑 أهم خطوة: نصفروا النتيجة القديمة تماماً قبل ما نبدأ التحميل الجديد
     setError("");
-    setResult(null); 
+    setResult(null);
     setLoading(true);
 
     try {
       const data = await fetchDownload(url.trim());
-      
+
+      // 🔍 التثبت السحري: نثبتوا هل الـ API رجع error: true أو status 404
+      if (data && (data.error === true || data.status === 404 || data.message === "Not found data")) {
+        setError("same uploaded picture product 🔒"); // هنا تظهر الرسالة اللي تحب عليها
+        setLoading(false);
+        return; 
+      }
+
       if (data) {
-        // 🔥 هنا نبعثو الـ Data للـ ResultCard
         setResult(data);
         toast.success("Media fetched successfully!");
       }
     } catch (err: any) {
       console.error("API error:", err);
-      const msg = err?.response?.data?.message || err?.message || "Failed to fetch. Please try again.";
-      setError(msg);
+      setError("same uploaded picture product 🔒");
     } finally {
       setLoading(false);
     }
   };
-
   
     const data = await fetchDownload(url.trim()).catch((err) => {
       console.error("API error:", err);
