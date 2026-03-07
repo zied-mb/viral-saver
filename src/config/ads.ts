@@ -64,6 +64,7 @@ export const ADS = {
   `,
 
   // HilltopAds Video Slider - Footer
+// ✨ Banner عادي وخفيف عوض الـ Video Slider ✨
   footerBanner: `
     <script>
     (function(hdw){
@@ -71,7 +72,8 @@ export const ADS = {
         s = d.createElement('script'),
         l = d.scripts[d.scripts.length - 1];
     s.settings = hdw || {};
-    s.src = "\\/\\/selfassured-celebration.com\\/bwX\\/V.sYdVG\\/lQ0KYEWMcf\\/weom\\/9uuUZKUzlXkePATKYI4zNBDJcC2\\/NnjjEPt_NRjPgK0\\/Ncz\\/Yz2ANCQz";
+    // 💡 هوني حط الـ Source متاع الـ Banner الجديد (Standard Display)
+    s.src = "\\/\\/selfassured-celebration.com\\/b.XjVVsGdDG\\/l\\/0\\/YNWFcT\\/neam-9quKZSUMlgkXP"; 
     s.async = true;
     s.referrerPolicy = 'no-referrer-when-downgrade';
     l.parentNode.insertBefore(s, l);
