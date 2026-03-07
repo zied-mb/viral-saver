@@ -10,7 +10,8 @@ const AD_DIMENSIONS = {
   top: { height: 90, label: "728×90" },
   middle: { height: 320, label: "Large Adaptive Middle" }, 
   "sidebar-sm": { height: 250, label: "300×250" },
-  "sidebar-lg": { height: 600, label: "300×600" }, // 👈 هذا باش يجي طويل ومزيان في الجنب
+  // 🎯 لهنا ركحنا الـ height باش يولي متناسق
+  "sidebar-lg": { height: 500, label: "Adaptive Result Ad" }, 
   footer: { height: 90, label: "970×90" },
 };
 
@@ -19,16 +20,11 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   
   const getAdId = () => {
     switch (type) {
-      case "top": 
-        return ADS.topBanner;
-      case "middle": 
-        return ADS.middleBanner;
-      case "sidebar-sm": 
-        return ADS.sidebarAd1;
-      case "sidebar-lg": 
-        return ADS.sidebarAd2; // 👈 توا يقرى في 2429665 مريغل
-      default: 
-        return null; 
+      case "top": return ADS.topBanner;
+      case "middle": return ADS.middleBanner;
+      case "sidebar-sm": return ADS.sidebarAd1;
+      case "sidebar-lg": return ADS.sidebarAd2; // 👈 ID: 2429665
+      default: return null; 
     }
   };
 
@@ -38,15 +34,16 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   return (
     <div
-      className={`w-full flex items-center justify-center overflow-hidden py-6 ${className}`}
-      style={{ minHeight: `${dim.height}px` }}
+      className={`w-full flex items-center justify-center overflow-hidden py-4 ${className}`}
+      // 📱 في التلفون نقصوا في الـ height شوية باش ما يجيش عملاق
+      style={{ minHeight: type === 'sidebar-lg' ? '300px' : `${dim.height}px` }}
     >
-      <div className="w-full flex justify-center items-center">
+      <div className="w-full flex justify-center items-center px-4">
         <div 
           className={`w-full transition-all duration-500 ${
             type === 'middle' ? 'max-w-[1100px]' : 
-            type.includes('sidebar') ? 'max-w-[300px]' : 'max-w-[1000px]'
-          } mx-auto overflow-hidden rounded-2xl border border-white/5 shadow-2xl shadow-violet-500/5`}
+            type.includes('sidebar') ? 'max-w-[340px]' : 'max-w-[1000px]'
+          } mx-auto overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0f]/50 shadow-xl`}
         >
           <iframe 
             data-aa={adId} 
@@ -55,11 +52,13 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
               border: 0, 
               padding: 0, 
               width: "100%", 
-              height: `${dim.height}px`, 
+              // 🚀 height ديناميكي: 500px في العادي، و300px في التلفونات الصغار
+              height: type === 'sidebar-lg' ? 'inherit' : `${dim.height}px`,
+              minHeight: type === 'sidebar-lg' ? '300px' : `${dim.height}px`,
+              maxHeight: `${dim.height}px`,
               overflow: "hidden",
               display: "block",
-              backgroundColor: "transparent",
-              transform: type === 'middle' ? 'scale(1.02)' : 'none' 
+              backgroundColor: "transparent"
             }}
             scrolling="no"
           />
