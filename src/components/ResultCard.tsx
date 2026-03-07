@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Globe, MousePointer2, Lock, AlertTriangle, ShieldAlert } from "lucide-react";
+import { CheckCircle2, Globe, MousePointer2, Lock, AlertCircle, ShieldAlert } from "lucide-react";
 import { DownloadResult } from "@/types";
 
 interface ResultCardProps {
@@ -19,16 +19,10 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
   ].filter((l) => l.url);
 
   const videoLinks = allLinks.filter((l) => l.ext === "mp4");
-  
-  const bestVideo = videoLinks.sort((a, b) => {
-    const qA = parseInt(a.quality) || 0;
-    const qB = parseInt(b.quality) || 0;
-    return qB - qA;
-  })[0];
-
+  const bestVideo = videoLinks.sort((a, b) => (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0))[0];
   const previewVideo = bestVideo?.url || null;
 
-  // 🛡️ تحديد حالة الحساب الخاص
+  // 🛡️ المبدأ: إذا ما فماش فيديو وفمة Thumbnail يعني الحساب Private
   const isPrivate = !previewVideo && !!result.thumbnail;
 
   return (
@@ -37,7 +31,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
       animate={{ opacity: 1, y: 0 }}
       className={`relative w-full max-w-4xl mx-auto overflow-hidden rounded-[2.5rem] border transition-all duration-500 ${
         isPrivate 
-          ? "border-red-500/30 bg-[#1a0b0b]/90 shadow-[0_20px_50px_rgba(239,68,68,0.2)]" 
+          ? "border-red-500/40 bg-[#1a0b0b]/90 shadow-[0_20px_50px_rgba(239,68,68,0.2)]" 
           : "border-white/10 bg-[#0f0720]/80 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
       } backdrop-blur-3xl`}
     >
@@ -57,11 +51,10 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           </div>
         </div>
 
-        {/* ⚠️ هنا السحر: التغيير من row لـ col إذا كان private لملء المساحة */}
         <div className={`flex flex-col ${isPrivate ? "items-center text-center" : "lg:flex-row lg:items-start gap-10"}`}>
           
           {/* 1. Preview Area */}
-          <div className={`shrink-0 ${isPrivate ? "w-full max-w-[300px] mb-8" : "w-full lg:w-[320px]"}`}>
+          <div className={`shrink-0 ${isPrivate ? "w-full max-w-[300px] mb-6" : "w-full lg:w-[320px]"}`}>
              <div className={`relative rounded-[2rem] overflow-hidden bg-black shadow-2xl border ${isPrivate ? "border-red-500/20" : "border-white/5"} min-h-[250px] flex items-center justify-center`}>
                 {previewVideo ? (
                   <video src={previewVideo} controls playsInline className="w-full h-auto max-h-[450px] object-contain" />
@@ -80,29 +73,29 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           </div>
 
           {/* 2. Dynamic Content Area */}
-          <div className={`flex-1 w-full ${isPrivate ? "max-w-lg" : "text-left"}`}>
+          <div className="flex-1 w-full">
             {isPrivate ? (
-              /* --- تظهر فقط عند وجود حساب خاص --- */
-              <div className="space-y-6">
+              /* 🚷 حالة الـ Private: نحينا الـ Rocket والـ Guide */
+              <div className="flex flex-col items-center space-y-6">
                 <h3 className="text-3xl sm:text-4xl font-black text-red-500 leading-tight">
-                  This Profile is Private! 🔒
+                  same uploaded picture product 🔒
                 </h3>
-                <p className="text-white/60 text-lg leading-relaxed">
-                  We can't access this content due to privacy settings. Please make sure the post is public. 🛡️
+                <p className="text-white/60 text-lg leading-relaxed max-w-md">
+                  We cannot access this video because the profile is private. 🛡️
                 </p>
-                <div className="p-6 rounded-3xl bg-red-500/5 border border-red-500/10 flex items-start gap-3 text-left">
+                <div className="w-full p-6 rounded-3xl bg-red-500/5 border border-red-500/10 flex items-start gap-3 text-left">
                   <AlertCircle className="text-red-500 shrink-0 mt-1" size={20} />
                   <p className="text-red-200/70 text-sm font-medium">
-                    Try checking if the user has a public profile or use a different link.
+                    Please make sure the account is public or the link is accessible without login.
                   </p>
                 </div>
               </div>
             ) : (
-              /* --- تظهر فقط عندما يكون الفيديو جاهز --- */
+              /* ✅ حالة الـ Success: يظهر فيها الـ Rocket والـ Guide */
               <div className="space-y-8">
                 <div>
                   <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight mb-4">
-                    {result.title || "Video Ready for Download! 🚀"}
+                    Video Ready for Download! 🚀
                   </h3>
                   <p className="text-white/50 text-lg leading-relaxed max-w-md">
                     The video has been processed successfully. You can now save it to your device. ✅
