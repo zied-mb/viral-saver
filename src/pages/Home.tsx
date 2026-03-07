@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-   Download, Zap, Shield, Globe, ChevronDown,
-  ArrowRight, CheckCircle2, Star, TrendingUp
+  Download, Zap, Shield, Globe, ChevronDown,
+  ArrowRight, CheckCircle2, Star, TrendingUp, AlertCircle
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
 import DownloaderBox from "@/components/DownloaderBox";
