@@ -86,7 +86,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                         <Lock className="w-8 h-8 text-red-500 animate-pulse" />
                       </div>
                       <span className="text-red-500 text-sm font-black uppercase tracking-tighter text-center">
-                        This same uploaded picture product is private
+                        This content is private
                       </span>
                     </div>
                   </div>
@@ -97,12 +97,12 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           {/* 2. Text & Actions Section */}
           <div className="flex-1 w-full min-w-0 text-center lg:text-left">
             <h3 className={`text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-tight break-words ${isPrivate ? "text-red-500" : "text-white"}`}>
-              {isPrivate ? "Private Content Detected" : (result.title || "Found your same uploaded picture product video! 🚀")}
+              {isPrivate ? "Private Content Detected" : (result.title || "Video Ready for Download! 🚀")}
             </h3>
             
             <p className="text-white/50 text-sm sm:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
               {isPrivate 
-                ? "This account is private. We can't fetch the download links for this same uploaded picture product video unless it's public. 🔒" 
+                ? "This account is private. We can't fetch the download links for this video unless it's public. 🔒" 
                 : "The video is processed. Use the player options below to save the file to your device. ✅"}
             </p>
 
