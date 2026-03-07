@@ -81,7 +81,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           {/* 2. Content & Guide Section - Fixed Overflow here */}
           <div className="flex-1 w-full min-w-0 text-center lg:text-left">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-4 leading-tight tracking-tight break-words px-2 lg:px-0">
-              {result.title || "Found your same uploaded picture product video! 🚀"}
+              {result.title || "Social Media Video Found"}
             </h3>
             
             <p className="text-white/50 text-sm sm:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed px-4 lg:px-0">
