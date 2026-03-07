@@ -617,7 +617,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── FAQ ── */}
+{/* ── FAQ ── */}
       <section id="faq" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-2xl mx-auto">
           <motion.div
@@ -652,20 +652,25 @@ const Home: React.FC = () => {
                     className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180 text-violet-400" : darkMode ? "text-white/30" : "text-slate-400"}`}
                   />
                 </button>
+                
                 <motion.div
-                  initial={false}
-                  animate={{ height: openFaq === i ? "auto" : 0, opacity: openFaq === i ? 1 : 0 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  initial="collapsed"
+                  animate={openFaq === i ? "open" : "collapsed"}
+                  variants={{
+                    open: { opacity: 1, height: "auto", transition: { duration: 0.3, ease: "easeOut" } },
+                    collapsed: { opacity: 0, height: 0, transition: { duration: 0.2, ease: "easeIn" } }
+                  }}
                   className="overflow-hidden"
                 >
-                  <div className={`px-6 pb-5 text-sm leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}>{faq.a}</div>
+                  <div className={`px-6 pb-5 text-sm leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}>
+                    {faq.a}
+                  </div>
                 </motion.div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
-
       {/* ── CTA Banner ── */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto">
