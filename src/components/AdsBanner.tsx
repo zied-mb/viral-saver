@@ -7,11 +7,11 @@ interface AdsBannerProps {
 }
 
 const AD_DIMENSIONS = {
-  top: { height: 90 },
-  middle: { height: 280 }, 
-  "sidebar-sm": { height: 250 },
-  "result-inline": { height: 250 }, 
-  footer: { height: 90 },
+  top: { height: 90, width: '728px' },
+  middle: { height: 280, width: '100%' }, 
+  "sidebar-sm": { height: 250, width: '300px' },
+  "result-inline": { height: 250, width: '300px' }, 
+  footer: { height: 90, width: '970px' },
 };
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
@@ -32,32 +32,36 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   if (!adId) return null;
 
   return (
-    <div className={`w-full flex justify-center items-center my-2 ${className}`}>
-      {/* 1. نحينا الـ overflow-hidden (باش يتنحى Hidden Error)
-          2. نحينا الـ rounded والـ border (باش يتنحى Unclickable Error)
-          3. الـ pointer-events-auto تضمن إنو الكليك يتعدى
-      */}
+    <div 
+      className={`ads-container w-full block text-center my-4 ${className}`}
+      style={{ minHeight: `${dim.height}px` }}
+    >
       <div 
-        className="relative transition-all duration-300 pointer-events-auto"
+        className="ad-wrapper inline-block transition-all"
         style={{ 
           width: "100%", 
-          maxWidth: type === 'result-inline' || type === 'sidebar-sm' ? '300px' : '100%',
+          maxWidth: dim.width,
           minHeight: `${dim.height}px`,
-          zIndex: 10 // باش الإشهار يجي فوق أي Background blob
+          position: 'relative',
+          zIndex: 20
         }}
       >
         <iframe 
+          key={adId}
           data-aa={adId} 
           src={`//acceptable.a-ads.com/${adId}/?size=Adaptive`}
           style={{ 
-            border: 0, 
+            border: 'none', 
             padding: 0, 
+            margin: '0 auto',
             width: "100%", 
             height: `${dim.height}px`,
             display: "block",
-            backgroundColor: "transparent"
+            backgroundColor: "transparent",
+            pointerEvents: "auto"
           }}
           scrolling="no"
+          title={`ad-${adId}`}
         />
       </div>
     </div>
