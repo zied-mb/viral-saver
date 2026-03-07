@@ -54,33 +54,42 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start overflow-hidden">
           
-          {/* 1. Video Player Section */}
-          <div className="relative w-full sm:w-[80%] lg:w-[320px] shrink-0 mx-auto lg:mx-0">
-             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 group aspect-auto">
-                {previewVideo ? (
-                  <video
-                    key={previewVideo}
-                    src={previewVideo}
-                    autoPlay
-                    loop
-                    controls
-                    playsInline
-                    className="w-full h-auto max-h-[450px] sm:max-h-[520px] object-contain"
-                  />
-                ) : (
-                  <img src={result.thumbnail} className="w-full h-auto object-contain" alt="thumbnail" />
-                )}
-                
-                {/* Quality Badge */}
-                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1.5 shadow-lg">
-                   <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                   <span className="text-[9px] text-white/90 font-bold uppercase">
-                    {bestVideo?.quality || "HD"} No Watermark
-                   </span>
-                </div>
-             </div>
-          </div>
-
+{/* 1. Video Player Section */}
+<div className="relative w-full sm:w-[80%] lg:w-[320px] shrink-0 mx-auto lg:mx-0">
+  {/* عطينا min-height باش الـ Framer Motion ما يضيعش في الحساب */}
+  <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 group min-h-[200px] flex items-center justify-center">
+    {previewVideo ? (
+      <video
+        key={previewVideo}
+        src={previewVideo}
+        autoPlay
+        loop
+        controls
+        muted // ✨ زدنا هذي خاطر الكروم يبللوكي الـ Autoplay بلاش Muted ساعات
+        playsInline
+        className="w-full h-full max-h-[450px] sm:max-h-[520px] object-contain"
+        onLoadedMetadata={(e) => {
+          // هذي تضمن إنو الفيديو خذا أبعاده قبل ما الـ Browser يحاول يعمل رندر
+          (e.target as HTMLVideoElement).style.opacity = "1";
+        }}
+      />
+    ) : (
+      <img 
+        src={result.thumbnail || "/placeholder.jpg"} 
+        className="w-full h-auto object-contain" 
+        alt="thumbnail" 
+      />
+    )}
+    
+    {/* Quality Badge */}
+    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1.5 shadow-lg z-10">
+       <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+       <span className="text-[9px] text-white/90 font-bold uppercase">
+        {bestVideo?.quality || "HD"} No Watermark
+       </span>
+    </div>
+  </div>
+</div>
           {/* 2. Content & Guide Section */}
           <div className="flex-1 w-full min-w-0 text-center lg:text-left">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-4 leading-tight tracking-tight break-words px-2 lg:px-0">
