@@ -408,19 +408,17 @@ const Home: React.FC = () => {
         </div>
 
         {/* ✨ الميساج السمح يظهر هوني تحت الـ Input طول ✨ */}
-   <AnimatePresence mode="wait">
+<AnimatePresence mode="wait">
   {errorMessage && (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: -10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95, y: -10 }}
-      transition={{ duration: 0.2 }}
-      className="w-full"
+      key="error-msg" // 💡 الـ Key هوني مهم برشا باش React يفرقه
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="w-full mt-4"
     >
       <div className="p-4 rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex items-center gap-3">
-        <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
-          <AlertCircle size={18} />
-        </div>
+        <AlertCircle className="text-red-400 shrink-0" size={18} />
         <p className="text-white/80 text-xs sm:text-sm font-medium italic">
           {errorMessage}
         </p>
