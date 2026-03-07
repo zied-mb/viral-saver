@@ -336,126 +336,38 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-{/* ── Downloader Section ── */}
-<section id="downloader" className="py-12 sm:py-20 px-4 overflow-hidden">
-  <div className="max-w-7xl mx-auto flex flex-col items-center">
-    
-    {/* Header Section */}
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="text-center mb-8 sm:mb-12 w-full max-w-2xl"
-    >
-      <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
-        — Try it now —
-      </p>
-      <h2 className="text-2xl sm:text-4xl font-black mb-3 px-2 leading-tight">
-        Paste Your Link &{" "}
-        <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-          Download Instantly
-        </span>
-      </h2>
-      <p className={`text-sm sm:text-base px-4 ${darkMode ? "text-white/40" : "text-slate-400"}`}>
-        No login. No subscription. Just paste and go.
-      </p>
-    </motion.div>
+      {/* ── Downloader Section ── */}
+      <section id="downloader" className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
+              — Try it now —
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-3">
+              Paste Your Link &{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+                Download Instantly
+              </span>
+            </h2>
+            <p className={`text-base ${darkMode ? "text-white/40" : "text-slate-400"}`}>No login. No subscription. Just paste and go.</p>
+          </motion.div>
 
-    {/* Main Content Area */}
-    <div className="w-full flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
-      
-{/* ── Downloader Section ── */}
-
-<section id="downloader" className="py-12 sm:py-20 px-4 overflow-hidden">
-
-  <div className="max-w-7xl mx-auto flex flex-col items-center">
-
-    
-
-    {/* Header Section */}
-
-    <motion.div
-
-      initial={{ opacity: 0, y: 16 }}
-
-      whileInView={{ opacity: 1, y: 0 }}
-
-      viewport={{ once: true }}
-
-      className="text-center mb-8 sm:mb-12 w-full max-w-2xl"
-
-    >
-
-      <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
-
-        — Try it now —
-
-      </p>
-
-      <h2 className="text-2xl sm:text-4xl font-black mb-3 px-2 leading-tight">
-
-        Paste Your Link &{" "}
-
-        <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-
-          Download Instantly
-
-        </span>
-
-      </h2>
-
-      <p className={`text-sm sm:text-base px-4 ${darkMode ? "text-white/40" : "text-slate-400"}`}>
-
-        No login. No subscription. Just paste and go.
-
-      </p>
-
-    </motion.div>
-
-
-
-    {/* Main Content Area */}
-
-    <div className="w-full flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
-
-      
-
-      {/* Downloader Column - Hedhi elli fiha el ResultCard dlakhel */}
-
-      <div className="w-full max-w-2xl flex flex-col gap-6 min-w-0">
-
-        <div className="w-full">
-
-          <DownloaderBox />
-
+          <div className="flex gap-8 items-start justify-center">
+            <div className="flex-1 max-w-2xl">
+              <DownloaderBox />
+            </div>
+            <div className="hidden xl:block flex-shrink-0 sticky top-24">
+              <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
+            </div>
+          </div>
         </div>
+      </section>
 
-        
-
-        {/* Hna el ResultCard dima iji dlakhel el max-w-2xl 
-
-            bech mayfoutech el width mte3 el input box */}
-
-      </div>
-
-
-
-      {/* Sidebar Ad - Appears only on Large Screens */}
-
-      <div className="hidden xl:block flex-shrink-0 sticky top-24">
-
-        <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
-
-      </div>
-
-
-
-    </div>
-
-  </div>
-
-</section>
-      
       {/* ── How It Works ── */}
       <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
@@ -632,7 +544,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-{/* ── FAQ ── */}
+      {/* ── FAQ ── */}
       <section id="faq" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-2xl mx-auto">
           <motion.div
@@ -667,25 +579,20 @@ const Home: React.FC = () => {
                     className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180 text-violet-400" : darkMode ? "text-white/30" : "text-slate-400"}`}
                   />
                 </button>
-                
                 <motion.div
-                  initial="collapsed"
-                  animate={openFaq === i ? "open" : "collapsed"}
-                  variants={{
-                    open: { opacity: 1, height: "auto", transition: { duration: 0.3, ease: "easeOut" } },
-                    collapsed: { opacity: 0, height: 0, transition: { duration: 0.2, ease: "easeIn" } }
-                  }}
+                  initial={false}
+                  animate={{ height: openFaq === i ? "auto" : 0, opacity: openFaq === i ? 1 : 0 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <div className={`px-6 pb-5 text-sm leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}>
-                    {faq.a}
-                  </div>
+                  <div className={`px-6 pb-5 text-sm leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}>{faq.a}</div>
                 </motion.div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
+
       {/* ── CTA Banner ── */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto">
