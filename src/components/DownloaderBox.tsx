@@ -37,7 +37,7 @@ const DownloaderBox: React.FC = () => {
     inputRef.current?.focus();
   };
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
     if (!url.trim()) {
       setError("Please paste a social media link to continue.");
       return;
@@ -46,11 +46,30 @@ const DownloaderBox: React.FC = () => {
       setError("Please enter a valid Instagram, TikTok, Facebook, or YouTube URL.");
       return;
     }
-    setError("");
-    setResult(null);
-    setLoading(true);
-    console.log("Fetching download for:", url);
 
+    // 🛑 أهم خطوة: نصفروا النتيجة القديمة تماماً قبل ما نبدأ التحميل الجديد
+    setError("");
+    setResult(null); 
+    setLoading(true);
+
+    try {
+      const data = await fetchDownload(url.trim());
+      
+      if (data) {
+        // 🔥 هنا نبعثو الـ Data للـ ResultCard
+        setResult(data);
+        toast.success("Media fetched successfully!");
+      }
+    } catch (err: any) {
+      console.error("API error:", err);
+      const msg = err?.response?.data?.message || err?.message || "Failed to fetch. Please try again.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
     const data = await fetchDownload(url.trim()).catch((err) => {
       console.error("API error:", err);
       const msg = err?.response?.data?.message || err?.message || "Failed to fetch. Please try again.";
