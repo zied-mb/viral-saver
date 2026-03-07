@@ -6,7 +6,6 @@ import { fetchDownload, detectPlatform, isValidUrl } from "@/services/api";
 import { DownloadResult } from "@/types";
 import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
-import AdsBanner from "@/components/AdsBanner"; // 👈 زدنا الـ Import
 
 const DownloaderBox: React.FC = () => {
   const [url, setUrl] = useState("");
@@ -74,7 +73,7 @@ const DownloaderBox: React.FC = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-5">
-      {/* ── Main Card ── */}
+      {/* ── Main Input Card ── */}
       <motion.div
         initial={{ opacity: 0, y: 32, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -149,7 +148,6 @@ const DownloaderBox: React.FC = () => {
             </span>
           </motion.button>
 
-          {/* ── Private Content Card ── */}
           <AnimatePresence>
             {error === "PRIVATE_ACCOUNT_DETECTED" && (
               <motion.div
@@ -163,25 +161,14 @@ const DownloaderBox: React.FC = () => {
                     <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-red-500/40" />
                     <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-red-500/40" />
                     <div className="flex flex-col items-center gap-4">
-                      <div className="relative">
-                        <div className="absolute -inset-1 bg-red-500/10 blur rounded-full" />
-                        <Lock className="relative w-7 h-7 text-red-600/90" />
-                      </div>
+                      <Lock className="relative w-7 h-7 text-red-600/90" />
                       <div className="h-[1px] w-8 bg-white/10" />
                     </div>
                   </div>
                   <div className="flex-1 text-center md:text-left space-y-3">
-                    <div className="flex items-center justify-center md:justify-start gap-2">
-                      <span className="px-2 py-0.5 rounded text-[9px] font-black bg-red-500/10 text-red-500 uppercase tracking-widest border border-red-500/10">
-                        Restricted
-                      </span>
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight italic">
-                      PRIVATE CONTENT <span className="text-red-600/90 italic">DETECTED</span>
-                    </h3>
-                    <p className="text-white/40 text-sm font-medium leading-relaxed max-w-sm">
-                      This account is private. Please make sure the link is public to access their content. 🛡️
-                    </p>
+                    <span className="px-2 py-0.5 rounded text-[9px] font-black bg-red-500/10 text-red-500 uppercase tracking-widest border border-red-500/10">Restricted</span>
+                    <h3 className="text-xl sm:text-2xl font-black text-white uppercase italic">PRIVATE CONTENT <span className="text-red-600/90">DETECTED</span></h3>
+                    <p className="text-white/40 text-sm leading-relaxed">This account is private. Please make sure the link is public to access their content. 🛡️</p>
                   </div>
                 </div>
               </motion.div>
@@ -192,7 +179,7 @@ const DownloaderBox: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* ── Result Card & Ad (Shows below on Success) ── */}
+      {/* ── Result Section (Ad is now INSIDE ResultCard) ── */}
       <AnimatePresence>
         {result && !loading && (
           <motion.div 
@@ -201,12 +188,8 @@ const DownloaderBox: React.FC = () => {
             exit={{ opacity: 0, y: -20 }}
             className="space-y-6"
           >
+            {/* 🎯 الإشهار يظهر توه داخل الـ ResultCard مباشرة */}
             <ResultCard result={result} platform={platform} />
-            
-            {/* ── 🚀 sidebarAd2 تظهر لهنا مع الفيديو ── */}
-            <div className="pt-2">
-              <AdsBanner type="sidebar-lg" className="rounded-2xl overflow-hidden shadow-2xl border border-white/5" />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
