@@ -19,22 +19,36 @@ export interface DownloadResult {
 }
 
 export const fetchDownload = async (url: string): Promise<DownloadResult> => {
+  // ✨ FIX 1: نثبتوا اللي الـ URL نظيف قبل ما نبعثوه
+  const cleanUrl = url.trim();
+
   const response = await axios.post(
     "https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink",
-    { url },
+    { url: cleanUrl },
     {
       headers: {
         "Content-Type": "application/json",
         "x-rapidapi-host": "auto-download-all-in-one.p.rapidapi.com",
         "x-rapidapi-key": RAPIDAPI_KEY,
       },
+      // ✨ FIX 2: نأكدوا على الـ Response يكون JSON باش نتفادوا الـ [object Object] error
+      responseType: 'json' 
     }
   );
 
-  const data = response.data;
+  let data = response.data;
 
-  if (detectPlatform(url) === "instagram" && data.thumbnail) {
-    data.thumbnail = data.thumbnail.split('&')[0]; 
+  // ✨ FIX 3: ساعات الـ API ترجع الـ data وسط Object أخر اسمه 'data'
+  if (data.data) {
+    data = data.data;
+  }
+
+  // ✨ FIX 4: الـ Thumbnail Proxy للـ Instagram (same uploaded picture product)
+  if (detectPlatform(cleanUrl) === "instagram") {
+    if (data.thumbnail) {
+      // نستعملوا Proxy مباشرة في الـ API باش الـ ResultCard تقراها مريقلة
+      data.thumbnail = `https://wsrv.nl/?url=${encodeURIComponent(data.thumbnail.split('&')[0])}`;
+    }
   }
 
   return data;
@@ -54,7 +68,7 @@ export const detectPlatform = (url: string): string => {
 
 export const isValidUrl = (url: string): boolean => {
   try {
-    const parsed = new URL(url);
+    new URL(url);
     const platform = detectPlatform(url);
     return platform !== "" && platform !== "unknown";
   } catch {
