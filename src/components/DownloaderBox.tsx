@@ -37,7 +37,7 @@ const DownloaderBox: React.FC = () => {
     inputRef.current?.focus();
   };
 
-const handleDownload = async () => {
+  const handleDownload = async () => {
     if (!url.trim()) {
       setError("Please paste a social media link to continue.");
       return;
@@ -54,11 +54,11 @@ const handleDownload = async () => {
     try {
       const data = await fetchDownload(url.trim());
 
-      // 🔍 التثبت السحري: نثبتوا هل الـ API رجع error: true أو status 404
+      // ✅ التثبت من الـ Private أو الـ Error 404
       if (data && (data.error === true || data.status === 404 || data.message === "Not found data")) {
-        setError("same uploaded picture product 🔒"); // هنا تظهر الرسالة اللي تحب عليها
+        setError("same uploaded picture product 🔒");
         setLoading(false);
-        return; 
+        return;
       }
 
       if (data) {
@@ -72,22 +72,6 @@ const handleDownload = async () => {
       setLoading(false);
     }
   };
-  
-    const data = await fetchDownload(url.trim()).catch((err) => {
-      console.error("API error:", err);
-      const msg = err?.response?.data?.message || err?.message || "Failed to fetch. Please try again.";
-      setError(msg);
-      setLoading(false);
-      return null;
-    });
-
-    if (data) {
-      console.log("Download result:", data);
-      setResult(data);
-      toast.success("Media fetched successfully!");
-    }
-    setLoading(false);
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleDownload();
@@ -95,7 +79,6 @@ const handleDownload = async () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-5">
-
       {/* ── Main Card ── */}
       <motion.div
         initial={{ opacity: 0, y: 32, scale: 0.97 }}
@@ -108,11 +91,9 @@ const handleDownload = async () => {
           boxShadow: "0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
         }}
       >
-        {/* Rainbow top border */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-pink-400 via-50% to-cyan-400" />
 
         <div className="p-6 sm:p-8">
-          {/* Header row */}
           <div className="flex items-center gap-2 mb-6">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-3.5 h-3.5 text-white" />
@@ -134,7 +115,6 @@ const handleDownload = async () => {
             </AnimatePresence>
           </div>
 
-          {/* Input row */}
           <div className="flex items-center gap-2">
             <div className="flex-1 relative">
               <input
@@ -153,8 +133,6 @@ const handleDownload = async () => {
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(139,92,246,0.12)"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
               />
               <AnimatePresence>
                 {url && (
@@ -183,7 +161,6 @@ const handleDownload = async () => {
             </motion.button>
           </div>
 
-          {/* Error */}
           <AnimatePresence>
             {error && (
               <motion.div
@@ -199,7 +176,6 @@ const handleDownload = async () => {
             )}
           </AnimatePresence>
 
-          {/* Download button */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -207,11 +183,8 @@ const handleDownload = async () => {
             disabled={loading}
             className="relative mt-5 w-full py-4 rounded-2xl font-black text-white text-base overflow-hidden group transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {/* Base gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 group-hover:from-violet-500 group-hover:via-pink-400 group-hover:to-cyan-400 transition-all duration-300" />
-            {/* Glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 scale-105" />
-            {/* Shimmer on hover */}
             <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
             <span className="relative flex items-center justify-center gap-2.5 tracking-wide">
               {loading ? (
@@ -228,7 +201,6 @@ const handleDownload = async () => {
             </span>
           </motion.button>
 
-          {/* Platform icons */}
           <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
         </div>
       </motion.div>
@@ -249,28 +221,12 @@ const handleDownload = async () => {
                 <div className="h-3 rounded-full animate-pulse w-1/4" style={{ background: "rgba(255,255,255,0.06)" }} />
                 <div className="h-4 rounded-full animate-pulse w-3/4" style={{ background: "rgba(255,255,255,0.06)" }} />
                 <div className="h-3 rounded-full animate-pulse w-1/2" style={{ background: "rgba(255,255,255,0.06)" }} />
-                <div className="flex gap-2 pt-2">
-                  {[1, 2, 3].map((n) => (
-                    <div key={n} className="h-9 w-20 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.06)" }} />
-                  ))}
-                </div>
               </div>
             </div>
             <p className="text-center text-xs text-white/25 animate-pulse pt-1">Fetching your media...</p>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── Middle Ad (shown after result) ── */}
-      {result && !loading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex justify-center overflow-x-auto"
-        >
-          <AdsBanner code={ADS.middleBanner} type="middle" />
-        </motion.div>
-      )}
 
       {/* ── Result card ── */}
       <AnimatePresence>
