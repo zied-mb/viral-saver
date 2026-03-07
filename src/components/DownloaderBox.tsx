@@ -37,7 +37,7 @@ const DownloaderBox: React.FC = () => {
     inputRef.current?.focus();
   };
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
     if (!url.trim()) {
       setError("Please paste a social media link to continue.");
       return;
@@ -54,9 +54,10 @@ const DownloaderBox: React.FC = () => {
     try {
       const data = await fetchDownload(url.trim());
 
-      // ✅ التثبت من الـ Private أو الـ Error 404
+      // 🛡️ التثبت من الـ Private أو الـ Error 404
       if (data && (data.error === true || data.status === 404 || data.message === "Not found data")) {
-        setError("same uploaded picture product 🔒");
+        // ❌ هنا نحينا الجملة القديمة وعوضناها بميساج يفهمو أي حد
+        setError("This content is private or unavailable. Please check the link and try again. 🔒");
         setLoading(false);
         return;
       }
@@ -67,12 +68,14 @@ const DownloaderBox: React.FC = () => {
       }
     } catch (err: any) {
       console.error("API error:", err);
-      setError("same uploaded picture product 🔒");
+      // ❌ حتى هنا نحيناها
+      setError("Unable to fetch media. The profile might be private or the link is broken. ⚠️");
     } finally {
       setLoading(false);
     }
   };
 
+  
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleDownload();
   };
