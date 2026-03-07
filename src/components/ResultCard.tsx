@@ -34,6 +34,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
       animate={{ opacity: 1, y: 0 }}
       className="relative w-[95%] sm:w-full max-w-4xl mx-auto mt-6 overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 bg-[#0f0720]/80 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
     >
+      {/* Top Glow Line */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
 
       <div className="p-6 sm:p-8 md:p-10">
@@ -63,12 +64,14 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                     autoPlay
                     loop
                     controls
+                    playsInline
                     className="w-full h-auto max-h-[450px] sm:max-h-[520px] object-contain"
                   />
                 ) : (
                   <img src={result.thumbnail} className="w-full h-auto object-contain" alt="thumbnail" />
                 )}
                 
+                {/* Quality Badge */}
                 <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1.5 shadow-lg">
                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                    <span className="text-[9px] text-white/90 font-bold uppercase">
@@ -78,9 +81,10 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
              </div>
           </div>
 
-          {/* 2. Content & Guide Section - Fixed Overflow here */}
+          {/* 2. Content & Guide Section */}
           <div className="flex-1 w-full min-w-0 text-center lg:text-left">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-4 leading-tight tracking-tight break-words px-2 lg:px-0">
+              {/* ✨ الجملة تبدلت هوني ✨ */}
               {result.title || "Social Media Video Found"}
             </h3>
             
