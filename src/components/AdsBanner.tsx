@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
 interface AdsBannerProps {
   code: string;
@@ -6,55 +6,49 @@ interface AdsBannerProps {
   className?: string;
 }
 
+const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: number; label: string }> = {
+  top: { width: 728, height: 90, label: "728×90" },
+  middle: { width: 728, height: 90, label: "728×90" },
+  "sidebar-sm": { width: 300, height: 250, label: "300×250" },
+  "sidebar-lg": { width: 300, height: 600, label: "300×600" },
+  footer: { width: 970, height: 90, label: "970×90" },
+};
+
 const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (containerRef.current && code) {
-      containerRef.current.innerHTML = "";
-      
-      const wrapper = document.createElement("div");
-      wrapper.id = `ad-wrapper-${Math.random().toString(36).substring(2, 9)}`;
-      containerRef.current.appendChild(wrapper);
-
-      try {
-        const range = document.createRange();
-        range.selectNode(document.body);
-        const fragment = range.createContextualFragment(code);
-        
-        const scripts = fragment.querySelectorAll("script");
-        scripts.forEach((s) => {
-          const newScript = document.createElement("script");
-          Array.from(s.attributes).forEach(attr => 
-            newScript.setAttribute(attr.name, attr.value)
-          );
-          newScript.innerHTML = s.innerHTML;
-          wrapper.appendChild(newScript);
-        });
-
-        const others = Array.from(fragment.childNodes).filter(n => n.nodeName !== "SCRIPT");
-        others.forEach(n => wrapper.appendChild(n.cloneNode(true)));
-      } catch (e) {
-        console.error("Ad Injection Error:", e);
-      }
-    }
-  }, [code]);
-
-  if (!code) {
-    return (
-      <div className={`hidden sm:flex items-center justify-center border border-white/5 bg-white/[0.02] text-[10px] text-white/10 uppercase font-bold rounded-xl ${className}`} 
-           style={{ minHeight: '90px', width: '100%' }}>
-        Ad Space
-      </div>
-    );
-  }
+  const dim = AD_DIMENSIONS[type];
+  const isPlaceholder =
+    !code ||
+    code === "PASTE_ADSTERRA_CODE_OR_LINK";
 
   return (
-    <div 
-      ref={containerRef} 
-      className={`w-full flex justify-center items-center my-4 overflow-hidden ${className}`} 
-      style={{ minHeight: '90px' }}
-    />
+    <div
+      className={`flex items-center justify-center overflow-hidden ${className}`}
+      style={{ minHeight: dim.height, maxWidth: "100%" }}
+    >
+      {isPlaceholder ? (
+        <div
+          className="flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 text-xs text-white/30 font-mono select-none"
+          style={{ width: Math.min(dim.width, 728), height: dim.height }}
+        >
+          Ad Space · {dim.label}
+        </div>
+      ) : code.startsWith("http") ? (
+        <iframe
+          src={code}
+          width={dim.width}
+          height={dim.height}
+          scrolling="no"
+          frameBorder="0"
+          style={{ border: "none", maxWidth: "100%" }}
+          title={`ad-${type}`}
+        />
+      ) : (
+        <div
+          dangerouslySetInnerHTML={{ __html: code }}
+          style={{ maxWidth: "100%" }}
+        />
+      )}
+    </div>
   );
 };
 
