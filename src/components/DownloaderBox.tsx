@@ -152,64 +152,49 @@ const DownloaderBox: React.FC = () => {
 <AnimatePresence>
   {error === "PRIVATE_ACCOUNT_DETECTED" && (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      className="mt-6 overflow-hidden rounded-[2.5rem] border border-red-500/20 bg-[#0f0707]/90 backdrop-blur-3xl shadow-[0_25px_60px_rgba(0,0,0,0.8)]"
+      className="mt-6 overflow-hidden rounded-[2rem] border border-red-500/10 bg-[#0d070b] shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
     >
-      <div className="flex flex-col md:flex-row items-stretch">
+      <div className="flex flex-col md:flex-row items-center gap-6 p-6 sm:p-10">
         
-        {/* 🎥 اليسار: كادر الفيديو الرسمي (Belgdee) */}
-        <div className="relative w-full md:w-[280px] bg-black flex items-center justify-center p-8 md:p-0 border-b md:border-b-0 md:border-r border-white/5">
-          <div className="relative w-[180px] h-[240px] rounded-2xl bg-[#1a0b0b] border border-red-500/20 shadow-[inset_0_0_30px_rgba(239,68,68,0.1)] flex flex-col items-center justify-center gap-4">
-            
-            {/* Lock Circle */}
-            <div className="w-16 h-16 rounded-full bg-red-500/5 border border-red-500/20 flex items-center justify-center">
-              <Lock className="w-8 h-8 text-red-500/80" />
+        {/* 🎥 الكادر (Clean Phone Frame) */}
+        <div className="relative flex-shrink-0 w-[140px] h-[200px] rounded-[1.5rem] bg-black/40 border border-white/5 flex items-center justify-center shadow-inner">
+          <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent rounded-[1.5rem]" />
+          <div className="relative z-10 flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+              <Lock className="w-6 h-6 text-red-500/80" />
             </div>
-            
-            <div className="text-center">
-              <p className="text-[10px] font-black text-red-500/60 uppercase tracking-widest">
-                Content
-              </p>
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">
-                Restricted
-              </p>
-            </div>
-
-            {/* Red Glow Decoration */}
-            <div className="absolute -bottom-2 w-1/2 h-[1px] bg-red-500/50 blur-sm" />
           </div>
         </div>
 
-        {/* 📝 اليمين: المعلومات (Clean & Pro) */}
-        <div className="flex-1 p-8 sm:p-10 flex flex-col justify-center text-center md:text-left">
-          <div className="inline-flex items-center justify-center md:justify-start gap-2 text-red-400 mb-4">
-            <ShieldAlert size={18} />
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-red-500/80">Security Check</span>
+        {/* 📝 المحتوى (Minimalist Text) */}
+        <div className="flex-1 text-center md:text-left space-y-3">
+          <div className="flex items-center justify-center md:justify-start gap-2">
+            <span className="px-2 py-0.5 rounded text-[9px] font-black bg-red-500/10 text-red-500 uppercase tracking-widest border border-red-500/10">
+              Restricted
+            </span>
           </div>
           
-          <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter leading-tight mb-4">
-            PRIVATE CONTENT <br /> 
-            <span className="text-red-600">DETECTED 🔒</span>
+          <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight italic">
+             PRIVATE CONTENT <span className="text-red-600/90 italic">DETECTED</span> 🔒
           </h3>
           
-          <p className="text-white/40 text-sm sm:text-base font-medium leading-relaxed max-w-sm mb-6">
-            This account is private. Please ensure the link is public or follow the user to access their media files. 🛡️
+          <p className="text-white/40 text-sm font-medium leading-relaxed max-w-sm">
+            This account is private. Please make sure the link is public or follow the user to access their content. 🛡️
           </p>
 
-          <div className="flex items-center justify-center md:justify-start">
-             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/60 uppercase tracking-widest">
-               <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-               Status: 403 Access Forbidden
-             </div>
+          <div className="pt-2 flex items-center justify-center md:justify-start gap-4 text-white/20">
+             <div className="h-[1px] flex-1 bg-white/5 max-w-[60px]" />
+             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">403 Forbidden</span>
+             <div className="h-[1px] flex-1 bg-white/5 max-w-[60px]" />
           </div>
         </div>
       </div>
     </motion.div>
   )}
 </AnimatePresence>
-
           
           <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
         </div>
