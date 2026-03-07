@@ -148,47 +148,61 @@ const DownloaderBox: React.FC = () => {
             </span>
           </motion.button>
 
-          {/* ── 🛡️ New Placement for Error/Private Card ── */}
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{ opacity: 1, height: "auto", marginTop: 20 }}
-                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                className={`overflow-hidden rounded-2xl border transition-all duration-500 ${
-                  error === "PRIVATE_ACCOUNT_DETECTED" 
-                    ? "border-red-500/30 bg-red-500/10 shadow-[0_10px_30px_rgba(239,68,68,0.1)]" 
-                    : "border-red-500/20 bg-red-500/5 px-4 py-3 flex items-center gap-3"
-                }`}
-              >
-                {error === "PRIVATE_ACCOUNT_DETECTED" ? (
-                  <div className="p-6 flex flex-col items-center text-center gap-4">
-                    <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center border border-red-500/30">
-                      <Lock className="w-6 h-6 text-red-500 animate-pulse" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-black text-white uppercase tracking-tight italic">
-                        PRIVATE CONTENT DETECTED 🔒
-                      </h3>
-                      <p className="text-red-200/50 text-[13px] font-medium max-w-sm mx-auto leading-relaxed mt-1">
-                        This account is private. Please make sure the link is public or follow the user to access their content. 🛡️
-                      </p>
-                    </div>
-                    <div className="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500/20 flex items-center gap-2 text-[9px] font-black text-red-400 uppercase tracking-widest">
-                      <ShieldAlert size={12} />
-                      Access Restricted
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <AlertCircle className="w-5 h-5 text-red-400" />
-                    <span className="text-red-300 text-sm font-medium">{error}</span>
-                  </>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+{/* ── Private Card ── */}
+<AnimatePresence>
+  {error === "PRIVATE_ACCOUNT_DETECTED" && (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="mt-6 overflow-hidden rounded-[2rem] border border-red-500/30 bg-[#1a0b0b]/90 backdrop-blur-3xl shadow-[0_20px_50px_rgba(239,68,68,0.2)]"
+    >
+      <div className="flex flex-col md:flex-row items-stretch min-h-[220px]">
+        
+        {/* 🟥 اليسار: الكادر متاع الفيديو مع الـ Glitch & Lock */}
+        <div className="relative w-full md:w-[240px] bg-black/40 flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-red-500/20 group">
+          {/* تأثير الـ Glitch في الخلفية */}
+          <div className="absolute inset-0 opacity-20 bg-[url('https://media.giphy.com/media/oEI9uWUicG58PYi2N2/giphy.gif')] bg-cover bg-center mix-blend-screen" />
+          
+          <div className="relative z-10 flex flex-col items-center gap-3">
+            <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.3)] group-hover:scale-110 transition-transform duration-500">
+              <Lock className="w-7 h-7 text-red-500 animate-pulse" />
+            </div>
+            <span className="text-[10px] font-black text-red-500/80 uppercase tracking-[0.2em] animate-pulse">
+              System Locked
+            </span>
+          </div>
+          
+          {/* خطوط الـ Scanline متاع الـ Glitch */}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-red-500/5 to-transparent bg-[length:100%_4px] animate-[scan_2s_linear_infinite]" />
+        </div>
 
+        {/* 📝 اليمين: الكتيبة والمعلومات */}
+        <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center text-center md:text-left">
+          <div className="inline-flex items-center justify-center md:justify-start gap-2 text-red-500 mb-3">
+            <ShieldAlert size={16} className="animate-bounce" />
+            <span className="text-[11px] font-black uppercase tracking-[0.2em]">Access Denied</span>
+          </div>
+          
+          <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter italic leading-none mb-3">
+            PRIVATE CONTENT <span className="text-red-500">DETECTED</span> 🔒
+          </h3>
+          
+          <p className="text-red-200/40 text-sm font-medium leading-relaxed max-w-sm">
+            This account is private. Please make sure the link is public or follow the user to bypass restriction. 🛡️
+          </p>
+
+          <div className="mt-6 flex items-center justify-center md:justify-start">
+             <div className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[9px] font-bold text-red-400/80 uppercase tracking-widest">
+               Status: 403 Forbidden
+             </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
+          
           <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
         </div>
       </motion.div>
