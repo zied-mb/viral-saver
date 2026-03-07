@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
-  Download, Zap, Shield, Globe, ChevronDown,
-  ArrowRight, CheckCircle2, Star, TrendingUp, AlertCircle
+   Download, Zap, Shield, Globe, ChevronDown,
+  ArrowRight, CheckCircle2, Star, TrendingUp
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
 import DownloaderBox from "@/components/DownloaderBox";
@@ -94,11 +94,6 @@ const faqs = [
 const Home: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  
-  // ✨ States الجديدة للـ Error Handling ✨
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPrivate, setIsPrivate] = useState(false);
-
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
   const heroY = useTransform(scrollY, [0, 400], [0, 80]);
@@ -106,25 +101,6 @@ const Home: React.FC = () => {
   const bg = darkMode ? "bg-[#06060f]" : "bg-slate-50";
   const text = darkMode ? "text-white" : "text-slate-900";
 
-  // ✨ Function باش نعالجو الـ Error اللي جاي من الـ API ✨
-  const handleDownloadError = (errorData: any) => {
-    if (errorData.error) {
-      const msg = errorData.message || "";
-      if (msg.includes("Private") || msg.includes("account cookies")) {
-        setIsPrivate(true);
-        setErrorMessage("This account is Private. We can't access private videos for security reasons.");
-      } else if (msg.includes("Stories") || msg.includes("Not support Stories")) {
-        setIsPrivate(true);
-        setErrorMessage("Instagram Stories are not supported yet. Please try a Public Reel or Video link.");
-      } else {
-        setIsPrivate(false);
-        setErrorMessage("Video not found. Please make sure the link is correct and public.");
-      }
-    } else {
-      setErrorMessage(null);
-      setIsPrivate(false);
-    }
-  };
   return (
     <div className={`min-h-screen transition-colors duration-500 ${bg} ${text} overflow-x-hidden`}>
 
@@ -388,59 +364,98 @@ const Home: React.FC = () => {
     {/* Main Content Area */}
     <div className="w-full flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
       
-      {/* Downloader Column */}
-      <div className="w-full max-w-2xl flex flex-col gap-6 min-w-0">
-        <div className="w-full">
-          {/* ✨ زدنا الـ Error Logic هوني باش الـ UI يقعد نظيف ✨ */}
-          <DownloaderBox 
-            onError={(errData: any) => {
-              const msg = errData.message || "";
-              if (msg.includes("Private") || msg.includes("account cookies")) {
-                setErrorMessage("🔒 This account is Private. Try a public link!");
-              } else if (msg.includes("Stories")) {
-                setErrorMessage("📹 Stories are not supported yet. Try a Reel!");
-              } else {
-                setErrorMessage("❌ Video not found. Check the link!");
-              }
-            }} 
-            onClear={() => setErrorMessage(null)} 
-          />
-        </div>
+{/* ── Downloader Section ── */}
 
-        {/* ✨ الميساج السمح يظهر هوني تحت الـ Input طول ✨ */}
-<AnimatePresence mode="wait">
-  {errorMessage && (
+<section id="downloader" className="py-12 sm:py-20 px-4 overflow-hidden">
+
+  <div className="max-w-7xl mx-auto flex flex-col items-center">
+
+    
+
+    {/* Header Section */}
+
     <motion.div
-      key="error-msg" // 💡 الـ Key هوني مهم برشا باش React يفرقه
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="w-full mt-4"
+
+      initial={{ opacity: 0, y: 16 }}
+
+      whileInView={{ opacity: 1, y: 0 }}
+
+      viewport={{ once: true }}
+
+      className="text-center mb-8 sm:mb-12 w-full max-w-2xl"
+
     >
-      <div className="p-4 rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex items-center gap-3">
-        <AlertCircle className="text-red-400 shrink-0" size={18} />
-        <p className="text-white/80 text-xs sm:text-sm font-medium italic">
-          {errorMessage}
-        </p>
-      </div>
+
+      <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
+
+        — Try it now —
+
+      </p>
+
+      <h2 className="text-2xl sm:text-4xl font-black mb-3 px-2 leading-tight">
+
+        Paste Your Link &{" "}
+
+        <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+
+          Download Instantly
+
+        </span>
+
+      </h2>
+
+      <p className={`text-sm sm:text-base px-4 ${darkMode ? "text-white/40" : "text-slate-400"}`}>
+
+        No login. No subscription. Just paste and go.
+
+      </p>
+
     </motion.div>
-  )}
-</AnimatePresence>
+
+
+
+    {/* Main Content Area */}
+
+    <div className="w-full flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
+
+      
+
+      {/* Downloader Column - Hedhi elli fiha el ResultCard dlakhel */}
+
+      <div className="w-full max-w-2xl flex flex-col gap-6 min-w-0">
+
+        <div className="w-full">
+
+          <DownloaderBox />
+
+        </div>
+
         
-        {/* الـ ResultCard باش تظهر هوني أوتوماتيكيا كي يبدأ فما فيديو صحيح */}
+
+        {/* Hna el ResultCard dima iji dlakhel el max-w-2xl 
+
+            bech mayfoutech el width mte3 el input box */}
+
       </div>
 
-      {/* Sidebar Ad - A-Ads (Nadhifa & USDT Ready) 🛡️ */}
+
+
+      {/* Sidebar Ad - Appears only on Large Screens */}
+
       <div className="hidden xl:block flex-shrink-0 sticky top-24">
-        <div className="p-2 rounded-2xl border border-white/5 bg-white/[0.02]">
-           {/* استعملنا الـ SidebarAd1 اللي ركحناها بالـ Iframe متاع A-Ads */}
-           <AdsBanner html={ADS.sidebarAd1} />
-        </div>
+
+        <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
+
       </div>
+
+
 
     </div>
+
   </div>
+
 </section>
+      
       {/* ── How It Works ── */}
       <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
