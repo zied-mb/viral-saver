@@ -178,18 +178,14 @@ const DownloaderBox: React.FC = () => {
           </div>
           
           <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight italic">
-             PRIVATE CONTENT <span className="text-red-600/90 italic">DETECTED</span> 🔒
+             PRIVATE CONTENT <span className="text-red-600/90 italic">DETECTED</span>
           </h3>
           
           <p className="text-white/40 text-sm font-medium leading-relaxed max-w-sm">
-            This account is private. Please make sure the link is public or follow the user to access their content. 🛡️
+            This account is private. Please make sure the link is public to access their content. 🛡️
           </p>
 
-          <div className="pt-2 flex items-center justify-center md:justify-start gap-4 text-white/20">
-             <div className="h-[1px] flex-1 bg-white/5 max-w-[60px]" />
-             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">403 Forbidden</span>
-             <div className="h-[1px] flex-1 bg-white/5 max-w-[60px]" />
-          </div>
+  
         </div>
       </div>
     </motion.div>
