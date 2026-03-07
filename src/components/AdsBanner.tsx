@@ -26,9 +26,9 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       case "sidebar-sm": 
         return ADS.sidebarAd1;     // 2429661 ✅
       case "result-inline": 
-        return ADS.sidebarAd2;     // 2429665 ✅ (المربع الدخلاني)
+        return ADS.sidebarAd2;     // 2429665 ✅
       case "footer": 
-        return ADS.footerBanner;   // 2429666 ✅ (الجديد)
+        return ADS.footerBanner;   // 2429666 ✅
       default: 
         return null; 
     }
@@ -39,13 +39,14 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   if (!adId) return null;
 
   return (
-    <div className={`w-full flex items-center justify-center overflow-hidden ${
-      type === 'result-inline' ? 'py-0' : 'py-4'
+    <div className={`w-full flex items-center justify-center ${
+      type === 'result-inline' ? 'py-0' : 'py-2'
     } ${className}`}>
-      <div className="w-full flex justify-center items-center px-2">
+      <div className="w-full flex justify-center items-center px-1">
+        {/* نحينا الـ overflow والـ rounded باش الـ Ad Unit تخدم مريغلة 100% */}
         <div className={`w-full transition-all duration-500 ${
-          type === 'result-inline' ? 'max-w-[320px]' : 'max-w-[1000px]'
-        } mx-auto overflow-hidden rounded-2xl border border-white/5 bg-transparent`}>
+          type === 'result-inline' ? 'max-w-[320px]' : 'max-w-full'
+        } mx-auto bg-transparent`}>
           <iframe 
             data-aa={adId} 
             src={`//acceptable.a-ads.com/${adId}/?size=Adaptive`}
@@ -54,7 +55,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
               padding: 0, 
               width: "100%", 
               height: `${dim.height}px`,
-              overflow: "hidden",
               display: "block",
               backgroundColor: "transparent"
             }}
