@@ -28,8 +28,8 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
 
   const previewVideo = bestVideo?.url || null;
 
-  // 🛡️ المبدأ الأساسي: إذا ما فماش فيديو وفمة Thumbnail يعني الحساب Private
-  const isPrivate = !previewVideo && !!result.thumbnail;
+  // ✅ التعديل السحري: نثبتوا في الـ status والـ error اللي جايين مالـ API
+  const isPrivate = !previewVideo && (result.status === 404 || result.error === true || !!result.thumbnail);
 
   return (
     <motion.div
@@ -48,12 +48,12 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${isPrivate ? "bg-red-500/10 border-red-500/20" : "bg-emerald-500/10 border-emerald-500/20"}`}>
             {isPrivate ? <ShieldAlert className="w-3.5 h-3.5 text-red-400" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
             <span className={`${isPrivate ? "text-red-400" : "text-emerald-400"} text-[10px] sm:text-[11px] font-black uppercase tracking-widest`}>
-              {isPrivate ? "Access Restricted" : "Ready to Download"}
+              {isPrivate ? "PRIVATE ACCOUNT" : "READY TO DOWNLOAD"}
             </span>
           </div>
           <div className="flex items-center gap-2 text-white/40 bg-white/5 px-3 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase border border-white/5">
             <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            {platform || "Social Media"}
+            {platform || "INSTAGRAM"}
           </div>
         </div>
 
@@ -71,7 +71,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                         <Lock className="w-8 h-8 text-red-500 animate-pulse" />
                       </div>
                       <span className="text-red-500 text-sm font-black uppercase tracking-tighter text-center">
-                        This content is private
+                        PRIVATE PROFILE
                       </span>
                     </div>
                   </div>
@@ -80,20 +80,18 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           </div>
 
           <div className="flex-1 w-full min-w-0 text-center lg:text-left">
-            <h3 className={`text-2xl sm:text-3xl font-black mb-4 leading-tight tracking-tight break-words ${isPrivate ? "text-red-500" : "text-white"}`}>
-              {/* ✨ الجملة المطلوبة هنا */}
-              {isPrivate ? "same uploaded picture product 🔒" : (result.title || "Video Ready for Download! 🚀")}
+            <h3 className={`text-2xl sm:text-4xl font-black mb-4 leading-tight tracking-tight break-words ${isPrivate ? "text-white" : "text-white"}`}>
+              {/* ✨ الجملة تتبدل حسب الحالة كيما في التصويرة */}
+              {isPrivate ? "Video Ready for Download! 🚀" : (result.title || "Video Ready for Download! 🚀")}
             </h3>
             
-            <p className="text-white/50 text-sm sm:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-white/60 text-sm sm:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed font-medium">
               {isPrivate 
-                ? "This account is private. We can't fetch the download links for this video. 🛡️" 
-                : "The video is processed. Use the player options below to save the file. ✅"}
+                ? "The video has been processed successfully. You can now save it to your device. ✅" 
+                : "The video has been successfully processed. Use the player options to save the file. ✅"}
             </p>
 
-            {/* 🚀 التحكم في ظهور الـ Guide أو الـ Warning */}
-            {!isPrivate ? (
-              <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 shadow-inner">
+            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 shadow-inner">
                  <div className="flex items-center justify-center lg:justify-start gap-2 mb-3 text-cyan-400">
                     <MousePointer2 className="w-4 h-4" />
                     <span className="text-xs font-bold tracking-widest uppercase">Quick Save Guide:</span>
@@ -102,18 +100,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                   "Click the <span className="text-white font-bold text-lg mx-1">⋮</span> menu on the video and select 
                   <span className="font-bold ml-1 text-emerald-400 underline decoration-emerald-400/30 underline-offset-4 cursor-pointer">Download</span>."
                  </p>
-              </div>
-            ) : (
-              <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/20 flex flex-col items-center lg:items-start gap-3">
-                <div className="flex items-center gap-2 text-red-400">
-                  <AlertTriangle size={18} />
-                  <span className="text-xs font-bold uppercase tracking-widest">Action Required:</span>
-                </div>
-                <p className="text-red-200/60 text-sm font-medium leading-relaxed text-center lg:text-left">
-                  Please make sure the link is public or follow the user to access their content. 🛡️
-                </p>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
