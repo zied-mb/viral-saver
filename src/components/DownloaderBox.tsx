@@ -1,13 +1,11 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Clipboard, X, Loader2, AlertCircle, Sparkles } from "lucide-react";
+import { Download, Clipboard, X, Loader2, AlertCircle, Sparkles, Lock, ShieldAlert, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { fetchDownload, detectPlatform, isValidUrl } from "@/services/api";
 import { DownloadResult } from "@/types";
 import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
-import AdsBanner from "@/components/AdsBanner";
-import { ADS } from "@/config/ads";
 
 const DownloaderBox: React.FC = () => {
   const [url, setUrl] = useState("");
@@ -37,7 +35,7 @@ const DownloaderBox: React.FC = () => {
     inputRef.current?.focus();
   };
 
-const handleDownload = async () => {
+  const handleDownload = async () => {
     if (!url.trim()) {
       setError("Please paste a social media link to continue.");
       return;
@@ -56,8 +54,8 @@ const handleDownload = async () => {
 
       // 🛡️ التثبت من الـ Private أو الـ Error 404
       if (data && (data.error === true || data.status === 404 || data.message === "Not found data")) {
-        // ❌ هنا نحينا الجملة القديمة وعوضناها بميساج يفهمو أي حد
-        setError("This content is private or unavailable. Please check the link and try again. 🔒");
+        // نبعثو كلمة سبيسيال للـ error باش الكود يفيق ويظهر الـ "Faza"
+        setError("PRIVATE_ACCOUNT_DETECTED");
         setLoading(false);
         return;
       }
@@ -68,12 +66,13 @@ const handleDownload = async () => {
       }
     } catch (err: any) {
       console.error("API error:", err);
-      // ❌ حتى هنا نحيناها
-      setError("Unable to fetch media. The profile might be private or the link is broken. ⚠️");
+      setError("Unable to fetch media. Please check your link. ⚠️");
     } finally {
       setLoading(false);
     }
-  };  const handleKeyDown = (e: React.KeyboardEvent) => {
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleDownload();
   };
 
@@ -83,7 +82,6 @@ const handleDownload = async () => {
       <motion.div
         initial={{ opacity: 0, y: 32, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative rounded-3xl overflow-hidden backdrop-blur-2xl"
         style={{
           background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
@@ -99,20 +97,6 @@ const handleDownload = async () => {
               <Sparkles className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="text-sm font-bold text-white/50 uppercase tracking-wider">Smart Downloader</span>
-            <AnimatePresence mode="wait">
-              {platform && platform !== "unknown" && (
-                <motion.span
-                  key={platform}
-                  initial={{ opacity: 0, scale: 0.8, x: -8 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="ml-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-violet-500/25 to-pink-500/25 text-pink-300 border border-pink-400/25 capitalize"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
-                  {platform} detected
-                </motion.span>
-              )}
-            </AnimatePresence>
           </div>
 
           <div className="flex items-center gap-2">
@@ -127,12 +111,9 @@ const handleDownload = async () => {
                   if (!e.target.value) setResult(null);
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Paste Instagram / TikTok / Facebook / YouTube link here..."
-                className="w-full px-5 py-4 pr-11 rounded-2xl text-white placeholder-white/25 text-sm focus:outline-none transition-all duration-200"
-                style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
+                placeholder="Paste Instagram / TikTok / Facebook link..."
+                className="w-full px-5 py-4 rounded-2xl text-white placeholder-white/25 text-sm focus:outline-none transition-all duration-200"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
               />
               <AnimatePresence>
                 {url && (
@@ -141,7 +122,7 @@ const handleDownload = async () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.7 }}
                     onClick={handleClear}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/40 hover:text-white/80 transition-all"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:text-white"
                   >
                     <X className="w-3 h-3" />
                   </motion.button>
@@ -153,51 +134,23 @@ const handleDownload = async () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handlePaste}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-4 rounded-2xl text-sm font-semibold transition-all duration-200 text-white/60 hover:text-white"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-4 rounded-2xl text-sm font-semibold text-white/60 hover:text-white border border-white/10 bg-white/5"
             >
               <Clipboard className="w-4 h-4" />
               <span className="hidden sm:inline">Paste</span>
             </motion.button>
           </div>
 
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -6, height: 0 }}
-                animate={{ opacity: 1, y: 0, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="flex items-start gap-2.5 mt-3 px-4 py-3 rounded-xl overflow-hidden"
-                style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
-              >
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                <span className="text-red-300 text-sm">{error}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleDownload}
             disabled={loading}
-            className="relative mt-5 w-full py-4 rounded-2xl font-black text-white text-base overflow-hidden group transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="relative mt-5 w-full py-4 rounded-2xl font-black text-white text-base overflow-hidden group transition-all"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 group-hover:from-violet-500 group-hover:via-pink-400 group-hover:to-cyan-400 transition-all duration-300" />
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 scale-105" />
-            <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
-            <span className="relative flex items-center justify-center gap-2.5 tracking-wide">
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Fetching media...
-                </>
-              ) : (
-                <>
-                  <Download className="w-5 h-5" />
-                  Download Now
-                </>
-              )}
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 group-hover:from-violet-500 transition-all" />
+            <span className="relative flex items-center justify-center gap-2.5">
+              {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Fetching...</> : <><Download className="w-5 h-5" /> Download Now</>}
             </span>
           </motion.button>
 
@@ -205,30 +158,50 @@ const handleDownload = async () => {
         </div>
       </motion.div>
 
-      {/* ── Loading skeleton ── */}
+      {/* ── Error & Private Area (THE FAZA) ── */}
       <AnimatePresence>
-        {loading && (
+        {error && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="rounded-2xl overflow-hidden backdrop-blur-xl p-6 space-y-3"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            exit={{ opacity: 0, y: 10 }}
+            className={`overflow-hidden rounded-[2rem] border backdrop-blur-3xl shadow-2xl transition-all duration-500 ${
+              error === "PRIVATE_ACCOUNT_DETECTED" 
+                ? "border-red-500/30 bg-[#1a0b0b]/80 shadow-[0_20px_50px_rgba(239,68,68,0.2)]" 
+                : "border-red-500/20 bg-red-500/5 px-4 py-3 flex items-center gap-3"
+            }`}
           >
-            <div className="flex gap-4">
-              <div className="w-32 h-32 rounded-xl animate-pulse flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }} />
-              <div className="flex-1 space-y-3 pt-1">
-                <div className="h-3 rounded-full animate-pulse w-1/4" style={{ background: "rgba(255,255,255,0.06)" }} />
-                <div className="h-4 rounded-full animate-pulse w-3/4" style={{ background: "rgba(255,255,255,0.06)" }} />
-                <div className="h-3 rounded-full animate-pulse w-1/2" style={{ background: "rgba(255,255,255,0.06)" }} />
+            {error === "PRIVATE_ACCOUNT_DETECTED" ? (
+              // 🎨 Design المزيان اللي حبيته
+              <div className="p-8 flex flex-col items-center text-center gap-5">
+                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                  <Lock className="w-8 h-8 text-red-500 animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2 italic">
+                    same uploaded picture product 🔒
+                  </h3>
+                  <p className="text-red-200/60 text-sm font-medium max-w-xs mx-auto leading-relaxed">
+                    This account is private. Please make sure the link is public or follow the user to access their content. 🛡️
+                  </p>
+                </div>
+                <div className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-2 text-[10px] font-black text-red-400 uppercase tracking-widest">
+                  <ShieldAlert size={14} />
+                  Access Restricted
+                </div>
               </div>
-            </div>
-            <p className="text-center text-xs text-white/25 animate-pulse pt-1">Fetching your media...</p>
+            ) : (
+              // مساج الغلط العادي (مثلا رابط غلط)
+              <>
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <span className="text-red-300 text-sm font-medium">{error}</span>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Result card ── */}
+      {/* ── Result Card (Success Only) ── */}
       <AnimatePresence>
         {result && !loading && <ResultCard result={result} platform={platform} />}
       </AnimatePresence>
