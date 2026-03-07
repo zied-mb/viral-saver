@@ -94,6 +94,11 @@ const faqs = [
 const Home: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  
+  // ✨ States الجديدة للـ Error Handling ✨
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPrivate, setIsPrivate] = useState(false);
+
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
   const heroY = useTransform(scrollY, [0, 400], [0, 80]);
@@ -101,6 +106,25 @@ const Home: React.FC = () => {
   const bg = darkMode ? "bg-[#06060f]" : "bg-slate-50";
   const text = darkMode ? "text-white" : "text-slate-900";
 
+  // ✨ Function باش نعالجو الـ Error اللي جاي من الـ API ✨
+  const handleDownloadError = (errorData: any) => {
+    if (errorData.error) {
+      const msg = errorData.message || "";
+      if (msg.includes("Private") || msg.includes("account cookies")) {
+        setIsPrivate(true);
+        setErrorMessage("This account is Private. We can't access private videos for security reasons.");
+      } else if (msg.includes("Stories") || msg.includes("Not support Stories")) {
+        setIsPrivate(true);
+        setErrorMessage("Instagram Stories are not supported yet. Please try a Public Reel or Video link.");
+      } else {
+        setIsPrivate(false);
+        setErrorMessage("Video not found. Please make sure the link is correct and public.");
+      }
+    } else {
+      setErrorMessage(null);
+      setIsPrivate(false);
+    }
+  };
   return (
     <div className={`min-h-screen transition-colors duration-500 ${bg} ${text} overflow-x-hidden`}>
 
@@ -336,7 +360,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Downloader Section ── */}
+{/* ── Downloader Section ── */}
 <section id="downloader" className="py-12 sm:py-20 px-4 overflow-hidden">
   <div className="max-w-7xl mx-auto flex flex-col items-center">
     
@@ -364,25 +388,60 @@ const Home: React.FC = () => {
     {/* Main Content Area */}
     <div className="w-full flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
       
-      {/* Downloader Column - Hedhi elli fiha el ResultCard dlakhel */}
+      {/* Downloader Column */}
       <div className="w-full max-w-2xl flex flex-col gap-6 min-w-0">
         <div className="w-full">
-          <DownloaderBox />
+          {/* ✨ زدنا الـ Error Logic هوني باش الـ UI يقعد نظيف ✨ */}
+          <DownloaderBox 
+            onError={(errData: any) => {
+              const msg = errData.message || "";
+              if (msg.includes("Private") || msg.includes("account cookies")) {
+                setErrorMessage("🔒 This account is Private. Try a public link!");
+              } else if (msg.includes("Stories")) {
+                setErrorMessage("📹 Stories are not supported yet. Try a Reel!");
+              } else {
+                setErrorMessage("❌ Video not found. Check the link!");
+              }
+            }} 
+            onClear={() => setErrorMessage(null)} 
+          />
         </div>
+
+        {/* ✨ الميساج السمح يظهر هوني تحت الـ Input طول ✨ */}
+        <AnimatePresence>
+          {errorMessage && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="w-full overflow-hidden"
+            >
+              <div className="p-4 rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex items-center gap-3">
+                <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
+                  <AlertCircle size={18} />
+                </div>
+                <p className="text-white/80 text-xs sm:text-sm font-medium italic">
+                  {errorMessage}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
-        {/* Hna el ResultCard dima iji dlakhel el max-w-2xl 
-            bech mayfoutech el width mte3 el input box */}
+        {/* الـ ResultCard باش تظهر هوني أوتوماتيكيا كي يبدأ فما فيديو صحيح */}
       </div>
 
-      {/* Sidebar Ad - Appears only on Large Screens */}
+      {/* Sidebar Ad - A-Ads (Nadhifa & USDT Ready) 🛡️ */}
       <div className="hidden xl:block flex-shrink-0 sticky top-24">
-        <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
+        <div className="p-2 rounded-2xl border border-white/5 bg-white/[0.02]">
+           {/* استعملنا الـ SidebarAd1 اللي ركحناها بالـ Iframe متاع A-Ads */}
+           <AdsBanner html={ADS.sidebarAd1} />
+        </div>
       </div>
 
     </div>
   </div>
 </section>
-
       {/* ── How It Works ── */}
       <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
