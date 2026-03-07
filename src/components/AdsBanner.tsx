@@ -1,12 +1,12 @@
 import React from "react";
+import { ADS } from '@/config/ads';
 
 interface AdsBannerProps {
-  code: string;
   type: "top" | "middle" | "sidebar-sm" | "sidebar-lg" | "footer";
   className?: string;
 }
 
-const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: number; label: string }> = {
+const AD_DIMENSIONS = {
   top: { width: 728, height: 90, label: "728×90" },
   middle: { width: 728, height: 90, label: "728×90" },
   "sidebar-sm": { width: 300, height: 250, label: "300×250" },
@@ -14,39 +14,43 @@ const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: num
   footer: { width: 970, height: 90, label: "970×90" },
 };
 
-const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
+const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const dim = AD_DIMENSIONS[type];
-  const isPlaceholder =
-    !code ||
-    code === "PASTE_ADSTERRA_CODE_OR_LINK";
+  
+  // نخدموا كان بالـ topBanner توا بشوية بشوية
+  const adId = type === "top" ? ADS.topBanner : null;
 
   return (
     <div
-      className={`flex items-center justify-center overflow-hidden ${className}`}
+      className={`flex items-center justify-center overflow-hidden py-4 ${className}`}
       style={{ minHeight: dim.height, maxWidth: "100%" }}
     >
-      {isPlaceholder ? (
+      {!adId || adId === "PASTE_ADSTERRA_CODE_OR_LINK" ? (
+        // Placeholder يظهر كي يبدأ ماثماش كود
         <div
-          className="flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 text-xs text-white/30 font-mono select-none"
-          style={{ width: Math.min(dim.width, 728), height: dim.height }}
+          className="flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 text-[10px] text-white/20 font-mono uppercase tracking-widest"
+          style={{ width: "100%", maxWidth: dim.width, height: dim.height }}
         >
-          Ad Space · {dim.label}
+          {dim.label} · Ad Space
         </div>
-      ) : code.startsWith("http") ? (
-        <iframe
-          src={code}
-          width={dim.width}
-          height={dim.height}
-          scrolling="no"
-          frameBorder="0"
-          style={{ border: "none", maxWidth: "100%" }}
-          title={`ad-${type}`}
-        />
       ) : (
-        <div
-          dangerouslySetInnerHTML={{ __html: code }}
-          style={{ maxWidth: "100%" }}
-        />
+        // الإشهار الحقيقي (A-ADS)
+        <div className="w-full flex justify-center items-center">
+          <iframe 
+            data-aa={adId} 
+            src={`//acceptable.a-ads.com/${adId}/?size=Adaptive`}
+            style={{ 
+              border: 0, 
+              padding: 0, 
+              width: "100%", 
+              maxWidth: "728px", 
+              height: "90px", 
+              overflow: "hidden",
+              display: "block"
+            }}
+            scrolling="no"
+          />
+        </div>
       )}
     </div>
   );
