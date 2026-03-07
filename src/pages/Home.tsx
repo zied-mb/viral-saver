@@ -176,7 +176,7 @@ const Home: React.FC = () => {
                 Save Any Video <br /> <span className="bg-gradient-to-r from-violet-400 to-cyan-300 bg-clip-text text-transparent">In Seconds.</span>
               </motion.h1>
               <p className="text-lg text-white/45 max-w-xl mx-auto xl:mx-0 mb-10">
-                Download HD content from Instagram, TikTok, and more instantly. No watermarks, no limits. 🚀
+                Download HD content from Instagram, TikTok, and more instantly. No watermarks, no limits.
               </p>
             </div>
             <div className="hidden xl:block">
