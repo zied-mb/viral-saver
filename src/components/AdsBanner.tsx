@@ -21,9 +21,10 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     switch (type) {
       case "top": 
         return ADS.topBanner;
+      case "middle": 
+        return ADS.middleBanner;
       case "sidebar-sm": 
-        return ADS.sidebarAd1; // 👈 توا يقرى في 2429661 من الـ ADS
-      // أي نوع آخر موش موجود في الـ ADS يرجع null باش ما يظهرش غلط
+        return ADS.sidebarAd1;
       default: 
         return null; 
     }
@@ -31,17 +32,16 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   const adId = getAdId();
 
-  // ✨ إذا الـ ID موش موجود، الـ Component يختفي وما يخليش فراغ
   if (!adId) return null;
 
   return (
     <div
-      className={`w-full flex items-center justify-center overflow-hidden py-4 ${className}`}
+      className={`w-full flex items-center justify-center overflow-hidden py-6 ${className}`}
       style={{ minHeight: `${dim.height}px` }}
     >
       <div className="w-full flex justify-center items-center">
         <div 
-          className={`w-full transition-transform duration-500 max-w-[1000px] mx-auto overflow-hidden rounded-2xl border border-white/5 shadow-2xl shadow-violet-500/5`}
+          className={`w-full transition-all duration-500 ${type === 'middle' ? 'max-w-[1100px]' : 'max-w-[1000px]'} mx-auto overflow-hidden rounded-2xl border border-white/5 shadow-2xl shadow-violet-500/5`}
         >
           <iframe 
             data-aa={adId} 
@@ -53,7 +53,8 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
               height: `${dim.height}px`, 
               overflow: "hidden",
               display: "block",
-              backgroundColor: "transparent"
+              backgroundColor: "transparent",
+              transform: type === 'middle' ? 'scale(1.02)' : 'none' 
             }}
             scrolling="no"
           />
