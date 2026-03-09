@@ -6,6 +6,7 @@ import { fetchDownload, detectPlatform, isValidUrl } from "@/services/api";
 import { DownloadResult } from "@/types";
 import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
+import AdsBanner from "./AdsBanner"; // تأكد من الـ import مريغل
 
 const DownloaderBox: React.FC = () => {
   const [url, setUrl] = useState("");
@@ -14,7 +15,6 @@ const DownloaderBox: React.FC = () => {
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // 🎯 Click Counter Logic لزيادة الترافيك لـ MDB Collection
   const [clickCount, setClickCount] = useState(() => {
     if (typeof window !== 'undefined') {
       return Number(localStorage.getItem("v_saver_clicks")) || 0;
@@ -98,7 +98,7 @@ const DownloaderBox: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-5 px-4 sm:px-0">
+    <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
@@ -168,6 +168,11 @@ const DownloaderBox: React.FC = () => {
           <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
         </div>
       </motion.div>
+
+      {/* 💰 الإشهار يجي هنا بالضبط تحت الـ Box وقبل الـ Result */}
+      <div className="w-full flex justify-center py-2">
+         <AdsBanner type="result-inline" />
+      </div>
 
       {result && !loading && (
         <div id={scrollAnchorId} className="space-y-6 pt-2">
