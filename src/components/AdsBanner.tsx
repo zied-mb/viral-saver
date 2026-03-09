@@ -17,7 +17,8 @@ const AD_DIMENSIONS = {
 const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const dim = AD_DIMENSIONS[type];
   const adContainerRef = useRef<HTMLDivElement>(null);
-  
+  const hasInitialized = useRef(false); // قفل باش نمنعو الـ flickering 🔒
+
   const getAdId = () => {
     switch (type) {
       case "top": return ADS.topBanner;
@@ -32,9 +33,13 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adId = getAdId();
 
   useEffect(() => {
-    if ((type === "sidebar-sm" || type === "result-inline") && adId && adContainerRef.current) {
-      adContainerRef.current.innerHTML = "";
+    // التثبت من الـ IDs والنوع
+    const isHilltopType = type === "sidebar-sm" || type === "result-inline";
+    
+    if (isHilltopType && adId && adContainerRef.current && !hasInitialized.current) {
+      hasInitialized.current = true; // نمنعوا الـ Script باش ما يعاودش يركب
       
+      adContainerRef.current.innerHTML = "";
       const script = document.createElement("script");
       
       if (adId === ADS.sidebarAd1) {
@@ -51,7 +56,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
-  // ─── MDB Collection ───
+  // ─── MDB Collection (Fallback for Top) ───
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
@@ -72,7 +77,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
           <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-[9px] font-bold text-white/80 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
             Sponsored
           </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </a>
       </div>
     );
@@ -80,6 +84,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   if (!adId) return null;
 
+  // Render for HilltopAds
   if (type === "sidebar-sm" || type === "result-inline") {
     return (
       <div 
@@ -95,6 +100,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     );
   }
 
+  // Render for A-Ads (Iframe)
   return (
     <div 
       className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`}
