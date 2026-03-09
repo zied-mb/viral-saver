@@ -68,7 +68,6 @@ const DownloaderBox: React.FC = () => {
       return;
     }
 
-    // ✨ Redirect Logic: بعد كل 3 كليكات، نفتح موقعك
     const nextCount = clickCount + 1;
     if (nextCount >= 3) {
       setClickCount(0);
