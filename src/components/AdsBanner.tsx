@@ -8,10 +8,10 @@ interface AdsBannerProps {
 
 const AD_DIMENSIONS = {
   top: { height: 90, width: '1200px' },
-  middle: { height: 100, width: '300px' }, // تعديل الـ height لـ 100px حسب اختيارك
+  middle: { height: 100, width: '300px' },
   "sidebar-sm": { height: 250, width: '300px' },
   "result-inline": { height: 250, width: '300px' }, 
-  footer: { height: 100, width: '300px' }, // تعديل الـ height لـ 100px
+  footer: { height: 100, width: '300px' },
 };
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
@@ -32,20 +32,23 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adId = getAdId();
 
   useEffect(() => {
-    // التحديث: يخدم على الـ Sidebar، Result Card، Middle، والـ Footer (كل ما هو HilltopAds)
-    if ((type === "sidebar-sm" || type === "result-inline" || type === "middle" || type === "footer") && adId && adContainerRef.current) {
+    // نركزو كان على الـ Hilltop types
+    const isHilltopType = ["sidebar-sm", "result-inline", "middle", "footer"].includes(type);
+    
+    if (isHilltopType && adId && adContainerRef.current) {
+      // تنظيف الـ container قبل الزرق
       adContainerRef.current.innerHTML = "";
       
       const script = document.createElement("script");
       
-      // اختيار الـ Source الصحيح حسب الـ ID من الـ Dashboard
-      if (adId === ADS.sidebarAd1) {
+      // التثبت من الـ Source الصحيح
+      if (type === "middle" || type === "footer") {
+        // الـ Script الخاص بالـ Zone #6854497 (300x100)
+        script.src = "//selfassured-celebration.com/b.X-VysadYGBlB0nYjWycN/QesmO9/upZ/UKlKk/PPTkYc4iNkThQr0/OgTFc/t_NdjigI1/NvDmUTwYM/Qp";
+      } else if (adId === ADS.sidebarAd1) {
         script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
       } else if (adId === ADS.sidebarAd2) {
         script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
-      } else if (adId === ADS.middleBanner || adId === ADS.footerBanner) {
-        // الـ Script الجديد للـ Zone #6854497 (300x100)
-        script.src = "//selfassured-celebration.com/b.X-VysadYGBlB0nYjWycN/QesmO9/upZ/UKlKk/PPTkYc4iNkThQr0/OgTFc/t_NdjigI1/NvDmUTwYM/Qp";
       }
       
       script.async = true;
@@ -56,26 +59,22 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
-  // ─── MDB Collection (Fallback for Top) ───
+  // Fallback للماركة متاعنا MDB Collection
   if (!adId && type === "top") {
     return (
-      <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
+      <div className={`w-full flex justify-center items-center my-6 px-4 ${className}`}>
         <a 
           href="https://mdbcollection.com" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="relative w-full group overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20"
-          style={{ maxWidth: dim.width }}
+          className="relative w-full max-w-[1200px] group overflow-hidden rounded-xl border border-white/10 shadow-2xl"
         >
-          <div className="h-[90px] md:h-[130px] w-full transition-all duration-500">
+          <div className="h-[90px] md:h-[130px] w-full">
             <img 
               src="/mdb-banner.jpg" 
               alt="MDB Collection" 
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-          </div>
-          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-[9px] font-bold text-white/80 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
-            Sponsored
           </div>
         </a>
       </div>
@@ -84,27 +83,23 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   if (!adId) return null;
 
-  // الـ UI الخاص بـ HilltopAds (Sidebar, Result, Middle, Footer)
   const isHilltop = ["sidebar-sm", "result-inline", "middle", "footer"].includes(type);
 
   if (isHilltop) {
     return (
-      <div 
-        className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`}
-        style={{ minHeight: `${dim.height}px` }}
-      >
+      <div className={`ads-container w-full flex justify-center items-center my-4 ${className}`}>
         <div 
           ref={adContainerRef}
-          className="ad-wrapper relative flex justify-center items-center"
+          className="ad-wrapper flex justify-center items-center"
           style={{ width: "100%", maxWidth: dim.width, minHeight: `${dim.height}px` }}
         />
       </div>
     );
   }
 
-  // الـ UI الخاص بـ A-Ads (لأي أنواع أخرى مستقبلاً)
+  // A-Ads Fallback
   return (
-    <div className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`}>
+    <div className={`ads-container w-full flex justify-center items-center my-4 ${className}`}>
         <iframe 
           data-aa={adId} 
           src={`https://acceptable.a-ads.com/${adId}/?size=Adaptive`}
