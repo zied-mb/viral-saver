@@ -32,13 +32,20 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adId = getAdId();
 
   useEffect(() => {
-    if (type === "sidebar-sm" && adId && adContainerRef.current) {
+    if ((type === "sidebar-sm" || type === "result-inline") && adId && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
       
       const script = document.createElement("script");
-      script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
+      
+      if (adId === ADS.sidebarAd1) {
+        script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
+      } else if (adId === ADS.sidebarAd2) {
+        script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
+      }
+      
       script.async = true;
       script.setAttribute("data-cfasync", "false");
+      script.referrerPolicy = 'no-referrer-when-downgrade';
       
       adContainerRef.current.appendChild(script);
     }
@@ -73,7 +80,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   if (!adId) return null;
 
-  if (type === "sidebar-sm") {
+  if (type === "sidebar-sm" || type === "result-inline") {
     return (
       <div 
         className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`}
