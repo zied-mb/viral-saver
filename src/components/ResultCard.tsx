@@ -35,7 +35,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
     >
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-r from-transparent via-cyan-500/50 to-transparent" />
 
-      <div className="p-6 sm:p-8"> {/* نقصت شوية في الـ padding باش تلم روحها */}
+      <div className="p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -48,10 +48,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start">
           
-          {/* 🎬 Video Preview - نركزو هنا */}
+          {/* 🎬 Video Preview */}
           <div className="relative w-full sm:w-[70%] lg:w-[300px] shrink-0 mx-auto lg:mx-0">
              <div className="relative rounded-[1.5rem] overflow-hidden bg-black shadow-2xl border border-white/5 flex items-center justify-center">
-                {/* نحيت الـ aspect-ratio باش الطول يتعدل وحده */}
                 <video 
                   key={bestVideo} 
                   src={bestVideo} 
@@ -109,10 +108,11 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                      <span className="text-[9px] font-black tracking-widest uppercase">Quick Save:</span>
                   </div>
                   <p className="text-white/60 text-xs italic">
-                   "Click <span className="text-white font-bold">⋮</span> and select <span className="text-emerald-400 font-bold">Download</span>."
+                    "Click <span className="text-white font-bold">⋮</span> and select <span className="text-emerald-400 font-bold">Download</span>."
                   </p>
                </div>
-               <AdsBanner type="result-inline" />
+               
+               <AdsBanner key={bestVideo} type="result-inline" />
             </div>
 
           </div>
