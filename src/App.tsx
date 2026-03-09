@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Contact from "./pages/Contact";
-import DMCA from "./pages/dmca";
+import DMCA from "./pages/DMCA";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
