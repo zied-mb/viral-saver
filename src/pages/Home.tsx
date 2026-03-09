@@ -327,8 +327,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── Middle Ad ── */}
-   <div className="flex justify-center py-4 sm:py-8 px-4">
-  <AdsBanner type="middle" className="min-h-[100px]" /> 
+<div className="flex justify-center py-4 sm:py-8 px-4 w-full">
+  <AdsBanner type="middle" />
 </div>
 
       {/* ── Reviews ── */}
