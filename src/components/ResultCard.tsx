@@ -1,96 +1,129 @@
-import React, { useEffect, useRef } from "react";
-import { ADS } from '@/config/ads';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { CheckCircle2, Globe, MousePointer2, Heart, Eye, User, Sparkles } from "lucide-react";
+import { DownloadResult } from "@/types";
 
-interface AdsBannerProps {
-  type: "top" | "middle" | "sidebar-sm" | "footer" | "result-inline";
-  className?: string;
+interface ResultCardProps {
+  result: DownloadResult;
+  platform: string;
 }
 
-const AD_DIMENSIONS = {
-  top: { height: 90, width: '1200px' },
-  middle: { height: 280, width: '100%' }, 
-  "sidebar-sm": { height: 250, width: '300px' },
-  "result-inline": { height: 250, width: '300px' }, 
-  footer: { height: 90, width: '970px' },
-};
+const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
+  const [showFullTitle, setShowFullTitle] = useState(false);
+  const res = result as any;
 
-const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
-  const dim = AD_DIMENSIONS[type];
-  const adContainerRef = useRef<HTMLDivElement>(null);
-  const isLoaded = useRef(false); // القفل متاعنا 🔒
+  const allLinks = [
+    ...(result.medias || []).map((m) => ({ url: m.url, quality: m.quality || "", ext: m.ext || "mp4" })),
+    ...(result.links || []),
+  ].filter((l) => l.url);
 
-  const getAdId = () => {
-    switch (type) {
-      case "top": return ADS.topBanner;
-      case "middle": return ADS.middleBanner;
-      case "sidebar-sm": return ADS.sidebarAd1;
-      case "result-inline": return ADS.sidebarAd2;
-      case "footer": return ADS.footerBanner;
-      default: return null; 
-    }
+  const bestVideo = allLinks.find((l) => l.ext === "mp4")?.url || allLinks[0]?.url;
+
+  if (!bestVideo) return null;
+
+  const truncateTitle = (text: string, limit: number) => {
+    if (!text || text.length <= limit) return text;
+    return text.slice(0, limit) + "...";
   };
 
-  const adId = getAdId();
-
-  useEffect(() => {
-    // نخدموا الـ Script كان كي يبدأ النوع صحيح، الـ ID موجود، والـ Component مازال ما صبش الـ Ad قبل
-    if ((type === "sidebar-sm" || type === "result-inline") && adId && adContainerRef.current && !isLoaded.current) {
-      
-      isLoaded.current = true; // نغلقوا القفل باش ما عادش يتعاود 🚫
-      adContainerRef.current.innerHTML = "";
-      
-      const script = document.createElement("script");
-      
-      if (adId === ADS.sidebarAd1) {
-        script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
-      } else if (adId === ADS.sidebarAd2) {
-        script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
-      }
-      
-      script.async = true;
-      script.setAttribute("data-cfasync", "false");
-      script.referrerPolicy = 'no-referrer-when-downgrade';
-      
-      adContainerRef.current.appendChild(script);
-    }
-
-    // Cleanup function: لو تفسخ الـ Component من الشاشة، نرجعوا الـ flag false
-    return () => {
-      isLoaded.current = false;
-    };
-  }, [adId, type]);
-
-  // --- MDB Collection (Top Banner) ---
-  if (!adId && type === "top") {
-    return (
-      <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
-        <a href="https://mdbcollection.com" target="_blank" rel="noopener noreferrer" className="relative w-full group overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20" style={{ maxWidth: dim.width }}>
-          <div className="h-[90px] md:h-[130px] w-full transition-all duration-500">
-            <img src="/mdb-banner.jpg" alt="MDB Collection" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          </div>
-          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-[9px] font-bold text-white/80 px-2 py-0.5 rounded-full uppercase border border-white/5">Sponsored</div>
-        </a>
-      </div>
-    );
-  }
-
-  if (!adId) return null;
-
-  if (type === "sidebar-sm" || type === "result-inline") {
-    return (
-      <div className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`} style={{ minHeight: `${dim.height}px` }}>
-        <div ref={adContainerRef} className="ad-wrapper relative" style={{ width: dim.width, minHeight: `${dim.height}px` }} />
-      </div>
-    );
-  }
-
   return (
-    <div className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`} style={{ minHeight: `${dim.height}px` }}>
-      <div className="ad-wrapper relative" style={{ width: "100%", maxWidth: dim.width, minHeight: `${dim.height}px`, zIndex: 10 }}>
-        <iframe key={adId} data-aa={adId} src={`https://acceptable.a-ads.com/${adId}/?size=Adaptive`} style={{ border: 'none', padding: 0, margin: '0 auto', width: "100%", height: `${dim.height}px`, display: "block", backgroundColor: "transparent" }} scrolling="no" title={`ad-${type}-${adId}`} loading="lazy" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative w-[95%] sm:w-full max-w-4xl mx-auto mt-6 overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#0f0720]/80 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl"
+    >
+      {/* Top Gradient Line */}
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+
+      <div className="p-6 sm:p-10">
+        {/* Header Tags */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span className="text-emerald-400 text-[11px] font-black uppercase tracking-[0.15em]">Ready to Download</span>
+          </div>
+          <div className="flex items-center gap-2 text-white/50 bg-white/5 px-4 py-2 rounded-full text-[11px] font-bold uppercase border border-white/5 tracking-wider">
+            <Globe className="w-3.5 h-3.5" /> {platform || "Social Media"}
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 items-center lg:items-start">
+          
+          {/* 🎬 Video Preview Area */}
+          <div className="relative w-full sm:w-[80%] lg:w-[320px] shrink-0 mx-auto lg:mx-0">
+             <div className="relative rounded-[2rem] overflow-hidden bg-black shadow-[0_0_40px_rgba(0,0,0,0.7)] border border-white/10 flex items-center justify-center group">
+                <video 
+                  key={bestVideo} 
+                  src={bestVideo} 
+                  loop 
+                  muted 
+                  controls 
+                  playsInline 
+                  className="w-full h-auto max-h-[450px] object-contain transition-transform duration-500 group-hover:scale-[1.02]" 
+                />
+             </div>
+          </div>
+
+          {/* ℹ️ Content Info Area */}
+          <div className="flex-1 w-full min-w-0 text-center lg:text-left flex flex-col h-full">
+            
+            {/* 👤 Owner Profile */}
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-5">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-white/10 shadow-inner">
+                <User className="w-4 h-4 text-cyan-400" />
+              </div>
+              <span className="text-white font-black text-sm tracking-tight italic opacity-90">
+                @{res.owner?.username || "social_user"}
+              </span>
+            </div>
+
+            {/* 📝 Video Title */}
+            <h3 className="text-2xl font-extrabold mb-6 leading-[1.3] text-white italic tracking-tight">
+              {showFullTitle ? res.title : truncateTitle(res.title || "Your video is processed and ready!", 90)}
+              {res.title && res.title.length > 90 && (
+                <button 
+                  onClick={() => setShowFullTitle(!showFullTitle)} 
+                  className="ml-3 text-cyan-400 text-[11px] font-black uppercase hover:text-cyan-300 transition-colors underline decoration-cyan-400/30 underline-offset-4"
+                >
+                  {showFullTitle ? "Show Less" : "Read More"}
+                </button>
+              )}
+            </h3>
+
+            {/* 📊 Engagement Stats */}
+            <div className="flex items-center justify-center lg:justify-start gap-5 mb-8">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 transition-colors hover:bg-white/[0.08]">
+                <Heart className="w-4 h-4 text-pink-500 fill-pink-500/10" />
+                <span className="text-white font-bold text-sm">{res.like_count?.toLocaleString() || 0}</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 transition-colors hover:bg-white/[0.08]">
+                <Eye className="w-4 h-4 text-emerald-400" />
+                <span className="text-white font-bold text-sm">{res.view_count?.toLocaleString() || 0}</span>
+              </div>
+            </div>
+
+            {/* 💡 Modern Quick Save Instructions */}
+            <div className="mt-auto">
+               <div className="p-6 rounded-[1.8rem] bg-gradient-to-br from-white/[0.04] to-transparent border border-white/10 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Sparkles className="w-8 h-8 text-cyan-400" />
+                  </div>
+                  
+                  <div className="flex items-center justify-center lg:justify-start gap-2.5 mb-3 text-cyan-400">
+                     <MousePointer2 className="w-4 h-4 animate-pulse" />
+                     <span className="text-[10px] font-black tracking-[0.2em] uppercase">Quick Save Guide</span>
+                  </div>
+                  <p className="text-white/70 text-sm leading-relaxed italic">
+                    "Tap the <span className="text-white font-bold mx-1">⋮</span> icon on the video player and select <span className="text-emerald-400 font-bold ml-1">Download</span> to save directly to your device."
+                  </p>
+               </div>
+            </div>
+
+          </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-export default AdsBanner;
+export default ResultCard;
