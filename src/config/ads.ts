@@ -1,7 +1,7 @@
 export const ADS = {
-  topBanner: "PASTE_ADSTERRA_CODE_OR_LINK",
-  middleBanner: "PASTE_ADSTERRA_CODE_OR_LINK",
-  sidebarAd1: "PASTE_ADSTERRA_CODE_OR_LINK",
-  sidebarAd2: "PASTE_ADSTERRA_CODE_OR_LINK",
-  footerBanner: "PASTE_ADSTERRA_CODE_OR_LINK",
+  topBanner: import.meta.env.VITE_ADS_TOP_BANNER,
+  middleBanner: import.meta.env.VITE_ADS_MIDDLE_BANNER,
+  sidebarAd1: import.meta.env.VITE_ADS_SIDEBAR_1,
+  sidebarAd2: import.meta.env.VITE_ADS_SIDEBAR_2,
+  footerBanner: import.meta.env.VITE_ADS_FOOTER_BANNER,
 };

@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-   Download, Zap, Shield, Globe, ChevronDown,
-  ArrowRight, CheckCircle2, Star, TrendingUp
+  Download, Zap, Shield, Globe, ChevronDown,
+  ArrowRight, CheckCircle2, Star, TrendingUp, Github, Linkedin, Heart,
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
 import DownloaderBox from "@/components/DownloaderBox";
 import AdsBanner from "@/components/AdsBanner";
 import { ADS } from "@/config/ads";
 import heroBg from "@/assets/hero-bg.jpg";
+import { Link } from "react-router-dom";
+import SupportWidget from "@/components/SupportWidget";
 
 const stats = [
   { label: "Downloads Served", value: "50M+", icon: Download },
@@ -92,7 +94,7 @@ const faqs = [
 ];
 
 const Home: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
@@ -116,12 +118,6 @@ const Home: React.FC = () => {
           transition={{ duration: 26, repeat: Infinity, ease: "easeInOut", delay: 4 }}
           className="absolute -top-40 -right-60 w-[600px] h-[600px] rounded-full bg-pink-600/15 blur-[120px]"
         />
-        <motion.div
-          animate={{ x: [0, 50, -30, 0], y: [0, -40, 50, 0] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 8 }}
-          className="absolute bottom-20 left-1/3 w-[600px] h-[600px] rounded-full bg-cyan-600/12 blur-[130px]"
-        />
-        {/* Grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.025]"
           style={{
@@ -135,261 +131,103 @@ const Home: React.FC = () => {
       <motion.nav
         initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className={`sticky top-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4 backdrop-blur-2xl border-b ${darkMode ? "border-white/5 bg-black/40" : "border-slate-200/60 bg-white/80"
-          }`}
+        className={`sticky top-0 z-50 flex items-center justify-between px-6 lg:px-10 py-3 backdrop-blur-2xl border-b ${darkMode ? "border-white/5 bg-black/40" : "border-slate-200/60 bg-white/80"}`}
       >
-        {/* Logo */}
         <a href="/" className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="ViralSaver logo"
-              className="w-7 h-7 object-contain"
-            />
-
-            <span className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              ViralSaver
-            </span>
+            <img src="/logo.png" alt="ViralSaver logo" className="w-7 h-7 object-contain" />
+            <span className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent"> ViralSaver </span>
           </div>
         </a>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           {["Downloader", "Features", "How It Works", "FAQ"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`transition-colors duration-200 ${darkMode ? "text-white/40 hover:text-white" : "text-slate-400 hover:text-slate-800"}`}
-            >
-              {item}
-            </a>
+            <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, "-")}`} className="text-white/40 hover:text-white transition-colors"> {item} </a>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          
-          <motion.a
-            href="#downloader"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-pink-500 hover:from-violet-500 hover:to-pink-400 shadow-lg shadow-violet-500/25 transition-all duration-200"
-          >
-            Start Downloading
-            <ArrowRight className="w-3.5 h-3.5" />
-          </motion.a>
-        </div>
+        <motion.a
+          href="#downloader"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-pink-500 shadow-lg"
+        >
+          Start Downloading <ArrowRight className="w-3.5 h-3.5" />
+        </motion.a>
       </motion.nav>
 
-      {/* ── Top Banner Ad ── */}
-      <div className="flex justify-center py-3 px-4 overflow-x-auto">
-        <AdsBanner code={ADS.topBanner} type="top" />
+      {/* ── Top Ads (Reduced Padding) ── */}
+      <div className="flex justify-center py-1 px-4">
+        <AdsBanner type="top" />
       </div>
 
-      {/* ── Hero Section ── */}
-      <section className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-10 pb-20">
-        {/* Hero background image */}
-        <motion.div
-          style={{ opacity: heroOpacity, y: heroY }}
-          className="absolute inset-0 -z-10"
-        >
-          <div
-            className="absolute inset-0 opacity-[0.07]"
-            style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
-          />
+      {/* ── Hero (Compact for Mobile) ── */}
+      <section className="relative flex flex-col items-center justify-center px-4 pt-4 pb-12 sm:pt-10 sm:pb-20">
+        <motion.div style={{ opacity: heroOpacity, y: heroY }} className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover" }} />
           <div className="absolute inset-0 bg-gradient-to-b from-[#06060f]/60 via-transparent to-[#06060f]" />
         </motion.div>
 
         <div className="max-w-7xl w-full mx-auto">
-          <div className="flex flex-col xl:flex-row gap-16 items-center">
-            {/* Left: text + CTA */}
+          <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 items-center">
             <div className="flex-1 text-center xl:text-left">
-              {/* Live badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-gradient-to-r from-violet-500/10 to-pink-500/10 border border-violet-400/20 text-violet-300 text-xs font-bold tracking-widest uppercase mb-8"
-              >
-                <span className="flex h-2 w-2">
-                  <span className="animate-ping absolute h-2 w-2 rounded-full bg-violet-400 opacity-75" />
-                  <span className="relative h-2 w-2 rounded-full bg-violet-400" />
-                </span>
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-300 text-[10px] sm:text-xs font-bold uppercase mb-4 sm:mb-8">
                 Free · No Watermark · No Account Needed
               </motion.div>
-
-              {/* Headline */}
-              <motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.7 }}
-                className="text-5xl sm:text-6xl lg:text-7xl xl:text-7xl font-black leading-[1.05] tracking-tight mb-6"
-              >
-                Save Any Video
-                <br />
-                <span
-                  className="bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-300 bg-clip-text text-transparent"
-                  style={{ WebkitTextStroke: "0px" }}
-                >
-                  In Seconds.
-                </span>
+              <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="text-4xl sm:text-6xl lg:text-7xl font-black leading-tight mb-4 sm:mb-6">
+                Save Any Video <br /> <span className="bg-gradient-to-r from-violet-400 to-cyan-300 bg-clip-text text-transparent">In Seconds.</span>
               </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className={`text-lg sm:text-xl max-w-xl xl:max-w-lg mx-auto xl:mx-0 mb-10 leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}
-              >
-                Paste any link from Instagram, TikTok, YouTube, Facebook, Twitter and more. Get HD, SD, or MP3 instantly — no signup, no watermarks, always free.
-              </motion.p>
-
-              {/* Trust bullets */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.45 }}
-                className="flex flex-wrap justify-center xl:justify-start gap-x-6 gap-y-2 mb-10"
-              >
-                {["HD Quality Downloads", "10+ Platforms", "Instant & Free"].map((item) => (
-                  <span key={item} className={`inline-flex items-center gap-1.5 text-sm font-medium ${darkMode ? "text-white/50" : "text-slate-500"}`}>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    {item}
-                  </span>
-                ))}
-              </motion.div>
-
-              {/* Supported platforms */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.55 }}
-                className="flex flex-wrap justify-center xl:justify-start gap-3"
-              >
-                {[
-                  { icon: FaInstagram, label: "Instagram", bg: "from-purple-600 via-pink-500 to-orange-400" },
-                  { icon: FaTiktok, label: "TikTok", bg: "from-slate-800 to-[#69C9D0]" },
-                  { icon: FaFacebook, label: "Facebook", bg: "from-blue-700 to-blue-400" },
-                  { icon: FaYoutube, label: "YouTube", bg: "from-red-700 to-red-400" },
-                  { icon: FaTwitter, label: "Twitter", bg: "from-sky-600 to-sky-400" },
-                ].map(({ icon: Icon, label, bg }) => (
-                  <motion.span
-                    key={label}
-                    whileHover={{ scale: 1.06, y: -2 }}
-                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border ${darkMode ? "border-white/8 bg-white/5 hover:bg-white/10 text-white/60" : "border-slate-200 bg-white text-slate-600"} text-sm font-semibold cursor-default transition-all duration-200`}
-                  >
-                    <span className={`w-5 h-5 rounded-md bg-gradient-to-br ${bg} flex items-center justify-center flex-shrink-0`}>
-                      <Icon className="text-white text-[10px]" />
-                    </span>
-                    {label}
-                  </motion.span>
-                ))}
-              </motion.div>
+              <p className="text-base sm:text-lg text-white/45 max-w-xl mx-auto xl:mx-0 mb-6 sm:mb-10">
+                Download HD content from Instagram, TikTok, and more instantly. No watermarks, no limits. 🚀
+              </p>
             </div>
-
-            {/* Right: sidebar ad (desktop) */}
-            <div className="hidden xl:block flex-shrink-0">
-              <AdsBanner code={ADS.sidebarAd1} type="sidebar-sm" />
+            <div className="hidden xl:block">
+              <AdsBanner type="sidebar-sm" />
             </div>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className={`text-xs font-medium tracking-widest uppercase ${darkMode ? "text-white/25" : "text-slate-300"}`}>Scroll</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center"
-          >
-            <ChevronDown className="w-3 h-3 text-white/40" />
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* ── Stats Bar ── */}
-      <section className={`py-6 border-y ${darkMode ? "border-white/5 bg-white/2" : "border-slate-100 bg-slate-50"}`}>
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((s, i) => {
-              const Icon = s.icon;
-              return (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="flex flex-col items-center text-center gap-1 py-4"
-                >
-                  <Icon className={`w-4 h-4 mb-1 ${darkMode ? "text-violet-400" : "text-violet-500"}`} />
-                  <p className="text-3xl font-black text-white">{s.value}</p>
-                  <p className={`text-xs font-medium ${darkMode ? "text-white/35" : "text-slate-400"}`}>{s.label}</p>
-                </motion.div>
-              );
-            })}
           </div>
         </div>
       </section>
 
-      {/* ── Downloader Section ── */}
-      <section id="downloader" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-violet-400" : "text-violet-500"}`}>
-              — Try it now —
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-3">
-              Paste Your Link &{" "}
-              <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-                Download Instantly
-              </span>
-            </h2>
-            <p className={`text-base ${darkMode ? "text-white/40" : "text-slate-400"}`}>No login. No subscription. Just paste and go.</p>
-          </motion.div>
+      {/* ── Stats ── */}
+      <section className="py-4 border-y border-white/5 bg-white/2">
+        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {stats.map((s, i) => (
+            <div key={i} className="text-center py-2 sm:py-4">
+              <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
+              <p className="text-[9px] sm:text-xs font-medium text-white/35 uppercase tracking-widest">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="flex gap-8 items-start justify-center">
-            <div className="flex-1 max-w-2xl">
-              <DownloaderBox />
-            </div>
-            <div className="hidden xl:block flex-shrink-0 sticky top-24">
-              <AdsBanner code={ADS.sidebarAd2} type="sidebar-lg" />
-            </div>
-          </div>
+      {/* ── Downloader Box ── */}
+      <section id="downloader" className="py-10 sm:py-20 px-4">
+        <div className="max-w-4xl mx-auto">
+          <DownloaderBox />
         </div>
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
+      <section id="how-it-works" className={`py-12 sm:py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
-            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-pink-400" : "text-pink-500"}`}>— Simple Process —</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-3">
+            <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-pink-400" : "text-pink-500"}`}>— Simple Process —</p>
+            <h2 className="text-2xl sm:text-4xl font-black mb-2 sm:mb-3">
               How{" "}
               <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">ViralSaver</span>
               {" "}Works
             </h2>
-            <p className={`text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
+            <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
               Three simple steps to download any video from the internet.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 relative">
-            {/* Connecting line */}
             <div className="hidden md:block absolute top-10 left-1/6 right-1/6 h-px bg-gradient-to-r from-violet-500/40 via-pink-500/40 to-cyan-500/40" />
 
             {steps.map((step, i) => (
@@ -400,14 +238,14 @@ const Home: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
                 whileHover={{ y: -6 }}
-                className={`relative rounded-2xl p-7 border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} backdrop-blur-sm transition-all duration-300 group`}
+                className={`relative rounded-2xl p-6 sm:p-7 border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} backdrop-blur-sm transition-all duration-300 group`}
               >
                 <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${step.color} rounded-t-2xl`} />
-                <div className={`inline-flex w-12 h-12 rounded-2xl bg-gradient-to-br ${step.color} items-center justify-center mb-5 shadow-lg`}>
-                  <span className="text-white text-xs font-black">{step.num}</span>
+                <div className={`inline-flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${step.color} items-center justify-center mb-4 sm:mb-5 shadow-lg`}>
+                  <span className="text-white text-[10px] sm:text-xs font-black">{step.num}</span>
                 </div>
-                <h3 className="font-bold text-lg mb-2">{step.title}</h3>
-                <p className={`text-sm leading-relaxed ${darkMode ? "text-white/40" : "text-slate-500"}`}>{step.desc}</p>
+                <h3 className="font-bold text-base sm:text-lg mb-2">{step.title}</h3>
+                <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/40" : "text-slate-500"}`}>{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -415,25 +253,25 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="py-20 px-4">
+      <section id="features" className="py-12 sm:py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-14"
+            className="text-center mb-10 sm:mb-14"
           >
-            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-cyan-400" : "text-cyan-500"}`}>— Why Us —</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-3">
+            <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-cyan-400" : "text-cyan-500"}`}>— Why Us —</p>
+            <h2 className="text-2xl sm:text-4xl font-black mb-2 sm:mb-3">
               Why Choose{" "}
               <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">ViralSaver?</span>
             </h2>
-            <p className={`text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
+            <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
               The fastest, cleanest, most reliable social media downloader on the web.
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 gap-5">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
             {features.map((f, i) => {
               const Icon = f.icon;
               return (
@@ -444,17 +282,17 @@ const Home: React.FC = () => {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
                   whileHover={{ y: -5 }}
-                  className={`group relative rounded-2xl p-7 border ${darkMode ? "border-white/8 bg-white/3 hover:border-white/14" : "border-slate-200 bg-white hover:border-slate-300"} backdrop-blur-sm overflow-hidden transition-all duration-300 cursor-default`}
+                  className={`group relative rounded-2xl p-6 sm:p-7 border ${darkMode ? "border-white/8 bg-white/3 hover:border-white/14" : "border-slate-200 bg-white hover:border-slate-300"} backdrop-blur-sm overflow-hidden transition-all duration-300 cursor-default`}
                   style={{ boxShadow: `0 0 0 0 ${f.glow}` }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 40px 0 ${f.glow}`; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 0 ${f.glow}`; }}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${f.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                  <div className={`inline-flex w-12 h-12 rounded-2xl bg-gradient-to-br ${f.gradient} items-center justify-center shadow-md mb-5`}>
-                    <Icon className="w-5 h-5 text-white" />
+                  <div className={`inline-flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${f.gradient} items-center justify-center shadow-md mb-4 sm:mb-5`}>
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-lg mb-2">{f.title}</h3>
-                  <p className={`text-sm leading-relaxed ${darkMode ? "text-white/40" : "text-slate-500"}`}>{f.desc}</p>
+                  <h3 className="font-bold text-base sm:text-lg mb-2">{f.title}</h3>
+                  <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/40" : "text-slate-500"}`}>{f.desc}</p>
                 </motion.div>
               );
             })}
@@ -463,39 +301,23 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── Supported Platforms ── */}
-      <section className={`py-16 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
+      <section className={`py-12 sm:py-16 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-2xl sm:text-3xl font-black mb-2">Supported Platforms</h2>
-            <p className={`text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>Download from all the biggest social media networks</p>
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-10">
+            <h2 className="text-xl sm:text-3xl font-black mb-2">Supported Platforms</h2>
+            <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>Download from all the biggest social networks</p>
           </motion.div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
             {supported.map((p, i) => {
               const Icon = p.icon;
               return (
-                <motion.div
-                  key={p.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  whileHover={{ y: -4, scale: 1.03 }}
-                  className={`flex flex-col items-center gap-3 p-5 rounded-2xl border ${darkMode ? "border-white/8 bg-white/3 hover:bg-white/6" : "border-slate-200 bg-white hover:bg-slate-50"} transition-all duration-200 cursor-default`}
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl shadow-md"
-                    style={{ background: `linear-gradient(135deg, ${p.color}cc, ${p.color}80)` }}
-                  >
+                <motion.div key={p.name} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }} whileHover={{ y: -4 }} className={`flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-2xl border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} transition-all duration-200`}>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md" style={{ background: `linear-gradient(135deg, ${p.color}cc, ${p.color}80)` }}>
                     <Icon />
                   </div>
                   <div className="text-center">
-                    <p className="font-bold text-sm">{p.name}</p>
-                    <p className={`text-[10px] mt-0.5 ${darkMode ? "text-white/30" : "text-slate-400"}`}>{p.types}</p>
+                    <p className="font-bold text-xs sm:text-sm">{p.name}</p>
+                    <p className={`text-[8px] sm:text-[10px] mt-0.5 ${darkMode ? "text-white/30" : "text-slate-400"}`}>{p.types}</p>
                   </div>
                 </motion.div>
               );
@@ -505,39 +327,27 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── Middle Ad ── */}
-      <div className="flex justify-center py-8 px-4 overflow-x-auto">
-        <AdsBanner code={ADS.middleBanner} type="middle" className="rounded-xl overflow-hidden" />
+      <div className="flex justify-center py-4 sm:py-8 px-4">
+        <AdsBanner type="middle" className="rounded-xl overflow-hidden" />
       </div>
 
       {/* ── Reviews ── */}
-      <section className="py-16 px-4">
+      <section className="py-12 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-2xl sm:text-3xl font-black mb-2">Loved by Millions</h2>
-            <p className={`text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>See what our users are saying</p>
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-10">
+            <h2 className="text-xl sm:text-3xl font-black mb-2">Loved by Millions</h2>
+            <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>See what our users are saying</p>
           </motion.div>
           <div className="grid sm:grid-cols-3 gap-4">
             {reviews.map((r, i) => (
-              <motion.div
-                key={r.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.09 }}
-                className={`rounded-2xl p-6 border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"}`}
-              >
+              <motion.div key={r.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.09 }} className={`rounded-2xl p-5 sm:p-6 border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"}`}>
                 <div className="flex mb-3">
                   {Array.from({ length: r.stars }).map((_, j) => (
-                    <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <Star key={j} className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400 fill-amber-400" />
                   ))}
                 </div>
-                <p className={`text-sm leading-relaxed mb-4 ${darkMode ? "text-white/60" : "text-slate-600"}`}>"{r.text}"</p>
-                <p className={`text-xs font-bold ${darkMode ? "text-white/40" : "text-slate-400"}`}>— {r.name}</p>
+                <p className={`text-xs sm:text-sm leading-relaxed mb-4 ${darkMode ? "text-white/60" : "text-slate-600"}`}>"{r.text}"</p>
+                <p className={`text-[10px] sm:text-xs font-bold ${darkMode ? "text-white/40" : "text-slate-400"}`}>— {r.name}</p>
               </motion.div>
             ))}
           </div>
@@ -545,47 +355,22 @@ const Home: React.FC = () => {
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" className={`py-20 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
+      <section id="faq" className={`py-12 sm:py-20 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${darkMode ? "text-pink-400" : "text-pink-500"}`}>— FAQ —</p>
-            <h2 className="text-3xl font-black mb-2">
-              Frequently Asked{" "}
-              <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">Questions</span>
-            </h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
+            <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-pink-400" : "text-pink-500"}`}>— FAQ —</p>
+            <h2 className="text-2xl sm:text-3xl font-black mb-2">Frequently Asked <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">Questions</span></h2>
           </motion.div>
 
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className={`rounded-2xl border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} overflow-hidden`}
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className={`w-full flex items-center justify-between px-6 py-5 text-left transition-colors duration-200 ${darkMode ? "hover:bg-white/4" : "hover:bg-slate-50"}`}
-                >
-                  <span className={`font-semibold text-sm pr-4 ${darkMode ? "text-white/90" : "text-slate-800"}`}>{faq.q}</span>
-                  <ChevronDown
-                    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180 text-violet-400" : darkMode ? "text-white/30" : "text-slate-400"}`}
-                  />
+              <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className={`rounded-2xl border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} overflow-hidden`}>
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className={`w-full flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 text-left transition-colors ${darkMode ? "hover:bg-white/4" : "hover:bg-slate-50"}`}>
+                  <span className={`font-semibold text-xs sm:text-sm pr-4 ${darkMode ? "text-white/90" : "text-slate-800"}`}>{faq.q}</span>
+                  <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180 text-violet-400" : darkMode ? "text-white/30" : "text-slate-400"}`} />
                 </button>
-                <motion.div
-                  initial={false}
-                  animate={{ height: openFaq === i ? "auto" : 0, opacity: openFaq === i ? 1 : 0 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                  className="overflow-hidden"
-                >
-                  <div className={`px-6 pb-5 text-sm leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}>{faq.a}</div>
+                <motion.div initial={false} animate={{ height: openFaq === i ? "auto" : 0, opacity: openFaq === i ? 1 : 0 }} transition={{ duration: 0.25, ease: "easeInOut" }} className="overflow-hidden">
+                  <div className={`px-5 sm:px-6 pb-4 sm:pb-5 text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/45" : "text-slate-500"}`}>{faq.a}</div>
                 </motion.div>
               </motion.div>
             ))}
@@ -593,86 +378,64 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── CTA Banner ── */}
-      <section className="py-20 px-4">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative rounded-3xl overflow-hidden text-center p-12"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-600/30 via-pink-500/20 to-cyan-500/20" />
-            <div className="absolute inset-0 border border-white/10 rounded-3xl" />
-            {/* Glow */}
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-violet-500/30 blur-[80px] rounded-full" />
-            <div className="relative">
-              <h2 className="text-3xl sm:text-4xl font-black mb-4">
-                Ready to Start Saving?
-              </h2>
-              <p className={`text-base mb-8 ${darkMode ? "text-white/50" : "text-white/70"}`}>
-                Join 2 million+ users downloading videos for free, every day.
-              </p>
-              <motion.a
-                href="#downloader"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-black text-white text-base bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 hover:from-violet-500 hover:via-pink-400 hover:to-cyan-400 shadow-2xl shadow-violet-500/30 transition-all duration-300"
-              >
-                <Download className="w-5 h-5" />
-                Download Now — It's Free
-              </motion.a>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Footer Banner Ad ── */}
-      <div className="flex justify-center py-6 px-4 overflow-x-auto">
-        <AdsBanner code={ADS.footerBanner} type="footer" className="rounded-xl overflow-hidden" />
+      {/* ── Footer Ad ── */}
+      <div className="flex justify-center py-4 px-4">
+        <AdsBanner type="footer" className="rounded-xl overflow-hidden" />
       </div>
 
       {/* ── Footer ── */}
-      <footer className={`border-t ${darkMode ? "border-white/5" : "border-slate-100"} py-12 px-6`}>
+      <footer className={`border-t ${darkMode ? "border-white/5 bg-[#030005]" : "border-slate-100 bg-white"} py-8 sm:py-10 px-6`}>
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <img
-                src="/logo.png"
-                alt="ViralSaver logo"
-                className="w-7 h-7 object-contain"
-              />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 text-center md:text-left">
 
-              <span className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                ViralSaver
-              </span>
+            {/* Brand & Socials */}
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+              <div className="flex items-center gap-2">
+                <img src="/logo.png" alt="ViralSaver logo" className="w-6 h-6 object-contain" />
+                <span className="font-black text-lg tracking-tight bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent italic">ViralSaver</span>
+              </div>
+
+              {/* ✨ Zied's Social Icons */}
+              <div className="flex items-center gap-4 border-l border-white/5 pl-4 hidden md:flex">
+                <a href="https://github.com/zied-mb" target="_blank" className="text-white/20 hover:text-white transition-colors"><Github className="w-4 h-4" /></a>
+                <a href="https://www.linkedin.com/in/zied-meddeb-7087a2266/" target="_blank" className="text-white/20 hover:text-blue-400 transition-colors"><Linkedin className="w-4 h-4" /></a>
+                <a href="https://zied-meddeb-portfolio.netlify.app/" target="_blank" className="text-white/20 hover:text-pink-400 transition-colors"><Globe className="w-4 h-4" /></a>
+              </div>
             </div>
 
-            {/* Links */}
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              {["Privacy Policy", "Terms of Service", "Contact", "DMCA"].map((link) => (
-                <a
-                  key={link}
-                  href="#"
-                  className={`transition-colors duration-200 ${darkMode ? "text-white/30 hover:text-white/60" : "text-slate-400 hover:text-slate-600"}`}
+            {/* Navigation Links */}
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm">
+              {[
+                { name: "Privacy Policy", path: "/privacy-policy" },
+                { name: "Terms of Service", path: "/terms-of-service" },
+                { name: "Contact", path: "/contact" },
+                { name: "DMCA", path: "/dmca" }
+              ].map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`transition-colors font-medium ${darkMode ? "text-white/30 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
                 >
-                  {link}
-                </a>
+                  {link.name}
+                </Link>
               ))}
             </div>
           </div>
 
-          <div className={`border-t ${darkMode ? "border-white/5" : "border-slate-100"} pt-6 flex flex-col sm:flex-row items-center justify-between gap-3`}>
-            <p className={`text-xs ${darkMode ? "text-white/20" : "text-slate-300"}`}>
-              © {new Date().getFullYear()} ViralSaver. All rights reserved.
-            </p>
-            <p className={`text-xs ${darkMode ? "text-white/15" : "text-slate-300"}`}>
-              For personal use only. Respect creators' rights.
-            </p>
+          {/* Bottom Bar: Copyright & Credit */}
+          <div className={`border-t ${darkMode ? "border-white/5" : "border-slate-100"} pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center`}>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <p className={`text-[10px] sm:text-xs ${darkMode ? "text-white/20" : "text-slate-300"}`}>© {new Date().getFullYear()} ViralSaver.</p>
+              <span className="hidden sm:block text-white/5 text-[10px]">•</span>
+              <p className={`text-[10px] sm:text-xs font-bold ${darkMode ? "text-white/40" : "text-slate-500"}`}>
+                Developed by <span className="text-violet-400/80 italic">Zied Meddeb</span> 👨‍💻
+              </p>
+            </div>
+            <p className={`text-[10px] sm:text-xs ${darkMode ? "text-white/15" : "text-slate-300"}`}>Respect creators' rights. For personal use only.</p>
           </div>
         </div>
       </footer>
+      <SupportWidget />
     </div>
   );
 };

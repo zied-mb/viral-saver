@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const RAPIDAPI_KEY = "b6b7f7874bmshf120da9889dad19p1ab3e7jsn72628e5bf593";
+const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
 
 export interface MediaItem {
   url: string;
@@ -19,6 +19,10 @@ export interface DownloadResult {
 }
 
 export const fetchDownload = async (url: string): Promise<DownloadResult> => {
+  if (!RAPIDAPI_KEY) {
+    throw new Error("API Key is missing! Check your .env file.");
+  }
+
   const response = await axios.post(
     "https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink",
     { url },
@@ -30,7 +34,14 @@ export const fetchDownload = async (url: string): Promise<DownloadResult> => {
       },
     }
   );
-  return response.data;
+
+  const data = response.data;
+
+  if (detectPlatform(url) === "instagram" && data.thumbnail) {
+    data.thumbnail = data.thumbnail.split('&')[0]; 
+  }
+
+  return data;
 };
 
 export const detectPlatform = (url: string): string => {
@@ -47,7 +58,7 @@ export const detectPlatform = (url: string): string => {
 
 export const isValidUrl = (url: string): boolean => {
   try {
-    new URL(url);
+    const parsed = new URL(url);
     const platform = detectPlatform(url);
     return platform !== "" && platform !== "unknown";
   } catch {

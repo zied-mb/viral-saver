@@ -1,53 +1,100 @@
 import React from "react";
+import { ADS } from '@/config/ads';
 
 interface AdsBannerProps {
-  code: string;
-  type: "top" | "middle" | "sidebar-sm" | "sidebar-lg" | "footer";
+  type: "top" | "middle" | "sidebar-sm" | "footer" | "result-inline";
   className?: string;
 }
 
-const AD_DIMENSIONS: Record<AdsBannerProps["type"], { width: number; height: number; label: string }> = {
-  top: { width: 728, height: 90, label: "728×90" },
-  middle: { width: 728, height: 90, label: "728×90" },
-  "sidebar-sm": { width: 300, height: 250, label: "300×250" },
-  "sidebar-lg": { width: 300, height: 600, label: "300×600" },
-  footer: { width: 970, height: 90, label: "970×90" },
+const AD_DIMENSIONS = {
+  top: { height: 90, width: '1200px' }, // زدنا في الـ width للـ PC
+  middle: { height: 280, width: '100%' }, 
+  "sidebar-sm": { height: 250, width: '300px' },
+  "result-inline": { height: 250, width: '300px' }, 
+  footer: { height: 90, width: '970px' },
 };
 
-const AdsBanner: React.FC<AdsBannerProps> = ({ code, type, className = "" }) => {
+const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const dim = AD_DIMENSIONS[type];
-  const isPlaceholder =
-    !code ||
-    code === "PASTE_ADSTERRA_CODE_OR_LINK";
+  
+  const getAdId = () => {
+    switch (type) {
+      case "top": return ADS.topBanner;
+      case "middle": return ADS.middleBanner;
+      case "sidebar-sm": return ADS.sidebarAd1;
+      case "result-inline": return ADS.sidebarAd2;
+      case "footer": return ADS.footerBanner;
+      default: return null; 
+    }
+  };
+
+  const adId = getAdId();
+
+  // ─── البانر متاع MDB Collection المعدل ───
+  if (!adId && type === "top") {
+    return (
+      <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
+        <a 
+          href="https://mdbcollection.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="relative w-full group overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20"
+          // في الـ PC الطول 130px والعرض أقصى حد 1200px، وفي الـ Mobile يبقى 90px
+          style={{ maxWidth: dim.width }}
+        >
+          <div className="h-[90px] md:h-[130px] w-full transition-all duration-500">
+            <img 
+              src="/mdb-banner.jpg" 
+              alt="MDB Collection - Luxury Streetwear" 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+          
+          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-[9px] font-bold text-white/80 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
+            Sponsored
+          </div>
+
+          {/* Overlay خفيف يزيد الـ Premium look عند الـ Hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        </a>
+      </div>
+    );
+  }
+
+  if (!adId) return null;
 
   return (
-    <div
-      className={`flex items-center justify-center overflow-hidden ${className}`}
-      style={{ minHeight: dim.height, maxWidth: "100%" }}
+    <div 
+      className={`ads-container w-full flex justify-center items-center my-4 overflow-hidden ${className}`}
+      style={{ minHeight: `${dim.height}px` }}
     >
-      {isPlaceholder ? (
-        <div
-          className="flex items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 text-xs text-white/30 font-mono select-none"
-          style={{ width: Math.min(dim.width, 728), height: dim.height }}
-        >
-          Ad Space · {dim.label}
-        </div>
-      ) : code.startsWith("http") ? (
-        <iframe
-          src={code}
-          width={dim.width}
-          height={dim.height}
+      <div 
+        className="ad-wrapper relative transition-opacity duration-500"
+        style={{ 
+          width: "100%", 
+          maxWidth: dim.width,
+          minHeight: `${dim.height}px`,
+          zIndex: 10 
+        }}
+      >
+        <iframe 
+          key={adId}
+          data-aa={adId} 
+          src={`https://acceptable.a-ads.com/${adId}/?size=Adaptive`}
+          style={{ 
+            border: 'none', 
+            padding: 0, 
+            margin: '0 auto',
+            width: "100%", 
+            height: `${dim.height}px`,
+            display: "block",
+            backgroundColor: "transparent",
+          }}
           scrolling="no"
-          frameBorder="0"
-          style={{ border: "none", maxWidth: "100%" }}
-          title={`ad-${type}`}
+          title={`ad-${type}-${adId}`}
+          loading="lazy" 
         />
-      ) : (
-        <div
-          dangerouslySetInnerHTML={{ __html: code }}
-          style={{ maxWidth: "100%" }}
-        />
-      )}
+      </div>
     </div>
   );
 };
