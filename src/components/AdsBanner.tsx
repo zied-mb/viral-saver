@@ -45,11 +45,11 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       // ─── تحديد وقت التأخير حسب النوع ───
       const getDelay = () => {
         switch (type) {
-          case "middle": return 1500; // 1.5s
-          case "footer": return 2500; // 2.5s
-          case "sidebar-sm": return 3500; // 3.5s
-          case "result-inline": return 4500; // 4.5s
-          default: return 1000;
+          case "middle": return 2000; // 1.5s
+          case "footer": return 2000; // 2.5s
+          case "sidebar-sm": return 2000; // 3.5s
+          case "result-inline": return 2000; // 4.5s
+          default: return 2000;
         }
       };
 
