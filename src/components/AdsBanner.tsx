@@ -19,7 +19,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adContainerRef = useRef<HTMLDivElement>(null);
   
   const getAdId = () => {
-    // التأكد من تحويل أي قيمة إلى نص وتجنب الـ [object Object]
+    // تأكدنا أن القيم في Netlify هي 6854497 و 6854585
     const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
 
     switch (type) {
@@ -34,37 +34,45 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   const adId = getAdId();
 
-useEffect(() => {
-  // الحماية القصوى: نثبتو إن الـ ID نص حقيقي وماهوش الـ Object المشؤوم
-  const isCleanId = adId && 
-                    typeof adId === 'string' && 
-                    adId.trim() !== "" && 
-                    adId !== "[object Object]";
+  useEffect(() => {
+    const isCleanId = adId && 
+                      typeof adId === 'string' && 
+                      adId.trim() !== "" && 
+                      adId !== "[object Object]";
 
-  if (isCleanId && adContainerRef.current) {
-    adContainerRef.current.innerHTML = "";
-    const script = document.createElement("script");
-    
-    // ربط السكريبت حسب النوع (نفس الأكواد اللي عندك)
-    if (type === "middle") {
-      script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
-    } else if (type === "footer") {
-      script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
-    } else if (type === "sidebar-sm") {
-      script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
-    } else if (type === "result-inline") {
-      script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
+    if (isCleanId && adContainerRef.current) {
+      adContainerRef.current.innerHTML = "";
+      const script = document.createElement("script");
+      
+      // تحديد المصدر بناءً على النوع
+      if (type === "middle") {
+        script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
+      } else if (type === "footer") {
+        script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
+      } else if (type === "sidebar-sm") {
+        script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
+      } else if (type === "result-inline") {
+        script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
+      }
+      
+      script.async = true;
+      script.setAttribute("data-cfasync", "false");
+      script.referrerPolicy = 'no-referrer-when-downgrade';
+
+      // --- التعديل الجديد لحماية الـ Console ---
+      script.onerror = (e) => {
+        // إذا فشل السكريبت أو عمل تضارب، نمنع الخطأ من الصعود للمتصفح
+        if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
+          (e as any).preventDefault?.();
+          (e as any).stopPropagation?.();
+        }
+      };
+      // ----------------------------------------
+      
+      adContainerRef.current.appendChild(script);
     }
-    
-    script.async = true;
-    script.setAttribute("data-cfasync", "false");
-    script.referrerPolicy = 'no-referrer-when-downgrade';
-    
-    adContainerRef.current.appendChild(script);
-  }
-}, [adId, type]);
+  }, [adId, type]);
 
-  // Fallback MDB (فقط إذا كان التوب فارغ)
   if (type === "top" && !adId) {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 ${className}`}>
@@ -77,7 +85,6 @@ useEffect(() => {
     );
   }
 
-  // منع الرندر إذا لم يتوفر ID صالح
   if (!adId || adId === "") return null;
 
   return (
