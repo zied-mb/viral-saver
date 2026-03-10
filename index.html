@@ -36,6 +36,34 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <script>
+    (function() {
+      window.addEventListener('error', function(e) {
+        const isAdDomain = e.filename && e.filename.includes('selfassured-celebration.com');
+        const adScripts = ['ybNLQq', 'OGQE', 'wOMYQX', '1xNsDnUI4aOoQh'];
+        const isAdInStack = e.error && e.error.stack && adScripts.some(s => e.error.stack.includes(s));
+
+        if (isAdDomain || isAdInStack) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+
+      const _orgPostMessage = window.postMessage;
+      window.postMessage = function(data, ...args) {
+        try {
+          _orgPostMessage.apply(this, [data, ...args]);
+        } catch (err) {
+          const adScripts = ['ybNLQq', 'OGQE', 'wOMYQX', '1xNsDnUI4aOoQh'];
+          const isAdScriptError = err.stack && adScripts.some(s => err.stack.includes(s));
+          
+          if (isAdScriptError) return;
+          console.error(err);
+        }
+      };
+    })();
+  </script>
+
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
