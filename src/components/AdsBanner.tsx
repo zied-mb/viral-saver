@@ -40,15 +40,25 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
                       adId !== "[object Object]";
 
     if (isCleanId && adContainerRef.current) {
-      // تنظيف الحاوية قبل كل شيء
       adContainerRef.current.innerHTML = "";
 
-      // نأخروا حقن السكريبت بـ 1.5 ثانية باش الـ Console ما تخرجش إيرور
+      // ─── تحديد وقت التأخير حسب النوع ───
+      const getDelay = () => {
+        switch (type) {
+          case "middle": return 1500; // 1.5s
+          case "footer": return 2500; // 2.5s
+          case "sidebar-sm": return 3500; // 3.5s
+          case "result-inline": return 4500; // 4.5s
+          default: return 1000;
+        }
+      };
+
       const timeoutId = setTimeout(() => {
         if (!adContainerRef.current) return;
 
         const script = document.createElement("script");
         
+        // الروابط الخاصة بكل نوع
         if (type === "middle") {
           script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
         } else if (type === "footer") {
@@ -63,7 +73,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         script.setAttribute("data-cfasync", "false");
         script.referrerPolicy = 'no-referrer-when-downgrade';
 
-        // منع الأخطاء من الصعود للـ Console
         script.onerror = (e) => {
           if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
             (e as any).preventDefault?.();
@@ -72,7 +81,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         };
         
         adContainerRef.current.appendChild(script);
-      }, 1500); // 1.5 ثانية تأخير
+      }, getDelay());
 
       return () => clearTimeout(timeoutId);
     }
@@ -92,7 +101,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
           <div className="h-[90px] md:h-[130px] w-full transition-all duration-500">
             <img 
               src="/mdb-banner.jpg" 
-              alt="MDB Collection - Luxury Streetwear" 
+              alt="MDB Collection" 
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
