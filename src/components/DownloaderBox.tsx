@@ -8,6 +8,7 @@ import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
 import AdsBanner from "./AdsBanner"; 
 
+// 🛡️ تعريف الـ Interface لضمان توافق TypeScript مع سكربت HilltopAds
 declare global {
   interface Window {
     fireHilltopPop?: () => void;
@@ -21,6 +22,7 @@ const DownloaderBox: React.FC = () => {
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   
+  // 📈 تتبع عدد الضغطات (Clicks) محلياً
   const [clickCount, setClickCount] = useState(() => {
     if (typeof window !== 'undefined') {
       return Number(localStorage.getItem("v_saver_clicks")) || 0;
@@ -31,6 +33,7 @@ const DownloaderBox: React.FC = () => {
   const scrollAnchorId = "download-result-anchor";
   const platform = detectPlatform(url);
 
+  // 🔄 تتبع هل المستخدم زار MDB قبل أو لا لتقديم الـ Branding على الإعلانات
   const [hasSeenMDB, setHasSeenMDB] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem("v_saver_seen_mdb") === "true";
@@ -38,6 +41,7 @@ const DownloaderBox: React.FC = () => {
     return false;
   });
 
+  // ⏱️ معالجة التحميل التلقائي بعد لصق الرابط بـ 3 ثواني
   useEffect(() => {
     if (url && isValidUrl(url.trim()) && !loading && !result) {
       const timer = setTimeout(() => {
@@ -47,6 +51,7 @@ const DownloaderBox: React.FC = () => {
     }
   }, [url]);
 
+  // 📜 تمرير الصفحة للنتائج تلقائياً عند ظهورها
   useEffect(() => {
     if (result && !loading) {
       setTimeout(() => {
@@ -81,37 +86,30 @@ const DownloaderBox: React.FC = () => {
       return;
     }
 
-    // --- 🚀 Smart Redirection Logic Start ---
+    // --- 🚀 Downloader_Pop_Logic Start ---
     const nextCount = clickCount + 1;
     
     if (nextCount >= 3) {
-      // ديما نرجعو العداد لـ 0 كي نوصلو لـ 3
+      // إعادة العداد للصفر وتخزينه
       setClickCount(0);
       localStorage.setItem("v_saver_clicks", "0");
 
       if (!hasSeenMDB) {
+        // الأولوية لزيارة MDB Collection في أول 3 ضغطات
         window.open("https://mdbcollection.com", "_blank", "noopener,noreferrer");
         setHasSeenMDB(true);
         localStorage.setItem("v_saver_seen_mdb", "true");
       } else {
-        // Force Trigger for Popunder
-        console.log("Triggering Ads...");
+        // المرات التالية يتم تشغيل الـ Popunder الخاص بـ HilltopAds
         if (window.fireHilltopPop) {
           window.fireHilltopPop();
         }
-        
-        // إرسال كليكة وهمية للـ document باش السكربت يخدم غصباً عنه
-        document.dispatchEvent(new MouseEvent('click', {
-          view: window,
-          bubbles: true,
-          cancelable: true
-        }));
       }
     } else {
       setClickCount(nextCount);
       localStorage.setItem("v_saver_clicks", nextCount.toString());
     }
-    // --- 🚀 Smart Redirection Logic End ---
+    // --- 🚀 Downloader_Pop_Logic End ---
 
     setError("");
     setResult(null);
@@ -134,6 +132,7 @@ const DownloaderBox: React.FC = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
+      {/* 🛠️ تحميل سكربت الـ Popunder في الخلفية */}
       <AdsBanner type="downloaderPop" />
 
       <motion.div
