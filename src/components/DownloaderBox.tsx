@@ -8,6 +8,13 @@ import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
 import AdsBanner from "./AdsBanner"; 
 
+// تعريف الـ Global Window Interface باش الـ TypeScript ما يخرجش Error
+declare global {
+  interface Window {
+    fireAdsterraPop?: () => void;
+  }
+}
+
 const DownloaderBox: React.FC = () => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,6 +31,14 @@ const DownloaderBox: React.FC = () => {
 
   const scrollAnchorId = "download-result-anchor";
   const platform = detectPlatform(url);
+
+  // 🔄 تتبع هل المستخدم زار MDB قبل أو لا
+  const [hasSeenMDB, setHasSeenMDB] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("v_saver_seen_mdb") === "true";
+    }
+    return false;
+  });
 
   useEffect(() => {
     if (url && isValidUrl(url.trim()) && !loading && !result) {
@@ -68,15 +83,33 @@ const DownloaderBox: React.FC = () => {
       return;
     }
 
+    // --- 🚀 Smart Redirection Logic Start ---
     const nextCount = clickCount + 1;
+    
     if (nextCount >= 3) {
+      // نرجعو الحسبة لـ 0 ونخزنوها
       setClickCount(0);
       localStorage.setItem("v_saver_clicks", "0");
-      window.open("https://mdbcollection.com", "_blank", "noopener,noreferrer");
+
+      if (!hasSeenMDB) {
+        // أول مرة يوصل لـ 3 كليكات: يزور MDB
+        window.open("https://mdbcollection.com", "_blank", "noopener,noreferrer");
+        setHasSeenMDB(true);
+        localStorage.setItem("v_saver_seen_mdb", "true");
+      } else {
+        // المرات اللي بعد الكل: يخدم الـ Popunder Ads
+        if (window.fireAdsterraPop) {
+          window.fireAdsterraPop();
+        } else {
+          // Fallback إذا السكريبت تبلوكا (نحطو الـ Direct URL متاع Adsterra)
+          window.open("https://تـحط_الـDirect_Link_متاعك_هنا.com", "_blank", "noopener,noreferrer");
+        }
+      }
     } else {
       setClickCount(nextCount);
       localStorage.setItem("v_saver_clicks", nextCount.toString());
     }
+    // --- 🚀 Smart Redirection Logic End ---
 
     setError("");
     setResult(null);
@@ -171,7 +204,6 @@ const DownloaderBox: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* 💰 الإشهار ديما موجود تحت الـ Box */}
       <div className="w-full flex justify-center py-2">
          <AdsBanner type="result-inline" />
       </div>
