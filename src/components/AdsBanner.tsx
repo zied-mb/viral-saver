@@ -34,31 +34,35 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   const adId = getAdId();
 
-  useEffect(() => {
-    // حماية قوية: لا نمرر أي شيء للـ DOM إذا كان الـ ID غير صالح
-    if (adId && adId !== "" && adContainerRef.current) {
-      adContainerRef.current.innerHTML = "";
-      const script = document.createElement("script");
-      
-      if (type === "middle") {
-        // Zone #6854497 (Middle)
-        script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
-      } else if (type === "footer") {
-        // Zone #6854585 (Footer)
-        script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
-      } else if (type === "sidebar-sm") {
-        script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
-      } else if (type === "result-inline") {
-        script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
-      }
-      
-      script.async = true;
-      script.setAttribute("data-cfasync", "false");
-      script.referrerPolicy = 'no-referrer-when-downgrade';
-      
-      adContainerRef.current.appendChild(script);
+useEffect(() => {
+  // الحماية القصوى: نثبتو إن الـ ID نص حقيقي وماهوش الـ Object المشؤوم
+  const isCleanId = adId && 
+                    typeof adId === 'string' && 
+                    adId.trim() !== "" && 
+                    adId !== "[object Object]";
+
+  if (isCleanId && adContainerRef.current) {
+    adContainerRef.current.innerHTML = "";
+    const script = document.createElement("script");
+    
+    // ربط السكريبت حسب النوع (نفس الأكواد اللي عندك)
+    if (type === "middle") {
+      script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
+    } else if (type === "footer") {
+      script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
+    } else if (type === "sidebar-sm") {
+      script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
+    } else if (type === "result-inline") {
+      script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
     }
-  }, [adId, type]);
+    
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+    script.referrerPolicy = 'no-referrer-when-downgrade';
+    
+    adContainerRef.current.appendChild(script);
+  }
+}, [adId, type]);
 
   // Fallback MDB (فقط إذا كان التوب فارغ)
   if (type === "top" && !adId) {
