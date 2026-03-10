@@ -1,192 +1,103 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Download, Clipboard, X, Loader2, Sparkles, Lock } from "lucide-react";
-import { toast } from "sonner";
-import { fetchDownload, detectPlatform, isValidUrl } from "@/services/api";
-import { DownloadResult } from "@/types";
-import PlatformIcons from "@/components/PlatformIcons";
-import ResultCard from "@/components/ResultCard";
-import AdsBanner from "./AdsBanner"; // تأكد من الـ import مريغل
+import React, { useEffect, useRef } from "react";
+import { ADS } from '@/config/ads';
 
-const DownloaderBox: React.FC = () => {
-  const [url, setUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<DownloadResult | null>(null);
-  const [error, setError] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+interface AdsBannerProps {
+  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline";
+  className?: string;
+}
+
+const AD_DIMENSIONS = {
+  top: { height: 90, width: '1200px' },
+  middle: { height: 100, width: '300px' },
+  footer: { height: 100, width: '300px' },
+  "sidebar-sm": { height: 250, width: '300px' },
+  "result-inline": { height: 250, width: '300px' }, 
+};
+
+const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
+  const dim = AD_DIMENSIONS[type];
+  const adContainerRef = useRef<HTMLDivElement>(null);
   
-  const [clickCount, setClickCount] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return Number(localStorage.getItem("v_saver_clicks")) || 0;
+  const getAdId = () => {
+    const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
+    switch (type) {
+      case "top": return ADS.topBanner;
+      case "sidebar-sm": return resolveValue(ADS.sidebarAd1);
+      case "result-inline": return resolveValue(ADS.sidebarAd2);
+      case "middle": return resolveValue(ADS.middleBanner);
+      case "footer": return resolveValue(ADS.footerBanner);
+      default: return ""; 
     }
-    return 0;
-  });
+  };
 
-  const scrollAnchorId = "download-result-anchor";
-  const platform = detectPlatform(url);
+  const adId = getAdId();
 
   useEffect(() => {
-    if (url && isValidUrl(url.trim()) && !loading && !result) {
-      const timer = setTimeout(() => {
-        handleDownload();
-      }, 3000); 
-      return () => clearTimeout(timer);
+    const isCleanId = adId && typeof adId === 'string' && adId.trim() !== "" && adId !== "[object Object]";
+
+    if (isCleanId && adContainerRef.current) {
+      adContainerRef.current.innerHTML = "";
+
+      // 🛡️ Interceptor قوي للـ Desktop: يمنع الـ [object Object] من الظهور في الـ Console
+      const originalPostMessage = window.postMessage;
+      window.postMessage = function(data: any, ...args: any[]) {
+        if (typeof data === 'string' && data.includes('[object Object]')) return;
+        return originalPostMessage.apply(window, [data, ...args] as any);
+      };
+
+      const getDelay = () => {
+        switch (type) {
+          case "middle": return 4000;
+          case "footer": return 5000;
+          case "sidebar-sm": return 3000;
+          case "result-inline": return 2000; 
+          default: return 2000;
+        }
+      };
+
+      const timeoutId = setTimeout(() => {
+        if (!adContainerRef.current) return;
+
+        const script = document.createElement("script");
+        
+        if (type === "middle") script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
+        else if (type === "footer") script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
+        else if (type === "sidebar-sm") script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
+        else if (type === "result-inline") script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
+        
+        script.async = true;
+        script.setAttribute("data-cfasync", "false");
+        script.referrerPolicy = 'no-referrer-when-downgrade';
+
+        script.onerror = (e) => {
+          if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
+            (e as any).preventDefault?.();
+            (e as any).stopPropagation?.();
+          }
+        };
+        
+        adContainerRef.current.appendChild(script);
+      }, getDelay());
+
+      // نرجعوا الـ postMessage لأصله كان كي الـ Banner يتنحى ملـ DOM
+      return () => {
+        clearTimeout(timeoutId);
+        window.postMessage = originalPostMessage;
+      };
     }
-  }, [url]);
+  }, [adId, type]);
 
-  useEffect(() => {
-    if (result && !loading) {
-      setTimeout(() => {
-        const element = document.getElementById(scrollAnchorId);
-        element?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 300); 
-    }
-  }, [result, loading]);
-
-  const handlePaste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      setUrl(text);
-      setError("");
-      setResult(null);
-      inputRef.current?.focus();
-    } catch {
-      toast.error("Clipboard access denied.");
-    }
-  };
-
-  const handleClear = () => {
-    setUrl("");
-    setError("");
-    setResult(null);
-    inputRef.current?.focus();
-  };
-
-  const handleDownload = async () => {
-    if (!url.trim() || !isValidUrl(url.trim())) {
-      if (url.trim()) setError("Please enter a valid URL.");
-      return;
-    }
-
-    const nextCount = clickCount + 1;
-    if (nextCount >= 3) {
-      setClickCount(0);
-      localStorage.setItem("v_saver_clicks", "0");
-      window.open("https://mdbcollection.com", "_blank", "noopener,noreferrer");
-    } else {
-      setClickCount(nextCount);
-      localStorage.setItem("v_saver_clicks", nextCount.toString());
-    }
-
-    setError("");
-    setResult(null);
-    setLoading(true);
-
-    try {
-      const data = await fetchDownload(url.trim());
-      if (data && ((data as any).error === true || (data as any).status === 404)) {
-        setError("PRIVATE_ACCOUNT_DETECTED");
-      } else if (data) {
-        setResult(data);
-        toast.success("Ready to save! 🚀");
-      }
-    } catch {
-      setError("Unable to fetch media. ⚠️");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!adId || adId === "") return null;
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
-      <motion.div
-        initial={{ opacity: 0, y: 32 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative rounded-3xl overflow-hidden backdrop-blur-2xl border border-white/10 bg-white/5 shadow-2xl"
-      >
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-pink-400 to-cyan-400" />
-
-        <div className="p-6 sm:p-8">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="text-sm font-bold text-white/50 uppercase italic tracking-wider">Smart Downloader</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
-              <input
-                ref={inputRef}
-                type="url"
-                value={url}
-                onChange={(e) => { setUrl(e.target.value); setError(""); if (!e.target.value) setResult(null); }}
-                onKeyDown={(e) => e.key === "Enter" && handleDownload()}
-                placeholder="Paste Instagram / TikTok / Facebook link..."
-                className="w-full px-5 py-4 rounded-2xl text-white placeholder-white/25 text-sm focus:outline-none bg-white/5 border border-white/10 focus:border-white/20"
-              />
-            </div>
-
-            <AnimatePresence mode="popLayout">
-              {url && (
-                <motion.button
-                  key="clear-btn"
-                  initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
-                  onClick={handleClear}
-                  className="h-[54px] w-[54px] flex items-center justify-center rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20"
-                >
-                  <X className="w-5 h-5 stroke-[3px]" />
-                </motion.button>
-              )}
-            </AnimatePresence>
-
-            <button onClick={handlePaste} className="h-[54px] px-5 rounded-2xl text-sm font-bold text-white/70 border border-white/10 bg-white/5 flex items-center gap-2">
-              <Clipboard className="w-4.5 h-4.5" /> <span className="hidden sm:inline italic">Paste</span>
-            </button>
-          </div>
-
-          <button
-            onClick={handleDownload}
-            disabled={loading}
-            className="relative mt-5 w-full py-4 rounded-2xl font-black text-white bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 hover:opacity-90 transition-all overflow-hidden"
-          >
-            <span className="relative flex items-center justify-center gap-2.5 uppercase italic">
-              {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : <><Download className="w-5 h-5" /> Download Now</>}
-            </span>
-          </button>
-
-          {error === "PRIVATE_ACCOUNT_DETECTED" && (
-            <div className="mt-6 p-6 rounded-[2rem] border border-red-500/10 bg-[#0d070b] flex items-center gap-6">
-              <Lock className="w-7 h-7 text-red-600/90" />
-              <div>
-                <h3 className="text-xl font-black text-white italic">PRIVATE CONTENT</h3>
-                <p className="text-white/40 text-sm">Account is private. Please use a public link. 🛡️</p>
-              </div>
-            </div>
-          )}
-
-          <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
-        </div>
-      </motion.div>
-
-      {/* 💰 الإشهار يجي هنا بالضبط تحت الـ Box وقبل الـ Result */}
-      <div className="w-full flex justify-center py-2">
-         <AdsBanner type="result-inline" />
-      </div>
-
-      {result && !loading && (
-        <div id={scrollAnchorId} className="space-y-6 pt-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <ResultCard result={result} platform={platform} />
-          </motion.div>
-        </div>
-      )}
+    <div key={`${type}-${adId}`} className={`ads-container w-full flex justify-center items-center my-4 ${className}`}>
+      <div 
+        ref={adContainerRef}
+        style={{ width: "100%", maxWidth: dim.width, minHeight: `${dim.height}px` }}
+        className="flex justify-center items-center"
+      />
     </div>
   );
 };
 
-export default DownloaderBox;
+export default AdsBanner;
