@@ -19,7 +19,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adContainerRef = useRef<HTMLDivElement>(null);
   
   const getAdId = () => {
-    // تأكدنا أن القيم في Netlify هي 6854497 و 6854585
     const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
 
     switch (type) {
@@ -33,8 +32,53 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   };
 
   const adId = getAdId();
-  
-    // ───  MDB Collection ───
+
+  useEffect(() => {
+    const isCleanId = adId && 
+                      typeof adId === 'string' && 
+                      adId.trim() !== "" && 
+                      adId !== "[object Object]";
+
+    if (isCleanId && adContainerRef.current) {
+      // تنظيف الحاوية قبل كل شيء
+      adContainerRef.current.innerHTML = "";
+
+      // نأخروا حقن السكريبت بـ 1.5 ثانية باش الـ Console ما تخرجش إيرور
+      const timeoutId = setTimeout(() => {
+        if (!adContainerRef.current) return;
+
+        const script = document.createElement("script");
+        
+        if (type === "middle") {
+          script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
+        } else if (type === "footer") {
+          script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
+        } else if (type === "sidebar-sm") {
+          script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
+        } else if (type === "result-inline") {
+          script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
+        }
+        
+        script.async = true;
+        script.setAttribute("data-cfasync", "false");
+        script.referrerPolicy = 'no-referrer-when-downgrade';
+
+        // منع الأخطاء من الصعود للـ Console
+        script.onerror = (e) => {
+          if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
+            (e as any).preventDefault?.();
+            (e as any).stopPropagation?.();
+          }
+        };
+        
+        adContainerRef.current.appendChild(script);
+      }, 1500); // 1.5 ثانية تأخير
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [adId, type]);
+
+  // ─── MDB Collection Fallback (Top Only) ───
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
@@ -52,62 +96,8 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
-          
           <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-[9px] font-bold text-white/80 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
             Sponsored
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        </a>
-      </div>
-    );
-  }
-  if (!adId) return null;
-
-
-  useEffect(() => {
-    const isCleanId = adId && 
-                      typeof adId === 'string' && 
-                      adId.trim() !== "" && 
-                      adId !== "[object Object]";
-
-    if (isCleanId && adContainerRef.current) {
-      adContainerRef.current.innerHTML = "";
-      const script = document.createElement("script");
-      
-      if (type === "middle") {
-        script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
-      } else if (type === "footer") {
-        script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
-      } else if (type === "sidebar-sm") {
-        script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
-      } else if (type === "result-inline") {
-        script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
-      }
-      
-      script.async = true;
-      script.setAttribute("data-cfasync", "false");
-      script.referrerPolicy = 'no-referrer-when-downgrade';
-
-      // --- التعديل الجديد لحماية الـ Console ---
-      script.onerror = (e) => {
-        // إذا فشل السكريبت أو عمل تضارب، نمنع الخطأ من الصعود للمتصفح
-        if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
-          (e as any).preventDefault?.();
-          (e as any).stopPropagation?.();
-        }
-      };
-      // ----------------------------------------
-      
-      adContainerRef.current.appendChild(script);
-    }
-  }, [adId, type]);
-
-  if (type === "top" && !adId) {
-    return (
-      <div className={`w-full flex justify-center items-center my-6 px-4 ${className}`}>
-        <a href="https://mdbcollection.com" target="_blank" rel="noopener noreferrer" className="relative w-full max-w-[1200px] rounded-xl border border-white/10 shadow-2xl overflow-hidden">
-          <div className="h-[90px] md:h-[130px] w-full">
-            <img src="/mdb-banner.jpg" alt="MDB Collection" className="w-full h-full object-cover" />
           </div>
         </a>
       </div>
