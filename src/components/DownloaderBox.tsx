@@ -18,30 +18,30 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const dim = AD_DIMENSIONS[type];
   const adContainerRef = useRef<HTMLDivElement>(null);
   
+  // دالة نظيفة لجلب الـ ID
   const getAdId = () => {
-    // نثبتو اللي الـ ADS موجودة وماهيش undefined
-    if (!ADS) return "";
-    const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
-    
-    switch (type) {
-      case "top": return resolveValue(ADS.topBanner);
-      case "sidebar-sm": return resolveValue(ADS.sidebarAd1);
-      case "result-inline": return resolveValue(ADS.sidebarAd2);
-      case "middle": return resolveValue(ADS.middleBanner);
-      case "footer": return resolveValue(ADS.footerBanner);
-      default: return ""; 
+    try {
+      const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
+      if (type === "top") return ADS.topBanner || "";
+      if (type === "sidebar-sm") return resolveValue(ADS.sidebarAd1);
+      if (type === "result-inline") return resolveValue(ADS.sidebarAd2);
+      if (type === "middle") return resolveValue(ADS.middleBanner);
+      if (type === "footer") return resolveValue(ADS.footerBanner);
+      return "";
+    } catch (e) {
+      return "";
     }
   };
 
   const adId = getAdId();
 
   useEffect(() => {
-    const isCleanId = adId && typeof adId === 'string' && adId.trim() !== "" && adId !== "[object Object]";
+    const isCleanId = adId && adId !== "" && adId !== "[object Object]";
 
     if (isCleanId && adContainerRef.current) {
       const originalPostMessage = window.postMessage;
       
-      // حماية الـ Console
+      // 🛡️ Guard للـ Console
       window.postMessage = function(data: any, ...args: any[]) {
         if (typeof data === 'string' && data.includes('[object Object]')) return;
         return originalPostMessage.apply(window, [data, ...args] as any);
@@ -49,6 +49,8 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
       const timeoutId = setTimeout(() => {
         if (!adContainerRef.current) return;
+        
+        // تنظيف المكان قبل الحقن
         adContainerRef.current.innerHTML = "";
 
         const script = document.createElement("script");
@@ -62,7 +64,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         script.referrerPolicy = 'no-referrer-when-downgrade';
 
         adContainerRef.current.appendChild(script);
-      }, 2000);
+      }, 1500);
 
       return () => {
         clearTimeout(timeoutId);
@@ -71,7 +73,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
-  // ─── MDB Collection Fallback ───
+  // 1. حالة الـ MDB Collection (Top Banner)
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 ${className}`}>
@@ -85,11 +87,14 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     );
   }
 
-  // إذا ما فماش Ad وماهوش Top، نرجعو Div فارغة باش ما نكسروش الـ DownloaderBox
-  if (!adId || adId === "") return <div className="hidden" />;
+  // 2. إذا ما فماش إشهار، نرجعوا ديف فارغة باش الـ DownloaderBox ما يتحيرش
+  if (!adId || adId === "") {
+    return <div className="ad-placeholder hidden" aria-hidden="true" />;
+  }
 
+  // 3. الحالة العادية للإشهار
   return (
-    <div className={`ads-container w-full flex justify-center items-center my-4 ${className}`}>
+    <div className={`ads-banner-wrapper w-full flex justify-center items-center my-4 ${className}`}>
       <div 
         ref={adContainerRef}
         style={{ width: "100%", maxWidth: dim.width, minHeight: `${dim.height}px` }}
