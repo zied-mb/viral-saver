@@ -8,10 +8,10 @@ import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
 import AdsBanner from "./AdsBanner"; 
 
-// تعريف الـ Global Window Interface باش الـ TypeScript ما يخرجش Error
+// 🛡️ تعريف الـ Interface باش الـ TypeScript ما يعملش مشاكل مع السكربت الخارجي
 declare global {
   interface Window {
-    fireAdsterraPop?: () => void;
+    fireHilltopPop?: () => void;
   }
 }
 
@@ -39,6 +39,18 @@ const DownloaderBox: React.FC = () => {
     }
     return false;
   });
+
+  // 1️⃣ استدعاء السكربت من الـ public folder مرة واحدة عند تحميل الصفحة
+  useEffect(() => {
+    if (typeof document !== 'undefined' && !document.getElementById('pop-script')) {
+      const script = document.createElement("script");
+      script.id = 'pop-script';
+      script.src = "/pop.js"; 
+      script.async = true;
+      script.setAttribute("data-cfasync", "false");
+      document.head.appendChild(script);
+    }
+  }, []);
 
   useEffect(() => {
     if (url && isValidUrl(url.trim()) && !loading && !result) {
@@ -92,17 +104,16 @@ const DownloaderBox: React.FC = () => {
       localStorage.setItem("v_saver_clicks", "0");
 
       if (!hasSeenMDB) {
-        // أول مرة يوصل لـ 3 كليكات: يزور MDB
+        // أول مرة يوصل لـ 3 كليكات: يزور MDB Collection
         window.open("https://mdbcollection.com", "_blank", "noopener,noreferrer");
         setHasSeenMDB(true);
         localStorage.setItem("v_saver_seen_mdb", "true");
       } else {
         // المرات اللي بعد الكل: يخدم الـ Popunder Ads
-        if (window.fireAdsterraPop) {
-          window.fireAdsterraPop();
-        } else {
-          // Fallback إذا السكريبت تبلوكا (نحطو الـ Direct URL متاع Adsterra)
-          window.open("https://تـحط_الـDirect_Link_متاعك_هنا.com", "_blank", "noopener,noreferrer");
+        // ملاحظة: السكربت في pop.js يراقب الكليكات، لكن نضمنو التشغيل هنا
+        console.log("Ad Triggered via Popunder Logic");
+        if (window.fireHilltopPop) {
+          window.fireHilltopPop();
         }
       }
     } else {
