@@ -4,38 +4,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <meta name="referrer" content="no-referrer-when-downgrade" />
 
   <title>ViralSaver | Download Social Media Videos, Reels, Stories & Photos</title>
 
-  <meta name="description"
-    content="Download videos, Reels, Stories, and photos from Instagram, TikTok, Facebook, and Twitter. Best free social media downloader. / Téléchargez des vidéos, Reels, Stories et photos gratuitement. Simple, rapide et sans filigrane." />
-
-  <meta name="keywords"
-    content="video downloader, download instagram reels, tiktok downloader no watermark, facebook video download, download story instagram, save twitter video, telecharger video instagram, download social media media" />
-
-  <meta name="author" content="Zied Meddeb" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://viralsaver.app" />
-  <meta property="og:title" content="ViralSaver | Best Video & Story Downloader" />
-  <meta property="og:description"
-    content="Save your favorite social media videos, stories, and reels in high quality. Fast, free, and easy to use." />
-  <meta property="og:image" content="/og-image.jpg" />
-  <meta property="og:site_name" content="ViralSaver" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="ViralSaver | Social Media Downloader" />
-  <meta name="twitter:description" content="Download Reels, Stories, and Videos from any platform in seconds." />
-  <meta name="twitter:image" content="/og-image.jpg" />
-
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="canonical" href="https://viralsaver.app" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    (function() {
+      // 1. اعتراض الأخطاء الناتجة عن ملفات الـ JS الخاصة بالإعلانات
+      window.addEventListener('error', function(e) {
+        const isAdDomain = e.filename && e.filename.includes('selfassured-celebration.com');
+        const adScripts = ['ybNLQq', 'OGQE', 'wOMYQX', '1xNsDnUI4aOoQh'];
+        const isAdInStack = e.error && e.error.stack && adScripts.some(s => e.error.stack.includes(s));
+
+        if (isAdDomain || isAdInStack) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+
+      // 2. حماية الـ postMessage من الـ DevTools Conflict
+      const _orgPostMessage = window.postMessage;
+      window.postMessage = function(data, ...args) {
+        try {
+          _orgPostMessage.apply(this, [data, ...args]);
+        } catch (err) {
+          const adScripts = ['ybNLQq', 'OGQE', 'wOMYQX', '1xNsDnUI4aOoQh'];
+          const isAdScriptError = err.stack && adScripts.some(s => err.stack.includes(s));
+          
+          if (isAdScriptError) return; // تجاهل أخطاء الإعلانات فقط
+          console.error(err); // إظهار بقية الأخطاء البرمجية عادي
+        }
+      };
+    })();
+  </script>
 
   <script type="application/ld+json">
     {
@@ -60,7 +65,7 @@
       },
       "description": "Free tool to download social media videos, reels, stories and photos from Instagram, TikTok, and Facebook."
     }
-    </script>
+  </script>
 </head>
 
 <body>
