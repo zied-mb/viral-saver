@@ -327,8 +327,11 @@ const Home: React.FC = () => {
       </section>
 
 {/* ── Middle Ad ── */}
-<AdsBanner type="middle" />
+<div className="w-full flex justify-center py-8 border-y border-white/5 bg-white/[0.01]">
+  <AdsBanner type="middle" />
+</div>
 
+      
       {/* ── Reviews ── */}
       <section className="py-12 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto">
@@ -376,9 +379,12 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-{/* ── Footer Ad  ── */}
-<AdsBanner type="footer" />
+{/* ── Footer Ad ── */}
+<div className="w-full flex justify-center py-8 bg-[#030005]">
+  <AdsBanner type="footer" />
+</div>
 
+      
       {/* ── Footer ── */}
       <footer className={`border-t ${darkMode ? "border-white/5 bg-[#030005]" : "border-slate-100 bg-white"} py-8 sm:py-10 px-6`}>
         <div className="max-w-5xl mx-auto">
