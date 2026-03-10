@@ -19,32 +19,32 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adContainerRef = useRef<HTMLDivElement>(null);
   
   const getAdId = () => {
+    // التأكد من تحويل أي قيمة إلى نص وتجنب الـ [object Object]
+    const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
+
     switch (type) {
       case "top": return ADS.topBanner;
-      case "sidebar-sm": return ADS.sidebarAd1;
-      case "result-inline": return ADS.sidebarAd2;
-      case "middle": return ADS.middleBanner;
-      case "footer": return ADS.footerBanner;
-      default: return null; 
+      case "sidebar-sm": return resolveValue(ADS.sidebarAd1);
+      case "result-inline": return resolveValue(ADS.sidebarAd2);
+      case "middle": return resolveValue(ADS.middleBanner);
+      case "footer": return resolveValue(ADS.footerBanner);
+      default: return ""; 
     }
   };
 
   const adId = getAdId();
 
   useEffect(() => {
-    // التأكد أن الـ ID عبارة عن نص صحيح وليس Object أو Undefined
-    const validAdId = adId && typeof adId === 'string' && adId !== "[object Object]";
-
-    if (validAdId && adContainerRef.current) {
+    // حماية قوية: لا نمرر أي شيء للـ DOM إذا كان الـ ID غير صالح
+    if (adId && adId !== "" && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
       const script = document.createElement("script");
       
-      // تحديد الـ Script الصحيح لكل منطقة بناءً على الأكواد اللي بعثتهم
       if (type === "middle") {
-        // Script الخاص بـ Zone #6854497
+        // Zone #6854497 (Middle)
         script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
       } else if (type === "footer") {
-        // Script الخاص بـ Zone #6854585
+        // Zone #6854585 (Footer)
         script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
       } else if (type === "sidebar-sm") {
         script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
@@ -60,20 +60,21 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
-  // Fallback MDB (Top Only)
-  if (!adId && type === "top") {
+  // Fallback MDB (فقط إذا كان التوب فارغ)
+  if (type === "top" && !adId) {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 ${className}`}>
         <a href="https://mdbcollection.com" target="_blank" rel="noopener noreferrer" className="relative w-full max-w-[1200px] rounded-xl border border-white/10 shadow-2xl overflow-hidden">
           <div className="h-[90px] md:h-[130px] w-full">
-            <img src="/mdb-banner.jpg" alt="MDB" className="w-full h-full object-cover" />
+            <img src="/mdb-banner.jpg" alt="MDB Collection" className="w-full h-full object-cover" />
           </div>
         </a>
       </div>
     );
   }
 
-  if (!adId || adId === "[object Object]") return null;
+  // منع الرندر إذا لم يتوفر ID صالح
+  if (!adId || adId === "") return null;
 
   return (
     <div 
