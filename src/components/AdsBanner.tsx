@@ -42,13 +42,12 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     if (isCleanId && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
 
-      // ─── تحديد وقت التأخير حسب النوع ───
       const getDelay = () => {
         switch (type) {
-          case "middle": return 4000; // 1.5s
-          case "footer": return 4500; // 2.5s
-          case "sidebar-sm": return 3000; // 3.5s
-          case "result-inline": return 2000; // 4.5s
+          case "middle": return 4000;
+          case "footer": return 4500;
+          case "sidebar-sm": return 3000;
+          case "result-inline": return 2000;
           default: return 2000;
         }
       };
@@ -56,9 +55,15 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       const timeoutId = setTimeout(() => {
         if (!adContainerRef.current) return;
 
+        // ─── حماية الـ Desktop من الـ DevTools (postMessage Fix) ───
+        const originalPostMessage = window.postMessage;
+        window.postMessage = (data: any, ...args: any[]) => {
+          if (typeof data === 'string' && data.includes('[object Object]')) return;
+          return originalPostMessage.apply(window, [data, ...args] as any);
+        };
+
         const script = document.createElement("script");
         
-        // الروابط الخاصة بكل نوع
         if (type === "middle") {
           script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
         } else if (type === "footer") {
@@ -81,13 +86,16 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         };
         
         adContainerRef.current.appendChild(script);
+
+        // نرجعوا الـ postMessage الطبيعي بعد ما الإعلان يركح (2 ثانية)
+        setTimeout(() => { window.postMessage = originalPostMessage; }, 2000);
+
       }, getDelay());
 
       return () => clearTimeout(timeoutId);
     }
   }, [adId, type]);
 
-  // ─── MDB Collection Fallback (Top Only) ───
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
