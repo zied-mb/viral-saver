@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { ADS } from '@/config/ads';
 
 interface AdsBannerProps {
-  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline" | "middle-footer";
+  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline";
   className?: string;
 }
 
@@ -10,7 +10,6 @@ const AD_DIMENSIONS = {
   top: { height: 90, width: '1200px' },
   middle: { height: 100, width: '300px' },
   footer: { height: 100, width: '300px' },
-  "middle-footer": { height: 100, width: '300px' },
   "sidebar-sm": { height: 250, width: '300px' },
   "result-inline": { height: 250, width: '300px' }, 
 };
@@ -26,7 +25,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       case "result-inline": return ADS.sidebarAd2;
       case "middle": return ADS.middleBanner;
       case "footer": return ADS.footerBanner;
-      case "middle-footer": return ADS.middleBanner || ADS.footerBanner; 
       default: return null; 
     }
   };
@@ -34,16 +32,20 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adId = getAdId();
 
   useEffect(() => {
-    const isHilltop = ["sidebar-sm", "result-inline", "middle", "footer", "middle-footer"].includes(type);
-    
-    if (isHilltop && adId && adContainerRef.current) {
-      // تنظيف الـ container قبل الزرع
+    // التأكد أن الـ ID عبارة عن نص صحيح وليس Object أو Undefined
+    const validAdId = adId && typeof adId === 'string' && adId !== "[object Object]";
+
+    if (validAdId && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
       const script = document.createElement("script");
       
-      // الـ Script الموحد للـ 300x100 (Zone #6854497)
-      if (["middle", "footer", "middle-footer"].includes(type)) {
-        script.src = "//selfassured-celebration.com/b.X-VysadYGBlB0nYjWycN/QesmO9/upZ/UKlKk/PPTkYc4iNkThQr0/OgTFc/t_NdjigI1/NvDmUTwYM/Qp";
+      // تحديد الـ Script الصحيح لكل منطقة بناءً على الأكواد اللي بعثتهم
+      if (type === "middle") {
+        // Script الخاص بـ Zone #6854497
+        script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
+      } else if (type === "footer") {
+        // Script الخاص بـ Zone #6854585
+        script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
       } else if (type === "sidebar-sm") {
         script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
       } else if (type === "result-inline") {
@@ -58,7 +60,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
-  // MDB Fallback (Top Only)
+  // Fallback MDB (Top Only)
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 ${className}`}>
@@ -71,12 +73,12 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     );
   }
 
-  if (!adId) return null;
+  if (!adId || adId === "[object Object]") return null;
 
   return (
     <div 
-      key={`${type}-${adId}`} // نزيدو key باش الـ React يعاود الـ render كيف يتبدل الـ type
-      className={`ads-container w-full flex justify-center items-center my-4 overflow-visible ${className}`}
+      key={`${type}-${adId}`} 
+      className={`ads-container w-full flex justify-center items-center my-4 ${className}`}
     >
       <div 
         ref={adContainerRef}
