@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { ADS } from '@/config/ads';
 
 interface AdsBannerProps {
-  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline";
+  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline" | "downloaderPop";
   className?: string;
 }
 
@@ -12,6 +12,7 @@ const AD_DIMENSIONS = {
   footer: { height: 100, width: '300px' },
   "sidebar-sm": { height: 250, width: '300px' },
   "result-inline": { height: 250, width: '300px' }, 
+  "downloaderPop": { height: 0, width: '0px' }, // الـ Popunder ما عندوش أبعاد
 };
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
@@ -27,6 +28,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       case "result-inline": return resolveValue(ADS.sidebarAd2);
       case "middle": return resolveValue(ADS.middleBanner);
       case "footer": return resolveValue(ADS.footerBanner);
+      case "downloaderPop": return resolveValue(ADS.downloaderPop); // الـ ID الجديد متاع Hilltop Pop
       default: return ""; 
     }
   };
@@ -39,6 +41,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
                       adId.trim() !== "" && 
                       adId !== "[object Object]";
 
+    // إذا كان النوع Popunder، السكربت باش يتزاد مرة وحدة في الصفحة
     if (isCleanId && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
 
@@ -48,6 +51,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
           case "footer": return 4500;
           case "sidebar-sm": return 3000;
           case "result-inline": return 2000;
+          case "downloaderPop": return 0; // يخدم طول باش يستنى الكليكات
           default: return 2000;
         }
       };
@@ -55,15 +59,15 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       const timeoutId = setTimeout(() => {
         if (!adContainerRef.current) return;
 
-        // ─── حماية الـ Desktop من الـ DevTools (postMessage Fix) ───
         const originalPostMessage = window.postMessage;
-        window.postMessage = (data: any, ...args: any[]) => {
+        (window as any).postMessage = (data: any, ...args: any[]) => {
           if (typeof data === 'string' && data.includes('[object Object]')) return;
           return originalPostMessage.apply(window, [data, ...args] as any);
         };
 
         const script = document.createElement("script");
         
+        // الروابط الكل توة تتبع HilltopAds حسب الـ Zone IDs اللي عندك
         if (type === "middle") {
           script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
         } else if (type === "footer") {
@@ -72,23 +76,17 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
           script.src = "//selfassured-celebration.com/bUXpVks.dcGblt0/Y/W/cM/CekmB9eucZnUQlwkuPsTyYz4qNETtIgyPMxj/ELtJN/jRg/1/M/jhI/ybNLQq";
         } else if (type === "result-inline") {
           script.src = "//selfassured-celebration.com/bxXzVjs.dDGyla0EYtWVcn/xeAmA9NuzZJUulnkWPZT_Y/4bNgTRI/yrO/DtUdtSNrj/gK1lM/jGIp4/OGQE";
+        } else if (type === "downloaderPop") {
+          script.src = "/pop.js"; // يعيط للملف اللي في الـ public اللي فيه كود الـ Popunder
         }
         
         script.async = true;
         script.setAttribute("data-cfasync", "false");
         script.referrerPolicy = 'no-referrer-when-downgrade';
-
-        script.onerror = (e) => {
-          if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
-            (e as any).preventDefault?.();
-            (e as any).stopPropagation?.();
-          }
-        };
         
         adContainerRef.current.appendChild(script);
 
-        // نرجعوا الـ postMessage الطبيعي بعد ما الإعلان يركح (2 ثانية)
-        setTimeout(() => { window.postMessage = originalPostMessage; }, 2000);
+        setTimeout(() => { (window as any).postMessage = originalPostMessage; }, 2000);
 
       }, getDelay());
 
@@ -96,6 +94,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
+  // Fallback متاع MDB Collection للـ Top Banner
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
@@ -106,7 +105,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
           className="relative w-full group overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20"
           style={{ maxWidth: dim.width }}
         >
-          <div className="h-[90px] md:h-[130px] w-full transition-all duration-500">
+          <div className="h-[90px] md:h-[130px] w-full">
             <img 
               src="/mdb-banner.jpg" 
               alt="MDB Collection" 
@@ -120,6 +119,8 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       </div>
     );
   }
+
+  if (type === "downloaderPop") return <div ref={adContainerRef} />; // مخفي، جيست باش يحمل السكربت
 
   if (!adId || adId === "") return null;
 
