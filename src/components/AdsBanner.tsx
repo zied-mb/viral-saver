@@ -24,8 +24,8 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       case "top": return ADS.topBanner;
       case "sidebar-sm": return ADS.sidebarAd1;
       case "result-inline": return ADS.sidebarAd2;
-      case "middle": return ADS.middleBanner; // يقرأ VITE_ADS_MIDDLE_BANNER
-      case "footer": return ADS.footerBanner; // يقرأ VITE_ADS_FOOTER_BANNER
+      case "middle": return ADS.middleBanner;
+      case "footer": return ADS.footerBanner;
       case "middle-footer": return ADS.middleBanner || ADS.footerBanner; 
       default: return null; 
     }
