@@ -38,7 +38,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     if (isCleanId && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
 
-      // 🛡️ Interceptor قوي للـ Desktop: يمنع الـ [object Object] من الظهور في الـ Console
+      // 🛡️ الـ Interceptor اللي يحمي الـ Console من الـ SyntaxError
       const originalPostMessage = window.postMessage;
       window.postMessage = function(data: any, ...args: any[]) {
         if (typeof data === 'string' && data.includes('[object Object]')) return;
@@ -79,13 +79,38 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         adContainerRef.current.appendChild(script);
       }, getDelay());
 
-      // نرجعوا الـ postMessage لأصله كان كي الـ Banner يتنحى ملـ DOM
       return () => {
         clearTimeout(timeoutId);
         window.postMessage = originalPostMessage;
       };
     }
   }, [adId, type]);
+
+  // ─── MDB Collection ───
+  if (!adId && type === "top") {
+    return (
+      <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
+        <a 
+          href="https://mdbcollection.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="relative w-full group overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20"
+          style={{ maxWidth: dim.width }}
+        >
+          <div className="h-[90px] md:h-[130px] w-full transition-all duration-500">
+            <img 
+              src="/mdb-banner.jpg" 
+              alt="MDB Collection" 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-[9px] font-bold text-white/80 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
+            Sponsored
+          </div>
+        </a>
+      </div>
+    );
+  }
 
   if (!adId || adId === "") return null;
 
