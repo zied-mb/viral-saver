@@ -273,3 +273,5 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   );
 
 };
+
+export default AdsBanner;
