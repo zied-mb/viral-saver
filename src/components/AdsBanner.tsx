@@ -4,6 +4,7 @@ import { ADS } from '@/config/ads';
 interface AdsBannerProps {
   type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline";
   className?: string;
+  show?: boolean; // البروب الجديد للتحكم في توقيت الظهور
 }
 
 const AD_DIMENSIONS = {
@@ -14,13 +15,12 @@ const AD_DIMENSIONS = {
   "result-inline": { height: 250, width: '300px' }, 
 };
 
-const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
+const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "", show = true }) => {
   const dim = AD_DIMENSIONS[type];
   const adContainerRef = useRef<HTMLDivElement>(null);
   
   const getAdId = () => {
     const resolveValue = (val: any) => (val && typeof val === 'string' && val !== "[object Object]") ? val : "";
-
     switch (type) {
       case "top": return ADS.topBanner;
       case "sidebar-sm": return resolveValue(ADS.sidebarAd1);
@@ -34,12 +34,10 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
   const adId = getAdId();
 
   useEffect(() => {
-    const isCleanId = adId && 
-                      typeof adId === 'string' && 
-                      adId.trim() !== "" && 
-                      adId !== "[object Object]";
+    const isCleanId = adId && typeof adId === 'string' && adId.trim() !== "" && adId !== "[object Object]";
 
-    if (isCleanId && adContainerRef.current) {
+    // الإشهار ما يخدم إلا إذا كان show=true (مهم جداً للـ result-inline)
+    if (show && isCleanId && adContainerRef.current) {
       adContainerRef.current.innerHTML = "";
 
       const getDelay = () => {
@@ -47,7 +45,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
           case "middle": return 4000;
           case "footer": return 4500;
           case "sidebar-sm": return 3000;
-          case "result-inline": return 2000;
+          case "result-inline": return 1500; // وقت قصير بما أن الـ Result ظهرت فعلاً
           default: return 2000;
         }
       };
@@ -55,7 +53,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       const timeoutId = setTimeout(() => {
         if (!adContainerRef.current) return;
 
-        // ─── حماية الـ Desktop من الـ DevTools (postMessage Fix) ───
+        // ─── حماية الـ Desktop من الـ DevTools ───
         const originalPostMessage = window.postMessage;
         window.postMessage = (data: any, ...args: any[]) => {
           if (typeof data === 'string' && data.includes('[object Object]')) return;
@@ -87,15 +85,18 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         
         adContainerRef.current.appendChild(script);
 
-        // نرجعوا الـ postMessage الطبيعي بعد ما الإعلان يركح (2 ثانية)
-        setTimeout(() => { window.postMessage = originalPostMessage; }, 2000);
+        // نرجعوا الـ postMessage بعد 3 ثواني لضمان استقرار الإعلان
+        setTimeout(() => { window.postMessage = originalPostMessage; }, 3000);
 
       }, getDelay());
 
-      return () => clearTimeout(timeoutId);
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
-  }, [adId, type]);
+  }, [adId, type, show]);
 
+  // ─── MDB Collection Fallback (Top Only) ───
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
@@ -121,13 +122,10 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     );
   }
 
-  if (!adId || adId === "") return null;
+  if (!adId || adId === "" || !show) return null;
 
   return (
-    <div 
-      key={`${type}-${adId}`} 
-      className={`ads-container w-full flex justify-center items-center my-4 ${className}`}
-    >
+    <div key={`${type}-${adId}`} className={`ads-container w-full flex justify-center items-center my-4 ${className}`}>
       <div 
         ref={adContainerRef}
         style={{ width: "100%", maxWidth: dim.width, minHeight: `${dim.height}px` }}
