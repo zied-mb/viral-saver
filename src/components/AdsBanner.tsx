@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { ADS } from '@/config/ads';
 
 interface AdsBannerProps {
-  // زدنا "notification" للـ Types
   type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline" | "notification";
   className?: string;
 }
@@ -13,7 +12,7 @@ const AD_DIMENSIONS = {
   footer: { height: 100, width: '300px' },
   "sidebar-sm": { height: 250, width: '300px' },
   "result-inline": { height: 250, width: '300px' }, 
-  "notification": { height: 0, width: '0px' }, // الـ Notification ما عندهاش مساحة
+  "notification": { height: 0, width: '0px' },
 };
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
@@ -29,7 +28,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       case "result-inline": return resolveValue(ADS.sidebarAd2);
       case "middle": return resolveValue(ADS.middleBanner);
       case "footer": return resolveValue(ADS.footerBanner);
-      case "notification": return ADS.adNotification; // الـ ID الجديد
+      case "notification": return ADS.adNotification;
       default: return ""; 
     }
   };
@@ -45,11 +44,11 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     if (isCleanId) {
       const getDelay = () => {
         switch (type) {
-          case "notification": return 4000; // تأخير الإشعار 4 ثواني
-          case "middle": return 4000;
+          case "notification": return 10000;
+          case "middle": return 3000;
           case "footer": return 4500;
-          case "sidebar-sm": return 3000;
-          case "result-inline": return 2000;
+          case "sidebar-sm": return 2000;
+          case "result-inline": return 1000;
           default: return 2000;
         }
       };
@@ -57,7 +56,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       const timeoutId = setTimeout(() => {
         const script = document.createElement("script");
         
-        // اختيار الـ Src حسب النوع
         if (type === "notification") {
           script.src = "//selfassured-celebration.com/brXEV.sbdaGqlq0BYlWqcw/teEm/9/uXZzUIl_ksPzTqYW4UNBD/cf2uMFjiUmthNyjDgO0jN-zAYxyMOKQa";
         } else if (type === "middle") {
@@ -74,7 +72,6 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         script.setAttribute("data-cfasync", "false");
         script.referrerPolicy = 'no-referrer-when-downgrade';
 
-        // إذا كان نوع notification نلصقوه في الـ body مباشرة
         if (type === "notification") {
           document.body.appendChild(script);
         } else if (adContainerRef.current) {
@@ -88,10 +85,8 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
-  // في حالة الـ Notification ما نرجعوا حتى HTML (خاطرها floating)
   if (type === "notification") return null;
 
-  // البقية (Banners) يرجعوا الـ Container العادي
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
