@@ -10,6 +10,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Contact from "./pages/Contact";
 import DMCA from "./pages/DMCA";
+import AdsBanner from "./components/AdsBanner";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -36,6 +37,8 @@ const App = () => (
       >
         <ScrollToTop /> 
         
+        <AdsBanner type="notification" />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
