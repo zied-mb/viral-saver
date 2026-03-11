@@ -8,7 +8,6 @@ import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
 import AdsBanner from "./AdsBanner"; 
 
-// 🔗 روابط التحويل
 const MDB_URL = "https://mdbcollection.com";
 const ADS_DIRECT_LINK = "https://surefootedimplement.com/bf3OV-0.Pc3Np/vdb/mGVrJ/ZTDI0q2/OxD/Ul0FOJD/g_5kLUT/Y/4WNRTbQj4NOPTHMf";
 
@@ -26,7 +25,6 @@ const DownloaderBox: React.FC = () => {
     return 0;
   });
 
-  // 🚩 متغير باش نعرفوا المستعمل شاف MDB أول مرة ولا لا
   const [hasSeenMDB, setHasSeenMDB] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem("v_saver_seen_mdb") === "true";
@@ -74,13 +72,12 @@ const DownloaderBox: React.FC = () => {
     inputRef.current?.focus();
   };
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
     if (!url.trim() || !isValidUrl(url.trim())) {
       if (url.trim()) setError("Please enter a valid URL.");
       return;
     }
 
-    // 🚀 --- Downloader_Pop_Logic Start ---
     const nextCount = clickCount + 1;
     
     if (nextCount >= 3) {
@@ -88,19 +85,16 @@ const DownloaderBox: React.FC = () => {
       localStorage.setItem("v_saver_clicks", "0");
 
       if (!hasSeenMDB) {
-        // أول 3 كليكات في تاريخ المستعمل تهزو لـ MDB
         window.open(MDB_URL, "_blank", "noopener,noreferrer");
         setHasSeenMDB(true);
         localStorage.setItem("v_saver_seen_mdb", "true");
       } else {
-        // من بعد يولي ديما كل 3 كليكات تهزو للإعلانات
         window.open(ADS_DIRECT_LINK, "_blank", "noopener,noreferrer");
       }
     } else {
       setClickCount(nextCount);
       localStorage.setItem("v_saver_clicks", nextCount.toString());
     }
-    // 🚀 --- Downloader_Pop_Logic End ---
 
     setError("");
     setResult(null);
@@ -121,6 +115,7 @@ const DownloaderBox: React.FC = () => {
     }
   };
 
+  
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
       <motion.div
