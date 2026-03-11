@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 import { ADS } from '@/config/ads';
 
 interface AdsBannerProps {
-  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline";
+  // زدنا "notification" للـ Types
+  type: "top" | "middle" | "footer" | "sidebar-sm" | "result-inline" | "notification";
   className?: string;
 }
 
@@ -12,6 +13,7 @@ const AD_DIMENSIONS = {
   footer: { height: 100, width: '300px' },
   "sidebar-sm": { height: 250, width: '300px' },
   "result-inline": { height: 250, width: '300px' }, 
+  "notification": { height: 0, width: '0px' }, // الـ Notification ما عندهاش مساحة
 };
 
 const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
@@ -27,6 +29,7 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       case "result-inline": return resolveValue(ADS.sidebarAd2);
       case "middle": return resolveValue(ADS.middleBanner);
       case "footer": return resolveValue(ADS.footerBanner);
+      case "notification": return ADS.adNotification; // الـ ID الجديد
       default: return ""; 
     }
   };
@@ -39,11 +42,10 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
                       adId.trim() !== "" && 
                       adId !== "[object Object]";
 
-    if (isCleanId && adContainerRef.current) {
-      adContainerRef.current.innerHTML = "";
-
+    if (isCleanId) {
       const getDelay = () => {
         switch (type) {
+          case "notification": return 4000; // تأخير الإشعار 4 ثواني
           case "middle": return 4000;
           case "footer": return 4500;
           case "sidebar-sm": return 3000;
@@ -53,18 +55,12 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
       };
 
       const timeoutId = setTimeout(() => {
-        if (!adContainerRef.current) return;
-
-        // ─── حماية الـ Desktop من الـ DevTools (postMessage Fix) ───
-        const originalPostMessage = window.postMessage;
-        window.postMessage = (data: any, ...args: any[]) => {
-          if (typeof data === 'string' && data.includes('[object Object]')) return;
-          return originalPostMessage.apply(window, [data, ...args] as any);
-        };
-
         const script = document.createElement("script");
         
-        if (type === "middle") {
+        // اختيار الـ Src حسب النوع
+        if (type === "notification") {
+          script.src = "//selfassured-celebration.com/brXEV.sbdaGqlq0BYlWqcw/teEm/9/uXZzUIl_ksPzTqYW4UNBD/cf2uMFjiUmthNyjDgO0jN-zAYxyMOKQa";
+        } else if (type === "middle") {
           script.src = "//selfassured-celebration.com/bHXLV/s.dJGHlS0HYXWBcl/wezmJ9vu/ZqU/lskaPJTgYq4cNATHQY0EOgTqc/tkNoj/gR1PNiD_U/wOMYQX";
         } else if (type === "footer") {
           script.src = "//selfassured-celebration.com/b.XeVQsXdDGcls0XYFWicl/oecm/9-u/Z/UgljktPfTWYE4LNXTsQr1YOgDRU/t/N/jYg/1xNsDnUI4aOoQh";
@@ -78,17 +74,13 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
         script.setAttribute("data-cfasync", "false");
         script.referrerPolicy = 'no-referrer-when-downgrade';
 
-        script.onerror = (e) => {
-          if (typeof e === 'string' || (e && (e as any).filename?.includes('selfassured-celebration.com'))) {
-            (e as any).preventDefault?.();
-            (e as any).stopPropagation?.();
-          }
-        };
-        
-        adContainerRef.current.appendChild(script);
-
-        // نرجعوا الـ postMessage الطبيعي بعد ما الإعلان يركح (2 ثانية)
-        setTimeout(() => { window.postMessage = originalPostMessage; }, 2000);
+        // إذا كان نوع notification نلصقوه في الـ body مباشرة
+        if (type === "notification") {
+          document.body.appendChild(script);
+        } else if (adContainerRef.current) {
+          adContainerRef.current.innerHTML = "";
+          adContainerRef.current.appendChild(script);
+        }
 
       }, getDelay());
 
@@ -96,6 +88,10 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
     }
   }, [adId, type]);
 
+  // في حالة الـ Notification ما نرجعوا حتى HTML (خاطرها floating)
+  if (type === "notification") return null;
+
+  // البقية (Banners) يرجعوا الـ Container العادي
   if (!adId && type === "top") {
     return (
       <div className={`w-full flex justify-center items-center my-6 px-4 overflow-hidden ${className}`}>
