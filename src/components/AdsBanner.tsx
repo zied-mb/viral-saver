@@ -114,10 +114,12 @@ const AdsBanner: React.FC<AdsBannerProps> = ({ type, className = "" }) => {
 
   if (!adId || adId === "") return null;
 
+  const responsiveClasses = (type === "middle" || type === "footer") ? "md:hidden" : "";
+
   return (
     <div 
       key={`${type}-${adId}`} 
-      className={`ads-container w-full flex justify-center items-center my-4 ${className}`}
+      className={`ads-container w-full flex justify-center items-center my-4 ${responsiveClasses} ${className}`}
     >
       <div 
         ref={adContainerRef}
