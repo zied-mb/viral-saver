@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# Link to your sitemap
+Sitemap: https://viralsaver.netlify.app/sitemap.xml
