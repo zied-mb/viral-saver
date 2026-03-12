@@ -1,24 +1,29 @@
-import { useEffect } from "react"; 
+import { useEffect, lazy, Suspense } from "react"; 
 import { useLocation, BrowserRouter, Routes, Route } from "react-router-dom"; 
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import Contact from "./pages/Contact";
-import DMCA from "./pages/DMCA";
-import AdsBanner from "./components/AdsBanner";
+
+const Home = lazy(() => import("./pages/Home"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const Contact = lazy(() => import("./pages/Contact"));
+const DMCA = lazy(() => import("./pages/DMCA"));
+const AdsBanner = lazy(() => import("./components/AdsBanner"));
+
+const PageLoader = () => (
+  <div className="h-screen w-full flex items-center justify-center bg-[#0d070b]">
+    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary"></div>
+  </div>
+);
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
   return null;
 };
 
@@ -37,17 +42,20 @@ const App = () => (
       >
         <ScrollToTop /> 
         
-        <AdsBanner type="notification" />
+        <Suspense fallback={null}>
+          <AdsBanner type="notification" />
+        </Suspense>
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/dmca" element={<DMCA />} />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/dmca" element={<DMCA />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
