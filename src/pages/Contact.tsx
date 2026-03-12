@@ -91,7 +91,7 @@ const Contact = () => {
             <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl group hover:border-pink-500/30 transition-all">
               <Sparkles className="w-6 h-6 text-pink-400 mb-3" />
               <h3 className="font-bold text-white uppercase italic tracking-tighter">Fast Response</h3>
-              <p className="text-sm text-white/40">Zied usually responds within 24 hours via.</p>
+              <p className="text-sm text-white/40">Zied usually responds within 24 hours.</p>
             </div>
 
             <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl">
