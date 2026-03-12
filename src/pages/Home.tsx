@@ -43,8 +43,8 @@ const features = [
   },
   {
     icon: Download,
-    title: "Multiple Formats",
-    desc: "Choose HD video, SD video, or audio-only MP3 downloads instantly — always free.",
+    title: "Original Quality",
+    desc: "Get your videos in the highest resolution available directly from the source — always free.",
     gradient: "from-cyan-500 to-blue-500",
     glow: "rgba(6,182,212,0.2)",
   },
@@ -54,26 +54,26 @@ const steps = [
   {
     num: "01",
     title: "Copy the Link",
-    desc: "Find your video on Instagram, TikTok, YouTube or any supported platform and copy its URL.",
+    desc: "Find your video on Instagram, TikTok, or any supported platform and copy its URL.",
     color: "from-violet-500 to-purple-600",
   },
   {
     num: "02",
-    title: "Paste & Detect",
-    desc: "Paste the URL into ViralSaver. We instantly detect the platform and prepare your file.",
+    title: "Paste & Preview",
+    desc: "Paste the URL into ViralSaver. We'll fetch the high-quality video for you to preview instantly.",
     color: "from-pink-500 to-rose-600",
   },
   {
     num: "03",
-    title: "Download Instantly",
-    desc: "Choose your format — HD, SD or MP3 — and download to your device in one click.",
+    title: "Save to Device",
+    desc: "Tap the ⋮ icon on the video player and select 'Download' to save the original file.",
     color: "from-cyan-500 to-blue-600",
   },
 ];
 
 const supported = [
   { icon: FaInstagram, name: "Instagram", types: "Reels · Photos · Stories", color: "#E1306C" },
-  { icon: FaTiktok, name: "TikTok", types: "Videos · Sounds", color: "#69C9D0" },
+  { icon: FaTiktok, name: "TikTok", types: "Videos · HD Content", color: "#69C9D0" },
   { icon: FaFacebook, name: "Facebook", types: "Videos · Reels", color: "#1877F2" },
   { icon: FaYoutube, name: "YouTube", types: "Videos · Shorts", color: "#FF0000" },
   { icon: FaTwitter, name: "Twitter / X", types: "Videos · GIFs", color: "#1D9BF0" },
@@ -88,7 +88,7 @@ const reviews = [
 const faqs = [
   { q: "Is ViralSaver completely free to use?", a: "Yes, ViralSaver is 100% free. Paste any supported link and download instantly — no subscription required." },
   { q: "Which platforms are supported?", a: "We support Instagram, TikTok, Facebook, YouTube, Twitter/X, Pinterest, and many more platforms globally." },
-  { q: "Are there watermarks on downloaded videos?", a: "Absolutely not. You get the original media exactly as uploaded by the creator — no watermarks, no quality loss." },
+  { q: "Are there watermarks on downloaded videos?", a: "Absolutely not. You get the original video exactly as uploaded by the creator — no watermarks, no quality loss." },
   { q: "Do I need to create an account?", a: "No account or sign-up required. Just paste the link and click download — it's that simple." },
   { q: "Is it legal to download videos?", a: "ViralSaver is for personal use only. Always respect creators' rights and platform terms of service when downloading." },
 ];
@@ -106,7 +106,7 @@ const Home: React.FC = () => {
   return (
     <div className={`min-h-screen transition-colors duration-500 ${bg} ${text} overflow-x-hidden`}>
 
-      {/* ── Animated background blobs ── */}
+      {/* ── background ── */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <motion.div
           animate={{ x: [0, 80, -40, 0], y: [0, -60, 40, 0], scale: [1, 1.1, 0.95, 1] }}
@@ -156,12 +156,12 @@ const Home: React.FC = () => {
         </motion.a>
       </motion.nav>
 
-      {/* ── Top Ads (Reduced Padding) ── */}
+      {/* ── Top Ads  ── */}
       <div className="flex justify-center py-1 px-4">
         <AdsBanner type="top" />
       </div>
 
-      {/* ── Hero (Compact for Mobile) ── */}
+      {/* ── Hero  ── */}
       <section className="relative flex flex-col items-center justify-center px-4 pt-4 pb-12 sm:pt-10 sm:pb-20">
         <motion.div style={{ opacity: heroOpacity, y: heroY }} className="absolute inset-0 -z-10">
           <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover" }} />
@@ -300,7 +300,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Supported Platforms ── */}
+      {/* ── Supported ── */}
       <section className={`py-12 sm:py-16 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-10">
