@@ -8,7 +8,6 @@ import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-i
 import DownloaderBox from "@/components/DownloaderBox";
 import AdsBanner from "@/components/AdsBanner";
 import { ADS } from "@/config/ads";
-import heroBg from "@/assets/hero-bg.jpg";
 import { Link } from "react-router-dom";
 import SupportWidget from "@/components/SupportWidget";
 
@@ -164,7 +163,6 @@ const Home: React.FC = () => {
       {/* ── Hero  ── */}
       <section className="relative flex flex-col items-center justify-center px-4 pt-4 pb-12 sm:pt-10 sm:pb-20">
         <motion.div style={{ opacity: heroOpacity, y: heroY }} className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover" }} />
           <div className="absolute inset-0 bg-gradient-to-b from-[#06060f]/60 via-transparent to-[#06060f]" />
         </motion.div>
 
