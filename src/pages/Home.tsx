@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { db } from "./firebase"; 
+import { db } from "../firebase"; 
 import { ref, onValue, update, increment } from "firebase/database";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
