@@ -10,9 +10,6 @@ import AdsBanner from "./AdsBanner";
 import { db } from "../firebase-config";
 import { ref, update, increment } from "firebase/database";
 
-const MDB_URL = "https://mdbcollection.com";
-const ADS_DIRECT_LINK = "https://surefootedimplement.com/bf3OV-0.Pc3Np/vdb/mGVrJ/ZTDI0q2/OxD/Ul0FOJD/g_5kLUT/Y/4WNRTbQj4NOPTHMf";
-
 const DownloaderBox: React.FC = () => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,19 +17,7 @@ const DownloaderBox: React.FC = () => {
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   
-  const [clickCount, setClickCount] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return Number(localStorage.getItem("v_saver_clicks")) || 0;
-    }
-    return 0;
-  });
 
-  const [hasSeenMDB, setHasSeenMDB] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem("v_saver_seen_mdb") === "true";
-    }
-    return false;
-  });
 
   const scrollAnchorId = "download-result-anchor";
   const platform = detectPlatform(url);
@@ -80,22 +65,8 @@ const handleDownload = async () => {
     return;
   }
 
-  const nextCount = clickCount + 1;
-  if (nextCount >= 3) {
-    setClickCount(0);
-    localStorage.setItem("v_saver_clicks", "0");
-    if (!hasSeenMDB) {
-      window.open(MDB_URL, "_blank", "noopener,noreferrer");
-      setHasSeenMDB(true);
-      localStorage.setItem("v_saver_seen_mdb", "true");
-    } else {
-      window.open(ADS_DIRECT_LINK, "_blank", "noopener,noreferrer");
-    }
-  } else {
-    setClickCount(nextCount);
-    localStorage.setItem("v_saver_clicks", nextCount.toString());
-  }
-
+  // ✅ تنحى الـ Logic متاع الـ Clicks والـ Pop-ups من هنا
+  
   setError("");
   setResult(null);
   setLoading(true);
@@ -121,6 +92,7 @@ const handleDownload = async () => {
     setLoading(false);
   }
 };
+
   
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
