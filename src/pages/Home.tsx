@@ -98,13 +98,26 @@ const Home: React.FC = () => {
   });
 
   useEffect(() => {
-    const userRef = ref(db, '/');
-    
-    update(userRef, {
-      activeUsers: increment(1)
+    const rootRef = ref(db, '/');
+    const activeUsersRef = ref(db, 'activeUsers');
+    const connectedRef = ref(db, '.info/connected');
+
+    const unsubscribeConn = onValue(connectedRef, (snap) => {
+      if (snap.val() === true) {
+        const lastVisit = localStorage.getItem("viralsaver_last_visit");
+        const now = Date.now();
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+
+        if (!lastVisit || (now - parseInt(lastVisit)) > twentyFourHours) {
+          update(rootRef, { activeUsers: increment(1) });
+          localStorage.setItem("viralsaver_last_visit", now.toString());
+        }
+
+        onDisconnect(activeUsersRef).set(increment(-1));
+      }
     });
 
-    const unsubscribe = onValue(userRef, (snapshot) => {
+    const unsubscribeData = onValue(rootRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         setLiveStats({
@@ -127,11 +140,12 @@ const Home: React.FC = () => {
     });
 
     return () => {
-      unsubscribe();
-      update(userRef, { activeUsers: increment(-1) });
+      unsubscribeConn();
+      unsubscribeData();
     };
   }, [db]);
 
+  
 const handlePostReview = async (e: React.FormEvent) => {
   e.preventDefault();
   
@@ -489,7 +503,6 @@ const handlePostReview = async (e: React.FormEvent) => {
             ))}
           </div>
           {/* Success Message placement fixed */}
-</div>
         </div>
 
         <div className="flex gap-4">
