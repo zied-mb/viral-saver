@@ -92,7 +92,7 @@ const Home: React.FC = () => {
   const [liveStats, setLiveStats] = useState({
     downloads: "50M+",
     users: "2M+",
-    platforms: "10+",
+    platforms: "5",
     rate: "99.9%"
   });
 
@@ -109,7 +109,7 @@ useEffect(() => {
       setLiveStats({
         downloads: (data.downloadsServed || 0).toLocaleString() + "+",
         users: (data.activeUsers || 0).toLocaleString() + "+",
-        platforms: "10+",
+        platforms: "5",
         rate: "99.9%"
       });
     }
