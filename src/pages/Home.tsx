@@ -89,7 +89,6 @@ const Home: React.FC = () => {
   const [reviews, setReviews] = useState<any[]>([]);
   const [newReview, setNewReview] = useState({ name: "", text: "" });
   const [rating, setRating] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [liveStats, setLiveStats] = useState({
     downloads: "50M+",
@@ -490,18 +489,6 @@ const handlePostReview = async (e: React.FormEvent) => {
             ))}
           </div>
           {/* Success Message placement fixed */}
-  <AnimatePresence>
-    {showSuccess && (
-      <motion.p 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0 }}
-        className="text-center text-emerald-400 text-xs font-bold mt-2"
-      >
-        Review posted successfully! Thank you ✨
-      </motion.p>
-    )}
-  </AnimatePresence>
 </div>
         </div>
 
