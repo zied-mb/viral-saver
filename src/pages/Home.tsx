@@ -162,16 +162,19 @@ const Home: React.FC = () => {
 const handlePostReview = async (e: React.FormEvent) => {
   e.preventDefault();
   
+  // 1. التثبت من النجوم
   if (rating === 0) {
     toast.error("Please select a star rating! ⭐");
-    return;
+    return; // يخرج وما يسكرش الـ Modal
   }
 
+  // 2. التثبت من الإسم
   if (!newReview.name.trim()) {
     toast.error("Please enter your name! 👤");
     return;
   }
 
+  // 3. التثبت من الوصف
   if (!newReview.text.trim()) {
     toast.error("Please write your review description! ✍️");
     return;
@@ -181,19 +184,21 @@ const handlePostReview = async (e: React.FormEvent) => {
   try {
     const reviewsRef = ref(db, 'reviews');
     
+    // بعث الداتا للـ Firebase
     await set(push(reviewsRef), {
-      name: newReview.name,
-      text: newReview.text,
-      email: newReview.email?.trim() || "Not Provided", 
+      name: newReview.name.trim(),
+      text: newReview.text.trim(),
+      email: newReview.email?.trim().toLowerCase() || "Not Provided", 
       stars: rating,
       date: new Date().toISOString()
     });
 
+    // Success! هنا فقط نسكروا المودال ونفرغوا الـ Form
     toast.success("Review posted successfully! Thank you ✨");
-
+    
     setNewReview({ name: "", text: "", email: "" });
     setRating(0);
-    setIsModalOpen(false); 
+    setIsModalOpen(false); // ✅ المودال يتسكر كان هنا
     
   } catch (err) { 
     console.error("Post Review Error:", err); 
@@ -201,7 +206,8 @@ const handlePostReview = async (e: React.FormEvent) => {
   } finally {
     setIsSubmitting(false);
   }
-};  
+};
+  
   const statsDisplay = [
     { label: "Downloads Served", value: liveStats.downloads, icon: Download },
     { label: "Platforms Supported", value: liveStats.platforms, icon: Globe },
@@ -497,9 +503,9 @@ const handlePostReview = async (e: React.FormEvent) => {
       viewport={{ once: true }} 
       className="text-center mb-10 sm:mb-12"
     >
-      <h2 className="text-2xl sm:text-4xl font-black mb-3">Loved by Millions</h2>
+      <h2 className="text-2xl sm:text-4xl font-black mb-3">Community Feedback</h2>
       <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>
-        Share your experience with ViralSaver community
+        Share your experience and help us grow the ViralSaver community
       </p>
     </motion.div>
 
@@ -516,7 +522,7 @@ const handlePostReview = async (e: React.FormEvent) => {
       </motion.button>
     </div>
 
-    {/* ── Review Submission Modal (Pushup) ── */}
+{/* ── Review Submission Modal (Pushup) ── */}
     <AnimatePresence>
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
@@ -546,13 +552,12 @@ const handlePostReview = async (e: React.FormEvent) => {
               ✕
             </button>
 
-            <h3 className="text-xl font-bold mb-6 text-center">Share Your Thoughts</h3>
+            <h3 className={`text-xl font-bold mb-6 text-center ${darkMode ? "text-white" : "text-slate-800"}`}>
+              Share Your Thoughts
+            </h3>
 
             <form 
-              onSubmit={async (e) => { 
-                await handlePostReview(e); 
-                setIsModalOpen(false); // Close modal after successful post
-              }} 
+              onSubmit={handlePostReview} // ✅ نظيفة ومريغلة، الـ logic الكلو لداخل توا
               className="space-y-4"
             >
               <div className="flex flex-col items-center gap-2 mb-4">
@@ -580,37 +585,37 @@ const handlePostReview = async (e: React.FormEvent) => {
                 </div>
               </div>
 
-    {/* Name Input */}
-<input 
-  type="text" 
-  placeholder="Your Name *" 
-  value={newReview.name}
-  onChange={e => setNewReview({...newReview, name: e.target.value})}
-  className={`w-full p-4 rounded-xl text-sm outline-none border transition-all ${
-    darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200"
-  }`}
-/>
+              {/* Name Input */}
+              <input 
+                type="text" 
+                placeholder="Your Name *" 
+                value={newReview.name}
+                onChange={e => setNewReview({...newReview, name: e.target.value})}
+                className={`w-full p-4 rounded-xl text-sm outline-none border transition-all ${
+                  darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200 focus:border-purple-400"
+                }`}
+              />
 
-{/* Email Input (Optional) */}
-<input 
-  type="email" 
-  placeholder="Email (Optional - for updates)" 
-  value={newReview.email}  
-  onChange={e => setNewReview({...newReview, email: e.target.value})}
-  className={`w-full p-4 rounded-xl text-sm outline-none border transition-all ${
-    darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200"
-  }`}
-/>
+              {/* Email Input (Optional) */}
+              <input 
+                type="email" 
+                placeholder="Email (Optional - for updates)" 
+                value={newReview.email}  
+                onChange={e => setNewReview({...newReview, email: e.target.value})}
+                className={`w-full p-4 rounded-xl text-sm outline-none border transition-all ${
+                  darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200 focus:border-purple-400"
+                }`}
+              />
 
-{/* Textarea */}
-<textarea 
-  placeholder="Write your review here... *" 
-  value={newReview.text}
-  onChange={e => setNewReview({...newReview, text: e.target.value})}
-  className={`w-full p-4 rounded-xl text-sm h-32 outline-none border transition-all resize-none ${
-    darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200"
-  }`}
-/>
+              {/* Textarea */}
+              <textarea 
+                placeholder="Write your review here... *" 
+                value={newReview.text}
+                onChange={e => setNewReview({...newReview, text: e.target.value})}
+                className={`w-full p-4 rounded-xl text-sm h-32 outline-none border transition-all resize-none ${
+                  darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200 focus:border-purple-400"
+                }`}
+              />
 
               <motion.button 
                 whileHover={{ scale: 1.02 }}
@@ -618,7 +623,13 @@ const handlePostReview = async (e: React.FormEvent) => {
                 disabled={isSubmitting}
                 className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {isSubmitting ? "Posting..." : <>Submit Review <Send size={18} /></>}
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                     Posting... <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  </span>
+                ) : (
+                  <>Submit Review <Send size={18} /></>
+                )}
               </motion.button>
             </form>
           </motion.div>
@@ -626,6 +637,7 @@ const handlePostReview = async (e: React.FormEvent) => {
       )}
     </AnimatePresence>
 
+    
     {/* ── Reviews Display Grid ── */}
     <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
       <AnimatePresence mode="popLayout">
