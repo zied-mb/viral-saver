@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase-config";
-import { ref, onValue, update, increment } from "firebase/database";
+import { ref, onValue, update, increment, push, set } from "firebase/database";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-  Download, Zap, Shield, Globe, ChevronDown,
-  ArrowRight, CheckCircle2, Star, TrendingUp, Github, Linkedin, Heart,
+  Download, Zap, Shield, Globe, ChevronDown, Send, Heart,
+  ArrowRight, CheckCircle2, Star, TrendingUp, Github, Linkedin, 
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
 import DownloaderBox from "@/components/DownloaderBox";
@@ -12,6 +12,9 @@ import AdsBanner from "@/components/AdsBanner";
 import { ADS } from "@/config/ads";
 import { Link } from "react-router-dom";
 import SupportWidget from "@/components/SupportWidget"; 
+import toast, { Toaster } from 'react-hot-toast';
+
+
 
 
 const features = [
@@ -74,12 +77,6 @@ const supported = [
   { icon: FaTwitter, name: "Twitter / X", types: "Videos · GIFs", color: "#1D9BF0" },
 ];
 
-const reviews = [
-  { name: "Sarah M.", text: "Best downloader I've used. Fast, clean, no watermarks!", stars: 5 },
-  { name: "Jake L.", text: "Downloaded 50+ TikToks without a single issue. Incredible!", stars: 5 },
-  { name: "Priya K.", text: "Works perfectly on mobile. Saved my whole Instagram feed.", stars: 5 },
-];
-
 const faqs = [
   { q: "Is ViralSaver completely free to use?", a: "Yes, ViralSaver is 100% free. Paste any supported link and download instantly — no subscription required." },
   { q: "Which platforms are supported?", a: "We support Instagram, TikTok, Facebook, YouTube, Twitter/X, Pinterest, and many more platforms globally." },
@@ -89,6 +86,11 @@ const faqs = [
 ];
 
 const Home: React.FC = () => {
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [newReview, setNewReview] = useState({ name: "", text: "" });
+  const [rating, setRating] = useState(0);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [liveStats, setLiveStats] = useState({
     downloads: "50M+",
     users: "2M+",
@@ -96,25 +98,70 @@ const Home: React.FC = () => {
     rate: "99.9%"
   });
 
-useEffect(() => {
-  const userRef = ref(db, '/'); 
+  useEffect(() => {
+    const userRef = ref(db, '/');
+    
+    update(userRef, {
+      activeUsers: increment(1)
+    });
 
-  update(userRef, {
-    activeUsers: increment(1)
-  });
+    const unsubscribe = onValue(userRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setLiveStats({
+          downloads: (data.downloadsServed || 0).toLocaleString() + "+",
+          users: (data.activeUsers || 0).toLocaleString() + "+",
+          platforms: "5",
+          rate: "99.9%"
+        });
 
-  onValue(userRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      setLiveStats({
-        downloads: (data.downloadsServed || 0).toLocaleString() + "+",
-        users: (data.activeUsers || 0).toLocaleString() + "+",
-        platforms: "5",
-        rate: "99.9%"
-      });
-    }
-  });
-}, []);
+        if (data.reviews) {
+          const reviewsList = Object.entries(data.reviews).map(([id, val]: any) => ({ 
+            id, 
+            ...val 
+          }));
+          setReviews(reviewsList.reverse().slice(0, 6));
+        }
+      }
+    }, (error) => {
+      console.error("Firebase Read Error:", error);
+    });
+
+    return () => {
+      unsubscribe();
+      update(userRef, { activeUsers: increment(-1) });
+    };
+  }, [db]);
+
+const handlePostReview = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!newReview.name.trim() || !newReview.text.trim() || rating === 0) {
+    toast.error("Please select a star rating and fill all fields! ⭐");
+    return;
+  }
+  
+  setIsSubmitting(true);
+  try {
+    const reviewsRef = ref(db, 'reviews');
+    await set(push(reviewsRef), {
+      ...newReview,
+      stars: rating,
+      date: new Date().toISOString()
+    });
+
+    toast.success("Review posted successfully! Thank you ✨");
+
+    setNewReview({ name: "", text: "" });
+    setRating(0); 
+    
+  } catch (err) { 
+    console.error("Post Review Error:", err); 
+    toast.error("Failed to post review. Please try again.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   
   const statsDisplay = [
     { label: "Downloads Served", value: liveStats.downloads, icon: Download },
@@ -133,7 +180,41 @@ useEffect(() => {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${bg} ${text} overflow-x-hidden`}>
-
+      
+      {/* ── Toaster Notification System ── */}
+<Toaster 
+  position="bottom-right" 
+  reverseOrder={false} 
+  toastOptions={{
+    className: 'backdrop-blur-xl border border-white/10 shadow-2xl',
+    style: {
+      borderRadius: '16px',
+      background: 'rgba(15, 15, 27, 0.8)',
+      color: '#fff',
+      fontSize: '14px',
+      fontWeight: '500',
+      padding: '12px 20px',
+    },
+    success: {
+      iconTheme: {
+        primary: '#a855f7',
+        secondary: '#fff',
+      },
+      style: {
+        border: '1px solid rgba(168, 85, 247, 0.4)',
+      }
+    },
+    error: {
+      iconTheme: {
+        primary: '#f43f5e',
+        secondary: '#fff',
+      },
+      style: {
+        border: '1px solid rgba(244, 63, 94, 0.4)',
+      }
+    }
+  }}
+/>
       {/* ── background ── */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <motion.div
@@ -358,29 +439,150 @@ useEffect(() => {
         <AdsBanner type="middle" />
       </div>
 
-      {/* ── Reviews ── */}
-      <section className="py-12 sm:py-16 px-4">
+{/* ── Reviews Section ── */}
+      <section className="py-12 sm:py-20 px-4 relative">
         <div className="max-w-4xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-10">
-            <h2 className="text-xl sm:text-3xl font-black mb-2">Loved by Millions</h2>
-            <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>See what our users are saying</p>
+          {/* Header */}
+          <motion.div 
+            initial={{ opacity: 0, y: 16 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            className="text-center mb-10 sm:mb-12"
+          >
+            <h2 className="text-2xl sm:text-4xl font-black mb-3">Loved by Millions</h2>
+            <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>
+              Share your experience with ViralSaver community
+            </p>
           </motion.div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {reviews.map((r, i) => (
-              <motion.div key={r.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.09 }} className={`rounded-2xl p-5 sm:p-6 border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"}`}>
-                <div className="flex mb-3">
-                  {Array.from({ length: r.stars }).map((_, j) => (
-                    <Star key={j} className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <p className={`text-xs sm:text-sm leading-relaxed mb-4 ${darkMode ? "text-white/60" : "text-slate-600"}`}>"{r.text}"</p>
-                <p className={`text-[10px] sm:text-xs font-bold ${darkMode ? "text-white/40" : "text-slate-400"}`}>— {r.name}</p>
-              </motion.div>
+
+    {/* ── Review Submission Form ── */}
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      className={`max-w-xl mx-auto mb-16 p-5 sm:p-8 rounded-3xl border ${
+        darkMode ? "border-white/10 bg-white/5 backdrop-blur-xl" : "border-slate-200 bg-white shadow-xl"
+      }`}
+    >
+      <form onSubmit={handlePostReview} className="space-y-4">
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <p className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${rating === 0 && isSubmitting ? "text-rose-500" : "text-white/30"}`}>
+            {rating === 0 ? "Select Stars" : "Your Rating"}
+          </p>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <button
+                key={num}
+                type="button"
+                onClick={() => setRating(num)}
+                className="transition-transform active:scale-90 hover:scale-110"
+              >
+                <Star
+                  size={26}
+                  className={`transition-all duration-300 ${
+                    num <= rating 
+                    ? "text-amber-400 fill-amber-400 filter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" 
+                    : "text-white/10 hover:text-white/30"
+                  }`}
+                />
+              </button>
+      
             ))}
           </div>
+          {/* Success Message placement fixed */}
+  <AnimatePresence>
+    {showSuccess && (
+      <motion.p 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        className="text-center text-emerald-400 text-xs font-bold mt-2"
+      >
+        Review posted successfully! Thank you ✨
+      </motion.p>
+    )}
+  </AnimatePresence>
+</div>
         </div>
-      </section>
 
+        <div className="flex gap-4">
+          <input 
+            type="text" 
+            placeholder="Your Name" 
+            value={newReview.name}
+            onChange={e => setNewReview({...newReview, name: e.target.value})}
+            className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${
+              darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200 focus:border-blue-500"
+            }`}
+          />
+        </div>
+        <textarea 
+          placeholder="Write your review here..." 
+          value={newReview.text}
+          onChange={e => setNewReview({...newReview, text: e.target.value})}
+          className={`w-full p-3 rounded-xl text-sm h-28 outline-none border transition-all resize-none ${
+            darkMode ? "bg-white/5 border-white/10 focus:border-purple-500 text-white" : "bg-slate-50 border-slate-200 focus:border-blue-500"
+          }`}
+        />
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={isSubmitting}
+          className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isSubmitting ? "Posting..." : <>Post My Review <Send size={18} /></>}
+        </motion.button>
+      </form>
+    </motion.div>
+
+    {/* ── Reviews Display Grid ── */}
+    <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
+      <AnimatePresence mode="popLayout">
+        {reviews.map((r, i) => (
+          <motion.div 
+            key={r.id || i} 
+            layout
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ delay: i * 0.05 }} 
+            className={`rounded-2xl p-5 sm:p-6 border flex flex-col justify-between ${
+              darkMode ? "border-white/8 bg-white/3 backdrop-blur-sm" : "border-slate-200 bg-white shadow-sm"
+            }`}
+          >
+            <div>
+              <div className="flex mb-4 gap-0.5">
+                {[...Array(5)].map((_, j) => (
+                  <Star 
+                    key={j} 
+                    size={14}
+                    className={`${
+                      j < r.stars 
+                      ? "text-amber-400 fill-amber-400" 
+                      : "text-white/10"
+                    }`} 
+                  />
+                ))}
+              </div>
+              <p className={`text-xs sm:text-sm leading-relaxed mb-6 italic ${darkMode ? "text-white/70" : "text-slate-600"}`}>
+                "{r.text}"
+              </p>
+            </div>
+            <p className={`text-[10px] sm:text-xs font-black uppercase tracking-wider ${darkMode ? "text-purple-400/80" : "text-blue-600"}`}>
+              — {r.name}
+            </p>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+    
+    {reviews.length === 0 && (
+      <p className="text-center opacity-30 text-sm mt-10">No reviews yet. Be the first to share! ✨</p>
+    )}
+  </div>
+</section>
+
+          
       {/* ── FAQ ── */}
       <section id="faq" className={`py-12 sm:py-20 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-2xl mx-auto">
