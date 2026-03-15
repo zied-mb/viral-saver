@@ -13,10 +13,6 @@ import { ADS } from "@/config/ads";
 import { Link } from "react-router-dom";
 import SupportWidget from "@/components/SupportWidget"; 
 
-const userRef = ref(db, '/');
-update(userRef, {
-  activeUsers: increment(1) 
-});
 
 const features = [
   {
