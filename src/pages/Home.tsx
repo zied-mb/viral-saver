@@ -100,20 +100,25 @@ const Home: React.FC = () => {
     rate: "99.9%"
   });
 
-  useEffect(() => {
-    const statsRef = ref(db, '/'); 
-    onValue(statsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setLiveStats({
-          downloads: (data.downloadsServed || 50000000).toLocaleString() + "+",
-          users: (data.activeUsers || 2000000).toLocaleString() + "+",
-          platforms: "10+",
-          rate: "99.9%"
-        });
-      }
-    });
-  }, []);
+useEffect(() => {
+  const userRef = ref(db, 'stats');
+  update(userRef, {
+    activeUsers: increment(1)
+  });
+
+  onValue(userRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      setLiveStats({
+        downloads: (data.downloadsServed || 0).toLocaleString() + "+",
+        users: (data.activeUsers || 0).toLocaleString() + "+",
+        platforms: "10+",
+        rate: "99.9%"
+      });
+    }
+  });
+}, []);
+  
   const statsDisplay = [
     { label: "Downloads Served", value: liveStats.downloads, icon: Download },
     { label: "Platforms Supported", value: liveStats.platforms, icon: Globe },
