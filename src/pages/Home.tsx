@@ -101,7 +101,8 @@ const Home: React.FC = () => {
   });
 
 useEffect(() => {
-  const userRef = ref(db, 'stats');
+  const userRef = ref(db, '/'); 
+
   update(userRef, {
     activeUsers: increment(1)
   });
