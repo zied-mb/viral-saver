@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { db } from "./firebase"; 
+import { ref, onValue, update, increment } from "firebase/database";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
   Download, Zap, Shield, Globe, ChevronDown,
@@ -11,12 +13,10 @@ import { ADS } from "@/config/ads";
 import { Link } from "react-router-dom";
 import SupportWidget from "@/components/SupportWidget";
 
-const stats = [
-  { label: "Downloads Served", value: "50M+", icon: Download },
-  { label: "Platforms Supported", value: "10+", icon: Globe },
-  { label: "Active Users", value: "2M+", icon: TrendingUp },
-  { label: "Success Rate", value: "99.9%", icon: Star },
-];
+const userRef = ref(db, '/');
+update(userRef, {
+  activeUsers: increment(1) 
+});
 
 const features = [
   {
@@ -93,6 +93,33 @@ const faqs = [
 ];
 
 const Home: React.FC = () => {
+  const [liveStats, setLiveStats] = useState({
+    downloads: "50M+",
+    users: "2M+",
+    platforms: "10+",
+    rate: "99.9%"
+  });
+
+  useEffect(() => {
+    const statsRef = ref(db, '/'); 
+    onValue(statsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setLiveStats({
+          downloads: (data.downloadsServed || 50000000).toLocaleString() + "+",
+          users: (data.activeUsers || 2000000).toLocaleString() + "+",
+          platforms: "10+",
+          rate: "99.9%"
+        });
+      }
+    });
+  }, []);
+  const statsDisplay = [
+    { label: "Downloads Served", value: liveStats.downloads, icon: Download },
+    { label: "Platforms Supported", value: liveStats.platforms, icon: Globe },
+    { label: "Active Users", value: liveStats.users, icon: TrendingUp },
+    { label: "Success Rate", value: liveStats.rate, icon: Star },
+  ];
   const [darkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { scrollY } = useScroll();
@@ -186,16 +213,16 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="py-4 border-y border-white/5 bg-white/2">
-        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {stats.map((s, i) => (
-            <div key={i} className="text-center py-2 sm:py-4">
-              <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
-              <p className="text-[9px] sm:text-xs font-medium text-white/35 uppercase tracking-widest">{s.label}</p>
-            </div>
-          ))}
-        </div>
+     {/* ── Stats ── */}
+     <section className="py-4 border-y border-white/5 bg-white/2">
+      <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+       {statsDisplay.map((s, i) => (
+        <div key={i} className="text-center py-2 sm:py-4">
+          <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
+           <p className="text-[9px] sm:text-[10px] font-medium text-white/35 uppercase tracking-widest">{s.label}</p>
+         </div>
+         ))}
+       </div>
       </section>
 
       {/* ── Downloader Box ── */}
