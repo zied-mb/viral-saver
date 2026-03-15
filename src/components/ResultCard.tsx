@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   CheckCircle2, Globe, User, Sparkles, 
@@ -17,16 +17,16 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
   const [downloading, setDownloading] = useState<string | null>(null);
   const res = result as any;
 
-  // 1. تحديد نوع المحتوى (Video ولا Image)
-  const isVideo = res.type === "video" || (res.medias && res.medias.some((m: any) => m.type === "video"));
-  const isImage = res.type === "image" || (!isVideo && res.url?.match(/\.(jpg|jpeg|png|webp)/i));
+  // 1. تنظيف الـ Medias وتحديد الروابط الصحيحة
+  const videoMedias = (res.medias || []).filter((m: any) => m.type === "video" || m.ext === "mp4");
+  const imageMedias = (res.medias || []).filter((m: any) => m.type === "image" || m.ext === "jpg" || m.ext === "png");
 
-  const medias = (result.medias || []).map(m => ({
-    url: m.url,
-    quality: m.quality || "HD",
-    ext: m.ext || "mp4",
-    type: m.type || (isVideo ? "video" : "image")
-  }));
+  // تحديد نوع المحتوى الأساسي
+  const isVideo = videoMedias.length > 0;
+  const isImage = !isVideo && (imageMedias.length > 0 || res.type === "image");
+
+  // الرابط اللي باش يظهر في الـ Preview
+  const previewUrl = isVideo ? videoMedias[0]?.url : (imageMedias[0]?.url || res.url);
 
   const forceDownload = async (url: string, filename: string, label: string) => {
     try {
@@ -45,7 +45,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
       toast.success(`${label} saved! 🚀`);
     } catch (error) {
       window.open(url, "_blank");
-      toast.error("Redirecting to link...");
+      toast.error("Redirecting to source...");
     } finally {
       setDownloading(null);
     }
@@ -67,20 +67,25 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
               {isImage ? "Image Found" : "Video Found"}
             </span>
           </div>
-          <div className="text-white/50 bg-white/5 px-4 py-2 rounded-full text-[11px] font-bold uppercase border border-white/5 italic">
-            {platform}
+          <div className="text-white/50 bg-white/5 px-4 py-2 rounded-full text-[11px] font-bold uppercase border border-white/5 italic tracking-tighter">
+            {platform || "Social Media"}
           </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 items-center lg:items-start">
           
-          {/* 🖼️ Media Preview */}
+          {/* 🖼️ Media Preview Fix */}
           <div className="relative w-full sm:w-[80%] lg:w-[320px] shrink-0">
-             <div className="relative rounded-[2rem] overflow-hidden bg-black shadow-2xl border border-white/10 group">
+             <div className="relative rounded-[2rem] overflow-hidden bg-black/40 shadow-2xl border border-white/10 group min-h-[200px] flex items-center justify-center">
                 {isImage ? (
-                  <img src={res.url || medias[0]?.url} alt="preview" className="w-full h-auto max-h-[450px] object-contain transition-transform group-hover:scale-105" />
+                  <img src={previewUrl} alt="Preview" className="w-full h-auto max-h-[450px] object-contain transition-transform duration-500 group-hover:scale-105" />
                 ) : (
-                  <video key={res.url || medias[0]?.url} src={res.url || medias[0]?.url} loop muted controls playsInline className="w-full h-auto max-h-[450px] object-contain group-hover:scale-[1.02]" />
+                  <video 
+                    key={previewUrl} // مهم جداً لإعادة تشغيل الـ Player عند تغيير الفيديو
+                    src={previewUrl} 
+                    loop muted controls playsInline 
+                    className="w-full h-auto max-h-[450px] object-contain transition-transform duration-500 group-hover:scale-[1.02]" 
+                  />
                 )}
              </div>
           </div>
@@ -88,52 +93,49 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           <div className="flex-1 w-full text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-5">
               <User className="w-4 h-4 text-cyan-400" />
-              <span className="text-white font-black text-sm italic opacity-80">@{res.owner?.username || "creator"}</span>
+              <span className="text-white font-black text-sm italic opacity-80">
+                @{res.owner?.username || res.author || "creator"}
+              </span>
             </div>
 
-            <h3 className="text-2xl font-extrabold mb-6 text-white italic leading-tight">
-              {res.title ? (showFullTitle ? res.title : res.title.slice(0, 80) + "...") : "Content is ready!"}
+            <h3 className="text-2xl font-extrabold mb-6 text-white italic leading-tight tracking-tight">
+              {res.title ? (showFullTitle ? res.title : res.title.slice(0, 60) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Dynamic Buttons Grid */}
+            {/* 📥 Selection Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              
-              {/* لو كانت تصويرة: نخرج بونون التصويرة فقط */}
-              {isImage && (
+              {isImage ? (
                 <button
-                  onClick={() => forceDownload(res.url || medias[0]?.url, "ViralSaver_Image", "Image")}
-                  className="col-span-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-gradient-to-r from-pink-600/20 to-violet-600/20 border border-pink-500/30 hover:bg-pink-500/10 transition-all group"
+                  onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
+                  className="col-span-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-gradient-to-r from-violet-600/20 to-cyan-600/20 border border-white/10 hover:bg-white/5 transition-all group"
                 >
-                  <ImageIcon className="w-6 h-6 text-pink-400 group-hover:rotate-12 transition-transform" />
-                  <span className="text-white font-black uppercase italic">Download High-Res Image</span>
+                  <ImageIcon className="w-6 h-6 text-pink-400" />
+                  <span className="text-white font-black uppercase italic">Download Image</span>
                 </button>
-              )}
-
-              {/* لو كان فيديو: نخرج جودات الفيديو + بونون الصوت */}
-              {isVideo && (
+              ) : (
                 <>
-                  {medias.filter(m => m.type === "video").map((m, i) => (
+                  {videoMedias.map((m: any, i: number) => (
                     <button
                       key={i}
-                      onClick={() => forceDownload(m.url, `ViralSaver_Video_${m.quality}`, m.quality)}
+                      onClick={() => forceDownload(m.url, `ViralSaver_Vid_${m.quality}`, m.quality)}
                       className="flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-white/[0.08] transition-all"
                     >
                       <Download className="w-5 h-5 text-cyan-400" />
                       <div className="text-left">
-                        <p className="text-white text-xs font-black uppercase">Video {m.quality}</p>
-                        <p className="text-white/40 text-[10px] uppercase">{m.ext}</p>
+                        <p className="text-white text-[10px] font-black uppercase">Video {m.quality}</p>
+                        <p className="text-white/40 text-[9px] uppercase font-bold">{m.ext}</p>
                       </div>
                     </button>
                   ))}
 
                   <button
-                    onClick={() => forceDownload(medias[0]?.url || res.url, "ViralSaver_Audio", "Audio")}
+                    onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
                     className="flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/50 transition-all"
                   >
                     <Music className="w-5 h-5 text-emerald-400" />
                     <div className="text-left">
-                      <p className="text-white text-xs font-black uppercase italic">Download Audio</p>
-                      <p className="text-white/40 text-[10px] uppercase font-bold">MP3 / AAC</p>
+                      <p className="text-white text-[10px] font-black uppercase italic">Audio Only</p>
+                      <p className="text-white/40 text-[9px] uppercase font-bold">MP3 / AAC</p>
                     </div>
                   </button>
                 </>
@@ -145,7 +147,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                 <Sparkles className="w-4 h-4" />
                 <span className="text-[10px] font-black tracking-widest uppercase italic">ViralSaver Smart Core</span>
               </div>
-              <p className="text-white/40 text-[11px] italic">Content detected and optimized for your device. 🚀</p>
+              <p className="text-white/40 text-[11px] italic leading-relaxed">
+                Content detected and optimized. Quality might vary based on source. 🚀
+              </p>
             </div>
           </div>
 
