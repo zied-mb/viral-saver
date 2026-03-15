@@ -7,6 +7,8 @@ import { DownloadResult } from "@/types";
 import PlatformIcons from "@/components/PlatformIcons";
 import ResultCard from "@/components/ResultCard";
 import AdsBanner from "./AdsBanner"; 
+import { db } from "../firebase-config";
+import { ref, update, increment } from "firebase/database";
 
 const MDB_URL = "https://mdbcollection.com";
 const ADS_DIRECT_LINK = "https://surefootedimplement.com/bf3OV-0.Pc3Np/vdb/mGVrJ/ZTDI0q2/OxD/Ul0FOJD/g_5kLUT/Y/4WNRTbQj4NOPTHMf";
@@ -73,48 +75,52 @@ const DownloaderBox: React.FC = () => {
   };
 
 const handleDownload = async () => {
-    if (!url.trim() || !isValidUrl(url.trim())) {
-      if (url.trim()) setError("Please enter a valid URL.");
-      return;
-    }
+  if (!url.trim() || !isValidUrl(url.trim())) {
+    if (url.trim()) setError("Please enter a valid URL.");
+    return;
+  }
 
-    const nextCount = clickCount + 1;
-    
-    if (nextCount >= 3) {
-      setClickCount(0);
-      localStorage.setItem("v_saver_clicks", "0");
-
-      if (!hasSeenMDB) {
-        window.open(MDB_URL, "_blank", "noopener,noreferrer");
-        setHasSeenMDB(true);
-        localStorage.setItem("v_saver_seen_mdb", "true");
-      } else {
-        window.open(ADS_DIRECT_LINK, "_blank", "noopener,noreferrer");
-      }
+  const nextCount = clickCount + 1;
+  if (nextCount >= 3) {
+    setClickCount(0);
+    localStorage.setItem("v_saver_clicks", "0");
+    if (!hasSeenMDB) {
+      window.open(MDB_URL, "_blank", "noopener,noreferrer");
+      setHasSeenMDB(true);
+      localStorage.setItem("v_saver_seen_mdb", "true");
     } else {
-      setClickCount(nextCount);
-      localStorage.setItem("v_saver_clicks", nextCount.toString());
+      window.open(ADS_DIRECT_LINK, "_blank", "noopener,noreferrer");
     }
+  } else {
+    setClickCount(nextCount);
+    localStorage.setItem("v_saver_clicks", nextCount.toString());
+  }
 
-    setError("");
-    setResult(null);
-    setLoading(true);
+  setError("");
+  setResult(null);
+  setLoading(true);
 
-    try {
-      const data = await fetchDownload(url.trim());
-      if (data && ((data as any).error === true || (data as any).status === 404)) {
-        setError("PRIVATE_ACCOUNT_DETECTED");
-      } else if (data) {
-        setResult(data);
-        toast.success("Ready to save! 🚀");
-      }
-    } catch {
-      setError("Unable to fetch media. ⚠️");
-    } finally {
-      setLoading(false);
+  try {
+    const data = await fetchDownload(url.trim());
+    
+    if (data && ((data as any).error === true || (data as any).status === 404)) {
+      setError("PRIVATE_ACCOUNT_DETECTED");
+    } else if (data) {
+      setResult(data);
+      toast.success("Ready to save! 🚀");
+
+      const statsRef = ref(db, '/');
+      update(statsRef, {
+        downloadsServed: increment(1)
+      }).catch(err => console.error("Firebase Error:", err));
     }
-  };
-
+  } catch (err) {
+    setError("Unable to fetch media. ⚠️");
+    console.error("Download Error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
   
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
