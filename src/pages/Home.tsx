@@ -11,7 +11,7 @@ import DownloaderBox from "@/components/DownloaderBox";
 import AdsBanner from "@/components/AdsBanner";
 import { ADS } from "@/config/ads";
 import { Link } from "react-router-dom";
-import SupportWidget from "@/components/SupportWidget";
+import SupportWidget from "@/components/SupportWidget"; 
 
 const userRef = ref(db, '/');
 update(userRef, {
