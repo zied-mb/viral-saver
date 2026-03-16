@@ -72,7 +72,7 @@ return (
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start">
           
-          {/* 🖼️ Media Preview: Fixed width on Desktop for stability */}
+          {/* 🖼️ Media Preview Section */}
           <div className="relative w-full sm:w-[80%] lg:w-[360px] shrink-0">
              <div className="relative rounded-[2.2rem] overflow-hidden bg-black/40 shadow-2xl border border-white/10 group">
                 {isImage ? (
@@ -101,39 +101,31 @@ return (
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 55) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Selection Grid: Optimized for PC & Mobile */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-8">
+            {/* 📥 Glass Action Buttons: Icons Only */}
+            <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-10">
               {isImage ? (
                 <button
                   onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
                   disabled={downloading !== null}
-                  className="col-span-full group relative flex items-center justify-center gap-4 px-8 py-6 rounded-[1.8rem] bg-gradient-to-br from-violet-600/20 to-cyan-600/20 border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden shadow-xl"
+                  className="group relative p-6 rounded-full bg-white/5 border border-white/10 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all duration-500 shadow-xl"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                  <ImageIcon className="w-6 h-6 text-pink-400 group-hover:scale-110 transition-transform" />
-                  <span className="text-white font-black uppercase italic tracking-wider whitespace-nowrap">
-                    {downloading === previewUrl ? "Downloading..." : "Download Image"}
-                  </span>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity blur-xl bg-cyan-500/10 -z-10" />
+                  <ImageIcon className="w-8 h-8 text-pink-400 group-hover:scale-110 transition-transform" />
+                  {downloading === previewUrl && (
+                    <div className="absolute inset-0 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                  )}
                 </button>
               ) : (
                 <>
-                  {videoMedias.map((m: any, i: number) => (
+                  {videoMedias.slice(0, 1).map((m: any, i: number) => (
                     <button
                       key={i}
-                      onClick={() => forceDownload(m.url, `ViralSaver_Vid_${m.quality}`, m.quality)}
+                      onClick={() => forceDownload(m.url, `ViralSaver_Vid`, "Video")}
                       disabled={downloading !== null}
-                      className="group relative flex items-center justify-center gap-4 px-6 py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300"
+                      className="group relative p-6 rounded-full bg-white/5 border border-white/10 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-500 shadow-xl"
                     >
-                      <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-colors shrink-0">
-                        <Download className="w-5 h-5" />
-                      </div>
-                      <div className="text-left min-w-0">
-                        <p className="text-white text-[11px] font-black uppercase tracking-tighter truncate">Video {m.quality}</p>
-                        <p className="text-white/30 text-[9px] uppercase font-bold">{m.ext}</p>
-                      </div>
+                      <Download className="w-8 h-8 text-cyan-400 group-hover:scale-110 transition-transform" />
                       {downloading === m.url && (
-                        <div className="absolute right-4 animate-spin rounded-full h-4 w-4 border-2 border-cyan-500 border-t-transparent" />
+                        <div className="absolute inset-0 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
                       )}
                     </button>
                   ))}
@@ -141,15 +133,12 @@ return (
                   <button
                     onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
                     disabled={downloading !== null}
-                    className="group relative flex items-center justify-center gap-4 px-6 py-5 rounded-[1.5rem] bg-emerald-500/5 border border-emerald-500/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all duration-300"
+                    className="group relative p-6 rounded-full bg-white/5 border border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-500 shadow-xl"
                   >
-                    <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-black transition-colors shrink-0">
-                      <Music className="w-5 h-5" />
-                    </div>
-                    <div className="text-left min-w-0">
-                      <p className="text-white text-[11px] font-black uppercase tracking-tighter italic truncate">Audio Only</p>
-                      <p className="text-white/30 text-[9px] uppercase font-bold">High Quality MP3</p>
-                    </div>
+                    <Music className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    {downloading === "Audio" && (
+                      <div className="absolute inset-0 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                    )}
                   </button>
                 </>
               )}
@@ -162,7 +151,7 @@ return (
                 <span className="text-[10px] font-black tracking-widest uppercase italic">ViralSaver Smart Core</span>
               </div>
               <p className="text-white/40 text-[11px] italic leading-relaxed">
-                Content detected and optimized. Quality might vary based on source. 🚀
+                Content detected and optimized. High quality guaranteed. 🚀
               </p>
             </div>
           </div>
