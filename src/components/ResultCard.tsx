@@ -101,7 +101,7 @@ return (
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 55) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Selection List: Stacked Rectangular Glass Buttons */}
+            {/* 📥 Selection List: Minimalist Glass Rectangles */}
             <div className="flex flex-col gap-4 mb-10 max-w-md mx-auto lg:mx-0">
               {isImage ? (
                 <button
