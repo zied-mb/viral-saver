@@ -88,7 +88,7 @@ return (
              </div>
           </div>
 
-          {/* 📝 Content & Action Buttons */}
+          {/* 📝 Content & Glass Buttons */}
           <div className="flex-1 w-full text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
               <User className="w-4 h-4 text-cyan-400" />
@@ -101,17 +101,17 @@ return (
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 55) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Glass Action Buttons: Icons Only */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-10">
+            {/* 📥 Selection List: Stacked Rectangular Buttons */}
+            <div className="flex flex-col gap-4 mb-10 max-w-md mx-auto lg:mx-0">
               {isImage ? (
                 <button
                   onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
                   disabled={downloading !== null}
-                  className="group relative p-6 rounded-full bg-white/5 border border-white/10 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all duration-500 shadow-xl"
+                  className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-pink-500/40 transition-all duration-300 shadow-lg"
                 >
-                  <ImageIcon className="w-8 h-8 text-pink-400 group-hover:scale-110 transition-transform" />
+                  <ImageIcon className="w-6 h-6 text-pink-400 group-hover:scale-110 transition-transform" />
                   {downloading === previewUrl && (
-                    <div className="absolute inset-0 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                    <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-pink-500 border-t-transparent" />
                   )}
                 </button>
               ) : (
@@ -121,11 +121,11 @@ return (
                       key={i}
                       onClick={() => forceDownload(m.url, `ViralSaver_Vid`, "Video")}
                       disabled={downloading !== null}
-                      className="group relative p-6 rounded-full bg-white/5 border border-white/10 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-500 shadow-xl"
+                      className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300 shadow-lg"
                     >
-                      <Download className="w-8 h-8 text-cyan-400 group-hover:scale-110 transition-transform" />
+                      <Download className="w-6 h-6 text-cyan-400 group-hover:scale-110 transition-transform" />
                       {downloading === m.url && (
-                        <div className="absolute inset-0 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
+                        <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-cyan-500 border-t-transparent" />
                       )}
                     </button>
                   ))}
@@ -133,11 +133,11 @@ return (
                   <button
                     onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
                     disabled={downloading !== null}
-                    className="group relative p-6 rounded-full bg-white/5 border border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-500 shadow-xl"
+                    className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
                   >
-                    <Music className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    <Music className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
                     {downloading === "Audio" && (
-                      <div className="absolute inset-0 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                      <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
                     )}
                   </button>
                 </>
