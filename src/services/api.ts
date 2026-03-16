@@ -23,27 +23,36 @@ export const fetchDownload = async (url: string): Promise<DownloadResult> => {
     throw new Error("API Key is missing! Check your .env file.");
   }
 
-  const response = await axios.post(
-    "https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink",
-    { url },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "x-rapidapi-host": "auto-download-all-in-one.p.rapidapi.com",
-        "x-rapidapi-key": RAPIDAPI_KEY,
-      },
+  try {
+    const response = await axios.post(
+      "https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink",
+      { url },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-rapidapi-host": "auto-download-all-in-one.p.rapidapi.com",
+          "x-rapidapi-key": RAPIDAPI_KEY,
+        },
+      }
+    );
+
+    const data = response.data;
+
+    if (detectPlatform(url) === "instagram" && data?.thumbnail) {
+      data.thumbnail = data.thumbnail.split('&')[0]; 
     }
-  );
 
-  const data = response.data;
+    return data;
 
-  if (detectPlatform(url) === "instagram" && data.thumbnail) {
-    data.thumbnail = data.thumbnail.split('&')[0]; 
+  } catch (error: any) {
+    if (error.response?.status === 429) {
+      throw new Error("Too many requests! Please wait a few minutes before trying again. ⏳");
+    }
+    
+    const errorMessage = error.response?.data?.message || "Failed to fetch media. Please check the link.";
+    throw new Error(errorMessage);
   }
-
-  return data;
 };
-
 export const detectPlatform = (url: string): string => {
   if (!url) return "";
   const lower = url.toLowerCase();
