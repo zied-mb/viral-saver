@@ -96,7 +96,7 @@ const Home: React.FC = () => {
   const [liveStats, setLiveStats] = useState({
     downloads: "0",
     users: "0",
-    platforms: "5",
+    platforms: "6",
     rate: "99.9%"
   });
 
@@ -143,10 +143,10 @@ const Home: React.FC = () => {
   }, [db]);
 
   const statsDisplay = [
-    { label: "Downloads Served", value: liveStats.downloads, icon: Download },
-    { label: "Platforms Supported", value: liveStats.platforms, icon: Globe },
-    { label: "Active Users", value: liveStats.users, icon: TrendingUp },
-    { label: "Success Rate", value: liveStats.rate, icon: Star },
+    { label: "Downloads Served", value: liveStats.downloads},
+    { label: "Platforms Supported", value: liveStats.platforms},
+    { label: "Active Users", value: liveStats.users},
+    { label: "Success Rate", value: liveStats.rate},
   ];
 
   useEffect(() => {
@@ -347,7 +347,7 @@ const Home: React.FC = () => {
 <section className="py-4 border-y border-white/5 bg-white/5 backdrop-blur-sm">
   <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
     {statsDisplay.map((s, i) => {
-      const numericValue = parseInt(s.value?.toString().replace(/\D/g, "") || "0");
+      const numericValue = Math.abs(parseInt(s.value?.toString().replace(/\D/g, "") || "0"));
       const shouldAnimate = !isNaN(numericValue) && s.label !== "Platforms Supported";
 
       return (
@@ -356,7 +356,7 @@ const Home: React.FC = () => {
             {shouldAnimate ? (
               <span className="flex items-center justify-center gap-0.5">
                 <Counter target={numericValue} />
-                <span className="text-cyan-400">
+                <span className="not-italic">
                   {s.value?.includes("+") && "+"}
                   {s.value?.includes("%") && "%"}
                 </span>
