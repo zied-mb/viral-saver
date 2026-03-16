@@ -17,15 +17,12 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
   const [downloading, setDownloading] = useState<string | null>(null);
   const res = result as any;
 
-  // 1. تنظيف الـ Medias وتحديد الروابط الصحيحة
   const videoMedias = (res.medias || []).filter((m: any) => m.type === "video" || m.ext === "mp4");
   const imageMedias = (res.medias || []).filter((m: any) => m.type === "image" || m.ext === "jpg" || m.ext === "png");
 
-  // تحديد نوع المحتوى الأساسي
   const isVideo = videoMedias.length > 0;
   const isImage = !isVideo && (imageMedias.length > 0 || res.type === "image");
 
-  // الرابط اللي باش يظهر في الـ Preview
   const previewUrl = isVideo ? videoMedias[0]?.url : (imageMedias[0]?.url || res.url);
 
   const forceDownload = async (url: string, filename: string, label: string) => {
@@ -81,7 +78,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                   <img src={previewUrl} alt="Preview" className="w-full h-auto max-h-[450px] object-contain transition-transform duration-500 group-hover:scale-105" />
                 ) : (
                   <video 
-                    key={previewUrl} // مهم جداً لإعادة تشغيل الـ Player عند تغيير الفيديو
+                    key={previewUrl}
                     src={previewUrl} 
                     loop muted controls playsInline 
                     className="w-full h-auto max-h-[450px] object-contain transition-transform duration-500 group-hover:scale-[1.02]" 
@@ -102,46 +99,64 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 60) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Selection Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              {isImage ? (
-                <button
-                  onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
-                  className="col-span-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-gradient-to-r from-violet-600/20 to-cyan-600/20 border border-white/10 hover:bg-white/5 transition-all group"
-                >
-                  <ImageIcon className="w-6 h-6 text-pink-400" />
-                  <span className="text-white font-black uppercase italic">Download Image</span>
-                </button>
-              ) : (
-                <>
-                  {videoMedias.map((m: any, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => forceDownload(m.url, `ViralSaver_Vid_${m.quality}`, m.quality)}
-                      className="flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-white/[0.08] transition-all"
-                    >
-                      <Download className="w-5 h-5 text-cyan-400" />
-                      <div className="text-left">
-                        <p className="text-white text-[10px] font-black uppercase">Video {m.quality}</p>
-                        <p className="text-white/40 text-[9px] uppercase font-bold">{m.ext}</p>
-                      </div>
-                    </button>
-                  ))}
 
-                  <button
-                    onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
-                    className="flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/50 transition-all"
-                  >
-                    <Music className="w-5 h-5 text-emerald-400" />
-                    <div className="text-left">
-                      <p className="text-white text-[10px] font-black uppercase italic">Audio Only</p>
-                      <p className="text-white/40 text-[9px] uppercase font-bold">MP3 / AAC</p>
-                    </div>
-                  </button>
-                </>
-              )}
-            </div>
+            
+{/* 📥 Selection Grid */}
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+  {isImage ? (
+    <button
+      onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
+      disabled={downloading !== null}
+      className="col-span-full group relative flex items-center justify-center gap-4 px-8 py-6 rounded-[1.8rem] bg-gradient-to-br from-violet-600/20 to-cyan-600/20 border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden shadow-xl"
+    >
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+      
+      <ImageIcon className="w-6 h-6 text-pink-400 group-hover:scale-110 transition-transform" />
+      <span className="text-white font-black uppercase italic tracking-wider">
+        {downloading === previewUrl ? "Downloading..." : "Download Image"}
+      </span>
+      
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity blur-xl bg-cyan-500/10 -z-10" />
+    </button>
+  ) : (
+    <>
+      {videoMedias.map((m: any, i: number) => (
+        <button
+          key={i}
+          onClick={() => forceDownload(m.url, `ViralSaver_Vid_${m.quality}`, m.quality)}
+          disabled={downloading !== null}
+          className="group relative flex items-center justify-center gap-4 px-6 py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300"
+        >
+          <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-colors">
+            <Download className="w-5 h-5" />
+          </div>
+          <div className="text-left">
+            <p className="text-white text-[11px] font-black uppercase tracking-tighter">Video {m.quality}</p>
+            <p className="text-white/30 text-[9px] uppercase font-bold">{m.ext}</p>
+          </div>
+          {downloading === m.url && (
+            <div className="absolute right-4 animate-spin rounded-full h-4 w-4 border-2 border-cyan-500 border-t-transparent" />
+          )}
+        </button>
+      ))}
 
+      <button
+        onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
+        disabled={downloading !== null}
+        className="group relative flex items-center justify-center gap-4 px-6 py-5 rounded-[1.5rem] bg-emerald-500/5 border border-emerald-500/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all duration-300"
+      >
+        <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-black transition-colors">
+          <Music className="w-5 h-5" />
+        </div>
+        <div className="text-left">
+          <p className="text-white text-[11px] font-black uppercase tracking-tighter italic">Audio Only</p>
+          <p className="text-white/30 text-[9px] uppercase font-bold">High Quality MP3</p>
+        </div>
+      </button>
+    </>
+  )}
+</div>
+            
             <div className="p-5 rounded-[1.8rem] bg-white/[0.03] border border-white/5">
               <div className="flex items-center justify-center lg:justify-start gap-2 mb-2 text-cyan-400">
                 <Sparkles className="w-4 h-4" />
