@@ -140,7 +140,7 @@ const Home: React.FC = () => {
       unsubscribeConn();
       unsubscribeData();
     };
-  }, [db]);
+  }, []);
 
   const statsDisplay = [
     { label: "Downloads Served", value: liveStats.downloads},
