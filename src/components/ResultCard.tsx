@@ -88,7 +88,7 @@ return (
              </div>
           </div>
 
-          {/* 📝 Content & Glass Buttons */}
+          {/* 📝 Content & Action Buttons */}
           <div className="flex-1 w-full text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
               <User className="w-4 h-4 text-cyan-400" />
@@ -101,7 +101,7 @@ return (
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 55) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Selection List: Stacked Rectangular Buttons */}
+            {/* 📥 Selection List: Stacked Rectangular Glass Buttons */}
             <div className="flex flex-col gap-4 mb-10 max-w-md mx-auto lg:mx-0">
               {isImage ? (
                 <button
@@ -109,7 +109,7 @@ return (
                   disabled={downloading !== null}
                   className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-pink-500/40 transition-all duration-300 shadow-lg"
                 >
-                  <ImageIcon className="w-6 h-6 text-pink-400 group-hover:scale-110 transition-transform" />
+                  <ImageIcon className="w-7 h-7 text-pink-400 group-hover:scale-110 transition-transform" />
                   {downloading === previewUrl && (
                     <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-pink-500 border-t-transparent" />
                   )}
@@ -123,7 +123,7 @@ return (
                       disabled={downloading !== null}
                       className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300 shadow-lg"
                     >
-                      <Download className="w-6 h-6 text-cyan-400 group-hover:scale-110 transition-transform" />
+                      <Video className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
                       {downloading === m.url && (
                         <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-cyan-500 border-t-transparent" />
                       )}
@@ -135,7 +135,7 @@ return (
                     disabled={downloading !== null}
                     className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
                   >
-                    <Music className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
                     {downloading === "Audio" && (
                       <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
                     )}
