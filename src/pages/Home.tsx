@@ -7,12 +7,13 @@ import {
   ArrowRight, CheckCircle2, Star, TrendingUp, Github, Linkedin, 
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
+import toast, { Toaster } from 'react-hot-toast';
 import DownloaderBox from "@/components/DownloaderBox";
 import AdsBanner from "@/components/AdsBanner";
 import { ADS } from "@/config/ads";
 import { Link } from "react-router-dom";
 import SupportWidget from "@/components/SupportWidget"; 
-import toast, { Toaster } from 'react-hot-toast';
+import Counter from "@/components/Counter";
 
 
 
@@ -93,8 +94,8 @@ const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [liveStats, setLiveStats] = useState({
-    downloads: "50M+",
-    users: "2M+",
+    downloads: "0",
+    users: "0",
     platforms: "5",
     rate: "99.9%"
   });
@@ -106,7 +107,6 @@ const Home: React.FC = () => {
     const unsubscribeConn = onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
         const hasBeenCounted = sessionStorage.getItem("viralsaver_session_active");
-
         if (!hasBeenCounted) {
           update(rootRef, { activeUsers: increment(1) });
           sessionStorage.setItem("viralsaver_session_active", "true");
@@ -118,8 +118,8 @@ const Home: React.FC = () => {
       const data = snapshot.val();
       if (data) {
         setLiveStats({
-          downloads: (data.downloadsServed || 0).toLocaleString() + "+",
-          users: (data.activeUsers || 0).toLocaleString() + "+",
+          downloads: (data.downloadsServed || 0).toString() + "+",
+          users: (data.activeUsers || 0).toString() + "+",
           platforms: "5",
           rate: "99.9%"
         });
@@ -141,6 +141,13 @@ const Home: React.FC = () => {
       unsubscribeData();
     };
   }, [db]);
+
+  const statsDisplay = [
+    { label: "Downloads Served", value: liveStats.downloads, icon: Download },
+    { label: "Platforms Supported", value: liveStats.platforms, icon: Globe },
+    { label: "Active Users", value: liveStats.users, icon: TrendingUp },
+    { label: "Success Rate", value: liveStats.rate, icon: Star },
+  ];
 
   useEffect(() => {
     if (isModalOpen) {
@@ -198,12 +205,7 @@ const Home: React.FC = () => {
     }
   };
   
-  const statsDisplay = [
-    { label: "Downloads Served", value: liveStats.downloads, icon: Download },
-    { label: "Platforms Supported", value: liveStats.platforms, icon: Globe },
-    { label: "Active Users", value: liveStats.users, icon: TrendingUp },
-    { label: "Success Rate", value: liveStats.rate, icon: Star },
-  ];
+
   const [darkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { scrollY } = useScroll();
@@ -340,18 +342,39 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-     {/* ── Stats ── */}
-     <section className="py-4 border-y border-white/5 bg-white/2">
-      <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-       {statsDisplay.map((s, i) => (
-        <div key={i} className="text-center py-2 sm:py-4">
-          <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
-           <p className="text-[9px] sm:text-[10px] font-medium text-white/35 uppercase tracking-widest">{s.label}</p>
-         </div>
-         ))}
-       </div>
-      </section>
+      
+{/* ── Stats ── */}
+<section className="py-4 border-y border-white/5 bg-white/5 backdrop-blur-sm">
+  <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+    {statsDisplay.map((s, i) => {
+      const numericValue = parseInt(s.value?.toString().replace(/\D/g, "") || "0");
+      const shouldAnimate = !isNaN(numericValue) && s.label !== "Platforms Supported";
 
+      return (
+        <div key={i} className="text-center py-2 sm:py-4 group">
+          <p className="text-2xl sm:text-3xl font-black text-white italic tracking-tighter">
+            {shouldAnimate ? (
+              <span className="flex items-center justify-center gap-0.5">
+                <Counter target={numericValue} />
+                <span className="text-cyan-400">
+                  {s.value?.includes("+") && "+"}
+                  {s.value?.includes("%") && "%"}
+                </span>
+              </span>
+            ) : (
+              <span className="text-white">{s.value}</span>
+            )}
+          </p>
+          <p className="text-[9px] sm:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-2 group-hover:text-white/50 transition-colors duration-300">
+            {s.label}
+          </p>
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+      
       {/* ── Downloader Box ── */}
       <section id="downloader" className="py-10 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto">
@@ -516,7 +539,6 @@ const Home: React.FC = () => {
     <AnimatePresence>
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-          {/* Backdrop (Dark Overlay) */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -534,7 +556,6 @@ const Home: React.FC = () => {
               darkMode ? "border-white/10 bg-[#0f0f1b]" : "border-slate-200 bg-white"
             }`}
           >
-            {/* Close Button */}
             <button 
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"
@@ -547,7 +568,7 @@ const Home: React.FC = () => {
             </h3>
 
             <form 
-              onSubmit={handlePostReview} // ✅ نظيفة ومريغلة، الـ logic الكلو لداخل توا
+              onSubmit={handlePostReview}
               className="space-y-4"
             >
               <div className="flex flex-col items-center gap-2 mb-4">
