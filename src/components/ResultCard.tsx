@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
-  CheckCircle2, Globe, User, Sparkles, 
+  CheckCircle2, Globe, User, Sparkles, Video,
   Download, Music, Image as ImageIcon 
 } from "lucide-react";
 import { DownloadResult } from "@/types";
 import { toast } from "sonner";
-
 interface ResultCardProps {
   result: DownloadResult;
   platform: string;
