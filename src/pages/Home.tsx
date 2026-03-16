@@ -101,21 +101,16 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const rootRef = ref(db, '/');
-    const activeUsersRef = ref(db, 'activeUsers');
     const connectedRef = ref(db, '.info/connected');
 
     const unsubscribeConn = onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
-        const lastVisit = localStorage.getItem("viralsaver_last_visit");
-        const now = Date.now();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
+        const hasBeenCounted = sessionStorage.getItem("viralsaver_session_active");
 
-        if (!lastVisit || (now - parseInt(lastVisit)) > twentyFourHours) {
+        if (!hasBeenCounted) {
           update(rootRef, { activeUsers: increment(1) });
-          localStorage.setItem("viralsaver_last_visit", now.toString());
+          sessionStorage.setItem("viralsaver_session_active", "true");
         }
-
-        onDisconnect(activeUsersRef).set(increment(-1));
       }
     });
 
@@ -159,54 +154,49 @@ const Home: React.FC = () => {
     };
   }, [isModalOpen]);
   
-const handlePostReview = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  // 1. التثبت من النجوم
-  if (rating === 0) {
-    toast.error("Please select a star rating! ⭐");
-    return; // يخرج وما يسكرش الـ Modal
-  }
-
-  // 2. التثبت من الإسم
-  if (!newReview.name.trim()) {
-    toast.error("Please enter your name! 👤");
-    return;
-  }
-
-  // 3. التثبت من الوصف
-  if (!newReview.text.trim()) {
-    toast.error("Please write your review description! ✍️");
-    return;
-  }
-  
-  setIsSubmitting(true);
-  try {
-    const reviewsRef = ref(db, 'reviews');
+  const handlePostReview = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // بعث الداتا للـ Firebase
-    await set(push(reviewsRef), {
-      name: newReview.name.trim(),
-      text: newReview.text.trim(),
-      email: newReview.email?.trim().toLowerCase() || "Not Provided", 
-      stars: rating,
-      date: new Date().toISOString()
-    });
+    if (rating === 0) {
+      toast.error("Please select a star rating! ⭐");
+      return;
+    }
 
-    // Success! هنا فقط نسكروا المودال ونفرغوا الـ Form
-    toast.success("Review posted successfully! Thank you ✨");
+    if (!newReview.name.trim()) {
+      toast.error("Please enter your name! 👤");
+      return;
+    }
+
+    if (!newReview.text.trim()) {
+      toast.error("Please write your review description! ✍️");
+      return;
+    }
     
-    setNewReview({ name: "", text: "", email: "" });
-    setRating(0);
-    setIsModalOpen(false); // ✅ المودال يتسكر كان هنا
-    
-  } catch (err) { 
-    console.error("Post Review Error:", err); 
-    toast.error("Failed to post review. Please try again.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+    try {
+      const reviewsRef = ref(db, 'reviews');
+      
+      await set(push(reviewsRef), {
+        name: newReview.name.trim(),
+        text: newReview.text.trim(),
+        email: newReview.email?.trim().toLowerCase() || "Not Provided", 
+        stars: rating,
+        date: new Date().toISOString()
+      });
+
+      toast.success("Review posted successfully! Thank you ✨");
+      
+      setNewReview({ name: "", text: "", email: "" });
+      setRating(0);
+      setIsModalOpen(false);
+      
+    } catch (err) { 
+      console.error("Post Review Error:", err); 
+      toast.error("Failed to post review. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   const statsDisplay = [
     { label: "Downloads Served", value: liveStats.downloads, icon: Download },
