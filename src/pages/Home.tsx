@@ -51,19 +51,19 @@ const steps = [
   {
     num: "01",
     title: "Copy the Link",
-    desc: "Find your video on Instagram, TikTok, or any supported platform and copy its URL.",
+    desc: "Find your video on TikTok, Instagram, or any platform and copy its URL to your clipboard.",
     color: "from-violet-500 to-purple-600",
   },
   {
     num: "02",
     title: "Paste & Preview",
-    desc: "Paste the URL into ViralSaver. We'll fetch the high-quality video for you to preview instantly.",
+    desc: "Paste the link into ViralSaver. Our AI instantly analyzes the link and prepares your files.",
     color: "from-pink-500 to-rose-600",
   },
   {
     num: "03",
-    title: "Save to Device",
-    desc: "Tap the ⋮ icon on the video player and select 'Download' to save the original file.",
+    title: "Choose & Save",
+    desc: "Pick your format: Download the HD Video, the MP3 Audio, or even the Thumbnail image in one click.",
     color: "from-cyan-500 to-blue-600",
   },
 ];
@@ -379,51 +379,63 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ── How It Works ── */}
-      <section id="how-it-works" className={`py-12 sm:py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-10 sm:mb-16"
-          >
-            <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-pink-400" : "text-pink-500"}`}>— Simple Process —</p>
-            <h2 className="text-2xl sm:text-4xl font-black mb-2 sm:mb-3">
-              How{" "}
-              <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">ViralSaver</span>
-              {" "}Works
-            </h2>
-            <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
-              Three simple steps to download any video from the internet.
-            </p>
-          </motion.div>
+{/* ── How It Works ── */}
+<section id="how-it-works" className={`py-12 sm:py-20 px-4 ${darkMode ? "bg-white/[0.02]" : "bg-slate-50"} border-y ${darkMode ? "border-white/5" : "border-slate-100"}`}>
+  <div className="max-w-5xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="text-center mb-10 sm:mb-16"
+    >
+      <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-pink-400" : "text-pink-500"}`}>— Multi-Format Support —</p>
+      <h2 className="text-2xl sm:text-4xl font-black mb-2 sm:mb-3">
+        How{" "}
+        <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">ViralSaver</span>
+        {" "}Works
+      </h2>
+      <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
+        One link, multiple possibilities. Download exactly what you need in seconds.
+      </p>
+    </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 relative">
-            <div className="hidden md:block absolute top-10 left-1/6 right-1/6 h-px bg-gradient-to-r from-violet-500/40 via-pink-500/40 to-cyan-500/40" />
+    <div className="grid md:grid-cols-3 gap-6 relative">
+      <div className={`hidden md:block absolute top-12 left-[15%] right-[15%] h-px bg-gradient-to-r from-violet-500/20 via-pink-500/20 to-cyan-500/20`} />
 
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.num}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12 }}
-                whileHover={{ y: -6 }}
-                className={`relative rounded-2xl p-6 sm:p-7 border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} backdrop-blur-sm transition-all duration-300 group`}
-              >
-                <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${step.color} rounded-t-2xl`} />
-                <div className={`inline-flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${step.color} items-center justify-center mb-4 sm:mb-5 shadow-lg`}>
-                  <span className="text-white text-[10px] sm:text-xs font-black">{step.num}</span>
-                </div>
-                <h3 className="font-bold text-base sm:text-lg mb-2">{step.title}</h3>
-                <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/40" : "text-slate-500"}`}>{step.desc}</p>
-              </motion.div>
-            ))}
+      {steps.map((step, i) => (
+        <motion.div
+          key={step.num}
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.12 }}
+          whileHover={{ y: -6 }}
+          className={`relative rounded-2xl p-6 sm:p-7 border ${darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"} backdrop-blur-sm transition-all duration-300 group shadow-sm hover:shadow-xl`}
+        >
+          <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${step.color} rounded-t-2xl opacity-70`} />
+          
+          <div className={`inline-flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${step.color} items-center justify-center mb-4 sm:mb-5 shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+            <span className="text-white text-xs sm:text-sm font-black">{step.num}</span>
           </div>
-        </div>
-      </section>
 
+          <h3 className="font-bold text-base sm:text-lg mb-2">{step.title}</h3>
+            <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/50" : "text-slate-500"}`}>
+            {step.desc}
+          </p>
+          
+          {step.num === "03" && (
+            <div className="flex gap-2 mt-4 opacity-40 group-hover:opacity-100 transition-opacity">
+               <div className="p-1.5 rounded-md bg-white/10 border border-white/10">🎬</div>
+               <div className="p-1.5 rounded-md bg-white/10 border border-white/10">🎵</div>
+               <div className="p-1.5 rounded-md bg-white/10 border border-white/10">🖼️</div>
+            </div>
+          )}
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
+      
       {/* ── Features ── */}
       <section id="features" className="py-12 sm:py-20 px-4">
         <div className="max-w-5xl mx-auto">
