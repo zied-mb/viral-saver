@@ -33,15 +33,15 @@ const features = [
   },
   {
     icon: Globe,
-    title: "10+ Platforms",
-    desc: "Supports Instagram, TikTok, Facebook, YouTube, Twitter, Pinterest and more.",
+    title: "All-in-One",
+    desc: "Download HD Videos, MP3 Music, and high-res Images from 6 major social platforms.",
     gradient: "from-violet-500 to-purple-500",
     glow: "rgba(139,92,246,0.2)",
   },
   {
     icon: Download,
-    title: "Original Quality",
-    desc: "Get your videos in the highest resolution available directly from the source — always free.",
+    title: "High Resolution",
+    desc: "Always get the maximum quality available (4K/HD) directly from the source—totally free.",
     gradient: "from-cyan-500 to-blue-500",
     glow: "rgba(6,182,212,0.2)",
   },
@@ -422,68 +422,66 @@ const Home: React.FC = () => {
             <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/50" : "text-slate-500"}`}>
             {step.desc}
           </p>
-          
-          {step.num === "03" && (
-            <div className="flex gap-2 mt-4 opacity-40 group-hover:opacity-100 transition-opacity">
-               <div className="p-1.5 rounded-md bg-white/10 border border-white/10">🎬</div>
-               <div className="p-1.5 rounded-md bg-white/10 border border-white/10">🎵</div>
-               <div className="p-1.5 rounded-md bg-white/10 border border-white/10">🖼️</div>
-            </div>
-          )}
         </motion.div>
       ))}
     </div>
   </div>
 </section>
       
-      {/* ── Features ── */}
-      <section id="features" className="py-12 sm:py-20 px-4">
-        <div className="max-w-5xl mx-auto">
+{/* ── Features ── */}
+<section id="features" className="py-12 sm:py-20 px-4">
+  <div className="max-w-5xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="text-center mb-10 sm:mb-14"
+    >
+      <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-cyan-400" : "text-cyan-500"}`}>— Performance —</p>
+      <h2 className="text-2xl sm:text-4xl font-black mb-2 sm:mb-3">
+        Why Choose{" "}
+        <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">ViralSaver?</span>
+      </h2>
+      <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
+        The fastest, cleanest, and most versatile downloader for all your social media needs.
+      </p>
+    </motion.div>
+
+    <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
+      {features.map((f, i) => {
+        const Icon = f.icon;
+        return (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            key={f.title}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-10 sm:mb-14"
+            transition={{ delay: i * 0.08 }}
+            whileHover={{ y: -5 }}
+            className={`group relative rounded-2xl p-6 sm:p-7 border ${darkMode ? "border-white/10 bg-white/[0.03] hover:border-white/20" : "border-slate-200 bg-white hover:border-slate-300"} backdrop-blur-md overflow-hidden transition-all duration-300 cursor-default shadow-sm`}
+            style={{ boxShadow: `0 0 0 0 ${f.glow}` }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px -10px ${f.glow}`; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 0 ${f.glow}`; }}
           >
-            <p className={`text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-2 sm:mb-3 ${darkMode ? "text-cyan-400" : "text-cyan-500"}`}>— Why Us —</p>
-            <h2 className="text-2xl sm:text-4xl font-black mb-2 sm:mb-3">
-              Why Choose{" "}
-              <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">ViralSaver?</span>
-            </h2>
-            <p className={`text-sm sm:text-base max-w-md mx-auto ${darkMode ? "text-white/40" : "text-slate-400"}`}>
-              The fastest, cleanest, most reliable social media downloader on the web.
+            <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${f.gradient} opacity-40 group-hover:opacity-100 transition-opacity duration-300`} />
+            
+            <div className={`inline-flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${f.gradient} items-center justify-center shadow-lg mb-4 sm:mb-5 transform group-hover:rotate-6 transition-transform duration-300`}>
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+
+            <h3 className="font-bold text-base sm:text-lg mb-2 group-hover:text-white transition-colors">{f.title}</h3>
+            <p className={`text-xs sm:text-sm leading-relaxed transition-colors ${darkMode ? "text-white/50 group-hover:text-white/70" : "text-slate-500"}`}>
+              {f.desc}
             </p>
+            <div className={`absolute -bottom-12 -right-12 w-24 h-24 bg-gradient-to-br ${f.gradient} blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
           </motion.div>
+        );
+      })}
+    </div>
+  </div>
+</section>
 
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
-            {features.map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <motion.div
-                  key={f.title}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -5 }}
-                  className={`group relative rounded-2xl p-6 sm:p-7 border ${darkMode ? "border-white/8 bg-white/3 hover:border-white/14" : "border-slate-200 bg-white hover:border-slate-300"} backdrop-blur-sm overflow-hidden transition-all duration-300 cursor-default`}
-                  style={{ boxShadow: `0 0 0 0 ${f.glow}` }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 40px 0 ${f.glow}`; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 0 ${f.glow}`; }}
-                >
-                  <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${f.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                  <div className={`inline-flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${f.gradient} items-center justify-center shadow-md mb-4 sm:mb-5`}>
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  </div>
-                  <h3 className="font-bold text-base sm:text-lg mb-2">{f.title}</h3>
-                  <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-white/40" : "text-slate-500"}`}>{f.desc}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
+      
       {/* ── Supported ── */}
       <section className={`py-12 sm:py-16 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
         <div className="max-w-4xl mx-auto">
