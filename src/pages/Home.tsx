@@ -482,32 +482,40 @@ const Home: React.FC = () => {
 </section>
 
       
-      {/* ── Supported ── */}
-      <section className={`py-12 sm:py-16 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
-        <div className="max-w-4xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-10">
-            <h2 className="text-xl sm:text-3xl font-black mb-2">Supported Platforms</h2>
-            <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>Download from all the biggest social networks</p>
+{/* ── Supported ── */}
+<section className={`py-12 sm:py-16 px-4 ${darkMode ? "bg-white/[0.02] border-y border-white/5" : "bg-slate-50 border-y border-slate-100"}`}>
+  <div className="max-w-6xl mx-auto">
+    <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-10">
+      <h2 className="text-xl sm:text-3xl font-black mb-2">Supported Platforms</h2>
+      <p className={`text-xs sm:text-sm ${darkMode ? "text-white/35" : "text-slate-400"}`}>Download from all the biggest social networks</p>
+    </motion.div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      {supported.map((p, i) => {
+        const Icon = p.icon;
+        return (
+          <motion.div 
+            key={p.name} 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            whileInView={{ opacity: 1, scale: 1 }} 
+            viewport={{ once: true }} 
+            transition={{ delay: i * 0.07 }} 
+            whileHover={{ y: -4 }} 
+            className={`flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-2xl border ${darkMode ? "border-white/8 bg-white/3 hover:bg-white/5" : "border-slate-200 bg-white hover:shadow-lg"} transition-all duration-200`}
+          >
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md" style={{ background: `linear-gradient(135deg, ${p.color}cc, ${p.color}80)` }}>
+              <Icon />
+            </div>
+            <div className="text-center">
+              <p className="font-bold text-xs sm:text-sm">{p.name}</p>
+              <p className={`text-[8px] sm:text-[10px] mt-0.5 ${darkMode ? "text-white/30" : "text-slate-400"}`}>{p.types}</p>
+            </div>
           </motion.div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-            {supported.map((p, i) => {
-              const Icon = p.icon;
-              return (
-                <motion.div key={p.name} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }} whileHover={{ y: -4 }} className={`flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 rounded-2xl border ${darkMode ? "border-white/8 bg-white/3" : "border-slate-200 bg-white"} transition-all duration-200`}>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md" style={{ background: `linear-gradient(135deg, ${p.color}cc, ${p.color}80)` }}>
-                    <Icon />
-                  </div>
-                  <div className="text-center">
-                    <p className="font-bold text-xs sm:text-sm">{p.name}</p>
-                    <p className={`text-[8px] sm:text-[10px] mt-0.5 ${darkMode ? "text-white/30" : "text-slate-400"}`}>{p.types}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
+        );
+      })}
+    </div>
+  </div>
+</section>
+      
       {/* ── Middle Ad ── */}
       <div className="w-full flex justify-center py-8 border-y border-white/5 bg-white/[0.01]">
         <AdsBanner type="middle" />
@@ -651,45 +659,57 @@ const Home: React.FC = () => {
           </AnimatePresence>
 
 
-          {/* ── Reviews Display Grid ── */}
-          <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
-            <AnimatePresence mode="popLayout">
-              {reviews.map((r, i) => (
-                <motion.div
-                  key={r.id || i}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: i * 0.05 }}
-                  className={`rounded-2xl p-5 sm:p-6 border flex flex-col justify-between ${darkMode ? "border-white/8 bg-white/3 backdrop-blur-sm" : "border-slate-200 bg-white shadow-sm"
-                    }`}
-                >
-                  <div>
-                    <div className="flex mb-4 gap-0.5">
-                      {[...Array(5)].map((_, j) => (
-                        <Star
-                          key={j}
-                          size={14}
-                          className={`${j < r.stars
-                              ? "text-amber-400 fill-amber-400"
-                              : "text-white/10"
-                            }`}
-                        />
-                      ))}
-                    </div>
-                    <p className={`text-xs sm:text-sm leading-relaxed mb-6 italic ${darkMode ? "text-white/70" : "text-slate-600"}`}>
-                      "{r.text}"
-                    </p>
-                  </div>
-                  <p className={`text-[10px] sm:text-xs font-black uppercase tracking-wider ${darkMode ? "text-purple-400/80" : "text-blue-600"}`}>
-                    — {r.name}
-                  </p>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+{/* ── Reviews Display Grid ── */}
+<div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
+  <AnimatePresence mode="popLayout">
+    {reviews.slice(0, 3).map((r, i) => (
+      <motion.div
+        key={r.id || i}
+        layout
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ delay: i * 0.05 }}
+        className={`rounded-2xl p-5 sm:p-6 border flex flex-col justify-between ${darkMode ? "border-white/8 bg-white/3 backdrop-blur-sm" : "border-slate-200 bg-white shadow-sm"
+          }`}
+      >
+        <div>
+          <div className="flex mb-4 gap-0.5">
+            {[...Array(5)].map((_, j) => (
+              <Star
+                key={j}
+                size={14}
+                className={`${j < r.stars
+                    ? "text-amber-400 fill-amber-400"
+                    : "text-white/10"
+                  }`}
+              />
+            ))}
           </div>
-
+          <p className={`text-xs sm:text-sm leading-relaxed mb-6 italic ${darkMode ? "text-white/70" : "text-slate-600"}`}>
+            "{r.text}"
+          </p>
+        </div>
+        <p className={`text-[10px] sm:text-xs font-black uppercase tracking-wider ${darkMode ? "text-purple-400/80" : "text-blue-600"}`}>
+          — {r.name}
+        </p>
+      </motion.div>
+    ))}
+  </AnimatePresence>
+</div>
+{reviews.length > 3 && (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    viewport={{ once: true }}
+    className="text-center mt-8"
+  >
+    <p className={`text-xs sm:text-sm font-medium ${darkMode ? "text-white/20" : "text-slate-400"}`}>
+      and <span className={darkMode ? "text-purple-400/60" : "text-purple-600/60"}>{reviews.length - 3}</span> more reviews from our amazing users ✨
+    </p>
+  </motion.div>
+)}
           {reviews.length === 0 && (
             <p className="text-center opacity-30 text-sm mt-10">No reviews yet. Be the first to share! ✨</p>
           )}
