@@ -28,7 +28,7 @@ const Counter: React.FC<CounterProps> = ({ target }) => {
     if (!startTimeRef.current) startTimeRef.current = timestamp;
     const progress = Math.min((timestamp - startTimeRef.current) / duration, 1);
     const easeOutQuad = (t: number) => t * (2 - t);
-    const currentCount = Math.floor(easeOutQuad(progress) * target);
+    const currentCount = (easeOutQuad(progress) * target).toFixed(1);
     
     setCount(currentCount);
 
