@@ -1,77 +1,190 @@
-import axios from "axios";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Download, Clipboard, X, Loader2, Sparkles, Lock } from "lucide-react";
+import { toast } from "sonner";
+import { fetchDownload, detectPlatform, isValidUrl } from "@/services/api";
+import { DownloadResult } from "@/types";
+import PlatformIcons from "@/components/PlatformIcons";
+import ResultCard from "@/components/ResultCard";
+import AdsBanner from "./AdsBanner"; 
+import { db } from "../firebase-config";
+import { ref, update, increment } from "firebase/database";
 
-const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
+const DownloaderBox: React.FC = () => {
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<DownloadResult | null>(null);
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  
 
-export interface MediaItem {
-  url: string;
-  quality?: string;
-  ext?: string;
-  type?: string;
-  size?: string;
-}
 
-export interface DownloadResult {
-  title?: string;
-  thumbnail?: string;
-  medias?: MediaItem[];
-  links?: { url: string; quality: string; ext: string }[];
-  platform?: string;
-}
+  const scrollAnchorId = "download-result-anchor";
+  const platform = detectPlatform(url);
 
-export const fetchDownload = async (url: string): Promise<DownloadResult> => {
-  if (!RAPIDAPI_KEY) {
-    throw new Error("API Key is missing! Check your .env file.");
+  useEffect(() => {
+    if (url && isValidUrl(url.trim()) && !loading && !result) {
+      const timer = setTimeout(() => {
+        handleDownload();
+      }, 3000); 
+      return () => clearTimeout(timer);
+    }
+  }, [url]);
+
+  useEffect(() => {
+    if (result && !loading) {
+      setTimeout(() => {
+        const element = document.getElementById(scrollAnchorId);
+        element?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300); 
+    }
+  }, [result, loading]);
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setUrl(text);
+      setError("");
+      setResult(null);
+      inputRef.current?.focus();
+    } catch {
+      toast.error("Clipboard access denied.");
+    }
+  };
+
+  const handleClear = () => {
+    setUrl("");
+    setError("");
+    setResult(null);
+    inputRef.current?.focus();
+  };
+
+const handleDownload = async () => {
+  if (!url.trim() || !isValidUrl(url.trim())) {
+    if (url.trim()) setError("Please enter a valid URL.");
+    return;
   }
+
+  // ✅ تنحى الـ Logic متاع الـ Clicks والـ Pop-ups من هنا
+  
+  setError("");
+  setResult(null);
+  setLoading(true);
 
   try {
-    const response = await axios.post(
-      "https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink",
-      { url },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "x-rapidapi-host": "auto-download-all-in-one.p.rapidapi.com",
-          "x-rapidapi-key": RAPIDAPI_KEY,
-        },
-      }
-    );
+    const data = await fetchDownload(url.trim());
+    
+    if (data && ((data as any).error === true || (data as any).status === 404)) {
+      setError("PRIVATE_ACCOUNT_DETECTED");
+    } else if (data) {
+      setResult(data);
+      toast.success("Ready to save! 🚀");
 
-    const data = response.data;
-
-    if (detectPlatform(url) === "instagram" && data?.thumbnail) {
-      data.thumbnail = data.thumbnail.split('&')[0];
+      const statsRef = ref(db, '/');
+      update(statsRef, {
+        downloadsServed: increment(1)
+      }).catch(err => console.error("Firebase Error:", err));
     }
-
-    return data;
-
-  } catch (error: any) {
-    if (error.response?.status === 429) {
-      throw new Error("Too many requests! Please wait a few minutes before trying again. ⏳");
-    }
-
-    const errorMessage = error.response?.data?.message || "Failed to fetch media. Please check the link.";
-    throw new Error(errorMessage);
+  } catch (err) {
+    setError("Unable to fetch media. ⚠️");
+    console.error("Download Error:", err);
+  } finally {
+    setLoading(false);
   }
 };
 
-export const detectPlatform = (url: string): string => {
-  if (!url) return "";
-  const lower = url.toLowerCase();
-  if (lower.includes("instagram.com") || lower.includes("instagr.am")) return "instagram";
-  if (lower.includes("tiktok.com") || lower.includes("vm.tiktok")) return "tiktok";
-  if (lower.includes("facebook.com") || lower.includes("fb.com") || lower.includes("fb.watch")) return "facebook";
-  if (lower.includes("youtube.com") || lower.includes("youtu.be")) return "youtube";
-  if (lower.includes("twitter.com") || lower.includes("x.com")) return "twitter";
-  if (lower.includes("pinterest.com")) return "pinterest";
-  return "unknown";
+  
+  return (
+    <div className="w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative rounded-3xl overflow-hidden backdrop-blur-2xl border border-white/10 bg-white/5 shadow-2xl"
+      >
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-pink-400 to-cyan-400" />
+
+        <div className="p-6 sm:p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-bold text-white/50 uppercase italic tracking-wider">Smart Downloader</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <input
+                ref={inputRef}
+                type="url"
+                value={url}
+                onChange={(e) => { setUrl(e.target.value); setError(""); if (!e.target.value) setResult(null); }}
+                onKeyDown={(e) => e.key === "Enter" && handleDownload()}
+                placeholder="Paste Instagram / TikTok / Facebook link..."
+                className="w-full px-5 py-4 rounded-2xl text-white placeholder-white/25 text-sm focus:outline-none bg-white/5 border border-white/10 focus:border-white/20"
+              />
+            </div>
+
+            <AnimatePresence mode="popLayout">
+              {url && (
+                <motion.button
+                  key="clear-btn"
+                  initial={{ scale: 0.8, opacity: 0 }} 
+                  animate={{ scale: 1, opacity: 1 }} 
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  onClick={handleClear}
+                  className="h-[54px] w-[54px] flex items-center justify-center rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20"
+                >
+                  <X className="w-5 h-5 stroke-[3px]" />
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            <button onClick={handlePaste} className="h-[54px] px-5 rounded-2xl text-sm font-bold text-white/70 border border-white/10 bg-white/5 flex items-center gap-2">
+              <Clipboard className="w-4.5 h-4.5" /> <span className="hidden sm:inline italic">Paste</span>
+            </button>
+          </div>
+
+          <button
+            onClick={handleDownload}
+            disabled={loading}
+            className="relative mt-5 w-full py-4 rounded-2xl font-black text-white bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 hover:opacity-90 transition-all overflow-hidden"
+          >
+            <span className="relative flex items-center justify-center gap-2.5 uppercase italic">
+              {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : <><Download className="w-5 h-5" /> Download Now</>}
+            </span>
+          </button>
+
+          {error === "PRIVATE_ACCOUNT_DETECTED" && (
+            <div className="mt-6 p-6 rounded-[2rem] border border-red-500/10 bg-[#0d070b] flex items-center gap-6">
+              <Lock className="w-7 h-7 text-red-600/90" />
+              <div>
+                <h3 className="text-xl font-black text-white italic">PRIVATE PROFILE</h3>
+                <p className="text-white/40 text-sm">Account is private. Please use a public link. 🛡️</p>
+              </div>
+            </div>
+          )}
+
+          <PlatformIcons detected={platform !== "unknown" ? platform : undefined} />
+        </div>
+      </motion.div>
+
+      <div className="w-full flex justify-center py-2">
+         <AdsBanner type="result-inline" />
+      </div>
+
+      {result && !loading && (
+        <div id={scrollAnchorId} className="space-y-6 pt-2">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <ResultCard result={result} platform={platform} />
+          </motion.div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export const isValidUrl = (url: string): boolean => {
-  try {
-    const parsed = new URL(url);
-    const platform = detectPlatform(url);
-    return platform !== "" && platform !== "unknown";
-  } catch {
-    return false;
-  }
-};
+export default DownloaderBox;
