@@ -26,12 +26,11 @@ const Counter: React.FC<CounterProps> = ({ target }) => {
 
   const animate = (timestamp: number) => {
     if (!startTimeRef.current) startTimeRef.current = timestamp;
-    const progress = Math.min((timestamp - startTimeRef.current) / duration, 1);
-    
+    const progress = Math.min((timestamp - startTimeRef.current) / duration, 1); 
     const easeOutQuad = (t: number) => t * (2 - t);
     const rawValue = easeOutQuad(progress) * target;
-
-    const currentCount = target < 100 ? rawValue.toFixed(1) : Math.floor(rawValue);
+    const isDecimal = target % 1 !== 0;
+    const currentCount = isDecimal ? rawValue.toFixed(1) : Math.floor(rawValue).toLocaleString();
     
     setCount(currentCount);
 
