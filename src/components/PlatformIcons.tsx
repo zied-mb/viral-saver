@@ -17,7 +17,6 @@ const platforms = [
 
 const PlatformIcons: React.FC<PlatformIconsProps> = ({ detected }) => {
   return (
-    /* التعديل هنا: استعملنا grid-cols-6 ونقصنا في الـ gap باش يقدّو في عرض التلفون */
     <div className="grid grid-cols-6 gap-1 sm:gap-4 mt-6 pt-5 border-t border-white/5">
       {platforms.map((p, i) => {
         const isActive = detected === p.id;
@@ -34,7 +33,6 @@ const PlatformIcons: React.FC<PlatformIconsProps> = ({ detected }) => {
             <motion.div
               animate={isActive ? { scale: [1, 1.08, 1] } : {}}
               transition={{ duration: 0.5 }}
-              /* صغّرنا الـ w و الـ h شوية باش يجي المنظر متناسق في الـ Mobile */
               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${p.gradient} flex items-center justify-center transition-all duration-300`}
               style={{
                 opacity: isActive ? 1 : 0.35,
@@ -45,7 +43,6 @@ const PlatformIcons: React.FC<PlatformIconsProps> = ({ detected }) => {
               <Icon className="text-white text-sm sm:text-base" />
             </motion.div>
             
-            {/* التعديل هنا: نص الـ Label صغّرناه في التلفون باش ما يداخلش */}
             <span
               className="text-[7px] sm:text-[9px] font-semibold uppercase tracking-tight sm:tracking-wide transition-all duration-300 text-center"
               style={{ color: isActive ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.2)" }}
