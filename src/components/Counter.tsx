@@ -8,11 +8,10 @@ const Counter: React.FC<CounterProps> = ({ target }) => {
   const [count, setCount] = useState(0);
   const requestRef = useRef<number>();
   const startTimeRef = useRef<number>();
-  const containerRef = useRef<HTMLSpanElement>(null); // 👈 نراقبوا الـ span هذا
+  const containerRef = useRef<HTMLSpanElement>(null); 
   const [isVisible, setIsVisible] = useState(false);
   const duration = 2000;
 
-  //Intersection Observer باش نعرفو الـ Counter دخل للشاشة ولا لا
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -39,16 +38,14 @@ const Counter: React.FC<CounterProps> = ({ target }) => {
   };
 
   useEffect(() => {
-    if (!isVisible) return; // 👈 ما يبدا الـ Animation كان كي يولي مرئي
-
+    if (!isVisible) return;
     startTimeRef.current = undefined;
     requestRef.current = requestAnimationFrame(animate);
     
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [target, isVisible]); // نزيدو isVisible هنا
-
+  }, [target, isVisible]); 
   return <span ref={containerRef}>{count.toLocaleString()}</span>;
 };
 
