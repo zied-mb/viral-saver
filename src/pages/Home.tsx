@@ -3,7 +3,7 @@ import { db } from "../firebase-config";
 import { ref, onValue, update, increment, push, set, onDisconnect } from "firebase/database";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-  Download, Zap, Shield, Globe, ChevronDown, Send, Heart,
+  Download, Zap, Shield, Globe, ChevronDown, Send, Heart, FaPinterest,
   ArrowRight, CheckCircle2, Star, TrendingUp, Github, Linkedin, 
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
@@ -14,8 +14,6 @@ import { ADS } from "@/config/ads";
 import { Link } from "react-router-dom";
 import SupportWidget from "@/components/SupportWidget"; 
 import Counter from "@/components/Counter";
-
-
 
 
 const features = [
@@ -76,6 +74,7 @@ const supported = [
   { icon: FaFacebook, name: "Facebook", types: "Videos · Reels", color: "#1877F2" },
   { icon: FaYoutube, name: "YouTube", types: "Videos · Shorts", color: "#FF0000" },
   { icon: FaTwitter, name: "Twitter / X", types: "Videos · GIFs", color: "#1D9BF0" },
+  { icon: FaPinterest, name: "Pinterest", types: "Pins · Boards · Ideas", color: "#E60023" },
 ];
 
 const faqs = [
@@ -97,7 +96,7 @@ const Home: React.FC = () => {
     downloads: "0",
     users: "0",
     platforms: "6",
-    rate: "99.9%"
+    rate: "99.9"
   });
 
   useEffect(() => {
@@ -120,7 +119,7 @@ const Home: React.FC = () => {
         setLiveStats({
           downloads: (data.downloadsServed || 0).toString() + "+",
           users: (data.activeUsers || 0).toString() + "+",
-          platforms: "5",
+          platforms: "6",
           rate: "99.9%"
         });
 
@@ -146,7 +145,7 @@ const Home: React.FC = () => {
     { label: "Downloads Served", value: liveStats.downloads},
     { label: "Platforms Supported", value: liveStats.platforms},
     { label: "Active Users", value: liveStats.users},
-    { label: "Success Rate", value: liveStats.rate},
+    { label: "Success Rate", value: liveStats.rate + "%" },
   ];
 
   useEffect(() => {
@@ -205,16 +204,15 @@ const Home: React.FC = () => {
     }
   };
   
-
   const [darkMode] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
   const heroY = useTransform(scrollY, [0, 400], [0, 80]);
-
   const bg = darkMode ? "bg-[#06060f]" : "bg-slate-50";
   const text = darkMode ? "text-white" : "text-slate-900";
 
+  
   return (
     <div className={`min-h-screen transition-colors duration-500 ${bg} ${text} overflow-x-hidden`}>
       
