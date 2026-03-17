@@ -36,29 +36,48 @@ export const fetchDownload = async (url: string): Promise<DownloadResult> => {
       }
     );
 
-    const data = response.data;
+    let data = response.data;
+
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        console.warn("Warning: response data is not valid JSON, returning as-is", data);
+      }
+    }
 
     if (detectPlatform(url) === "instagram" && data?.thumbnail) {
-      data.thumbnail = data.thumbnail.split('&')[0]; 
+      data.thumbnail = data.thumbnail.split("&")[0];
     }
 
     return data;
 
   } catch (error: any) {
     if (error.response?.status === 429) {
-      throw new Error("Too many requests! Please wait a few minutes before trying again. ⏳");
+      throw new Error(
+        "Too many requests! Please wait a few minutes before trying again. ⏳"
+      );
     }
-    
-    const errorMessage = error.response?.data?.message || "Failed to fetch media. Please check the link.";
+
+    const errorMessage =
+      error.response?.data?.message ||
+      "Failed to fetch media. Please check the link.";
     throw new Error(errorMessage);
   }
 };
+
 export const detectPlatform = (url: string): string => {
   if (!url) return "";
   const lower = url.toLowerCase();
-  if (lower.includes("instagram.com") || lower.includes("instagr.am")) return "instagram";
+  if (lower.includes("instagram.com") || lower.includes("instagr.am"))
+    return "instagram";
   if (lower.includes("tiktok.com") || lower.includes("vm.tiktok")) return "tiktok";
-  if (lower.includes("facebook.com") || lower.includes("fb.com") || lower.includes("fb.watch")) return "facebook";
+  if (
+    lower.includes("facebook.com") ||
+    lower.includes("fb.com") ||
+    lower.includes("fb.watch")
+  )
+    return "facebook";
   if (lower.includes("youtube.com") || lower.includes("youtu.be")) return "youtube";
   if (lower.includes("twitter.com") || lower.includes("x.com")) return "twitter";
   if (lower.includes("pinterest.com")) return "pinterest";
