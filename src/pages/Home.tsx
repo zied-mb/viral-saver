@@ -3,10 +3,10 @@ import { db } from "../firebase-config";
 import { ref, onValue, update, increment, push, set, onDisconnect } from "firebase/database";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-  Download, Zap, Shield, Globe, ChevronDown, Send, Heart, FaPinterest,
+  Download, Zap, Shield, Globe, ChevronDown, Send, Heart, 
   ArrowRight, CheckCircle2, Star, TrendingUp, Github, Linkedin, 
 } from "lucide-react";
-import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
+import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter, FaPinterest } from "react-icons/fa";
 import toast, { Toaster } from 'react-hot-toast';
 import DownloaderBox from "@/components/DownloaderBox";
 import AdsBanner from "@/components/AdsBanner";
