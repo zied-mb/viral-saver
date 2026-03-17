@@ -120,7 +120,7 @@ const Home: React.FC = () => {
           downloads: (data.downloadsServed || 0).toString() + "+",
           users: (data.activeUsers || 0).toString() + "+",
           platforms: "6",
-          rate: "99.9%"
+          rate: "99.9"
         });
 
         if (data.reviews) {
@@ -142,12 +142,12 @@ const Home: React.FC = () => {
   }, []);
 
   const statsDisplay = [
-    { label: "Downloads Served", value: liveStats.downloads},
-    { label: "Platforms Supported", value: liveStats.platforms},
-    { label: "Active Users", value: liveStats.users},
+    { label: "Downloads Served", value: liveStats.downloads },
+    { label: "Platforms Supported", value: liveStats.platforms },
+    { label: "Active Users", value: liveStats.users },
     { label: "Success Rate", value: liveStats.rate + "%" },
   ];
-
+  
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -345,7 +345,7 @@ const Home: React.FC = () => {
 <section className="py-4 border-y border-white/5 bg-white/5 backdrop-blur-sm">
   <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
     {statsDisplay.map((s, i) => {
-      const numericValue = Math.abs(parseInt(s.value?.toString().replace(/\D/g, "") || "0"));
+      const numericValue = parseFloat(s.value?.toString().replace(/[^\d.]/g, "") || "0");
       const shouldAnimate = !isNaN(numericValue) && s.label !== "Platforms Supported";
 
       return (
@@ -371,7 +371,6 @@ const Home: React.FC = () => {
     })}
   </div>
 </section>
-
       
       {/* ── Downloader Box ── */}
       <section id="downloader" className="py-10 sm:py-20 px-4">
