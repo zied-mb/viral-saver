@@ -5,7 +5,7 @@ interface CounterProps {
 }
 
 const Counter: React.FC<CounterProps> = ({ target }) => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState<string | number>(0);
   const requestRef = useRef<number>();
   const startTimeRef = useRef<number>();
   const containerRef = useRef<HTMLSpanElement>(null); 
@@ -27,8 +27,11 @@ const Counter: React.FC<CounterProps> = ({ target }) => {
   const animate = (timestamp: number) => {
     if (!startTimeRef.current) startTimeRef.current = timestamp;
     const progress = Math.min((timestamp - startTimeRef.current) / duration, 1);
+    
     const easeOutQuad = (t: number) => t * (2 - t);
-    const currentCount = (easeOutQuad(progress) * target).toFixed(1);
+    const rawValue = easeOutQuad(progress) * target;
+
+    const currentCount = target < 100 ? rawValue.toFixed(1) : Math.floor(rawValue);
     
     setCount(currentCount);
 
@@ -46,7 +49,12 @@ const Counter: React.FC<CounterProps> = ({ target }) => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
   }, [target, isVisible]); 
-  return <span ref={containerRef}>{count.toLocaleString()}</span>;
+
+  return (
+    <span ref={containerRef}>
+      {count}
+    </span>
+  );
 };
 
 export default Counter;
