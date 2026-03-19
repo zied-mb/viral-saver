@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  CheckCircle2, Globe, User, Sparkles, Video,
-  Download, Music, Image as ImageIcon 
+  CheckCircle2, User, Sparkles, Video,
+  Music, Image as ImageIcon 
 } from "lucide-react";
 import { DownloadResult } from "@/types";
 import { toast } from "sonner";
+
 interface ResultCardProps {
   result: DownloadResult;
   platform: string;
@@ -17,29 +18,33 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
   const res = result as any;
 
   const videoMedias = (res.medias || []).filter((m: any) => m.type === "video" || m.ext === "mp4");
+  const audioMedias = (res.medias || []).filter((m: any) => m.type === "audio" || m.ext === "mp3");
   const imageMedias = (res.medias || []).filter((m: any) => m.type === "image" || m.ext === "jpg" || m.ext === "png");
 
   const isVideo = videoMedias.length > 0;
   const isImage = !isVideo && (imageMedias.length > 0 || res.type === "image");
-
   const previewUrl = isVideo ? videoMedias[0]?.url : (imageMedias[0]?.url || res.url);
 
   const forceDownload = async (url: string, filename: string, label: string) => {
     try {
       setDownloading(url);
       toast.info(`Downloading ${label}... ⏳`);
+      
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
+      
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = `${filename}_${Date.now()}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
       window.URL.revokeObjectURL(blobUrl);
       toast.success(`${label} saved! 🚀`);
     } catch (error) {
+      console.error("Download error:", error);
       window.open(url, "_blank");
       toast.error("Redirecting to source...");
     } finally {
@@ -47,7 +52,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
     }
   };
 
-return (
+  return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -61,7 +66,7 @@ return (
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span className="text-emerald-400 text-[11px] font-black uppercase tracking-widest italic">
-              {isImage ? "Image Found" : "Video Found"}
+              {isImage ? "Image Found" : "Content Found"}
             </span>
           </div>
           <div className="text-white/50 bg-white/5 px-4 py-2 rounded-full text-[11px] font-bold uppercase border border-white/5 italic tracking-tighter">
@@ -96,51 +101,62 @@ return (
               </span>
             </div>
 
-            <h3 className="text-xl lg:text-3xl font-extrabold mb-8 text-white italic leading-tight tracking-tight">
+            <h3 
+              onClick={() => setShowFullTitle(!showFullTitle)}
+              className="text-xl lg:text-3xl font-extrabold mb-8 text-white italic leading-tight tracking-tight cursor-pointer"
+            >
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 55) + "...") : "Processing done! 🚀"}
             </h3>
 
-            {/* 📥 Selection List: Minimalist Glass Rectangles */}
-            <div className="flex flex-col gap-4 mb-10 max-w-md mx-auto lg:mx-0">
-              {isImage ? (
+            {/* 📥 Selection List: Responsive Grid */}
+            <div className="grid grid-cols-1 gap-4 mb-10 max-w-md mx-auto lg:mx-0">
+              
+              {/* 🎥 Video Buttons (YouTube, TikTok, etc.) */}
+              {videoMedias.map((m: any, i: number) => (
                 <button
-                  onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
+                  key={`vid-${i}`}
+                  onClick={() => forceDownload(m.url, `ViralSaver_Vid`, "Video")}
+                  disabled={downloading !== null}
+                  className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300 shadow-lg"
+                >
+                  <Video className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
+                  <span className="ml-3 text-[10px] text-white/40 font-bold uppercase italic">{m.quality || "HD Content"}</span>
+                  {downloading === m.url && (
+                    <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-cyan-500 border-t-transparent" />
+                  )}
+                </button>
+              ))}
+
+              {/* 🎵 Audio Buttons (YouTube MP3) */}
+              {audioMedias.map((m: any, i: number) => (
+                <button
+                  key={`aud-${i}`}
+                  onClick={() => forceDownload(m.url, "ViralSaver_Audio", "Audio")}
+                  disabled={downloading !== null}
+                  className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
+                >
+                  <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span className="ml-3 text-[10px] text-white/40 font-bold uppercase italic">Audio Track</span>
+                  {downloading === m.url && (
+                    <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
+                  )}
+                </button>
+              ))}
+
+              {/* 🖼️ Image Buttons (Instagram/Pinterest) */}
+              {imageMedias.map((m: any, i: number) => (
+                <button
+                  key={`img-${i}`}
+                  onClick={() => forceDownload(m.url, "ViralSaver_Img", "Image")}
                   disabled={downloading !== null}
                   className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-pink-500/40 transition-all duration-300 shadow-lg"
                 >
                   <ImageIcon className="w-7 h-7 text-pink-400 group-hover:scale-110 transition-transform" />
-                  {downloading === previewUrl && (
+                  {downloading === m.url && (
                     <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-pink-500 border-t-transparent" />
                   )}
                 </button>
-              ) : (
-                <>
-                  {videoMedias.slice(0, 1).map((m: any, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => forceDownload(m.url, `ViralSaver_Vid`, "Video")}
-                      disabled={downloading !== null}
-                      className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300 shadow-lg"
-                    >
-                      <Video className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
-                      {downloading === m.url && (
-                        <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-cyan-500 border-t-transparent" />
-                      )}
-                    </button>
-                  ))}
-
-                  <button
-                    onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
-                    disabled={downloading !== null}
-                    className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
-                  >
-                    <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
-                    {downloading === "Audio" && (
-                      <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
-                    )}
-                  </button>
-                </>
-              )}
+              ))}
             </div>
 
             {/* Smart Core Box */}
@@ -150,7 +166,7 @@ return (
                 <span className="text-[10px] font-black tracking-widest uppercase italic">ViralSaver Smart Core</span>
               </div>
               <p className="text-white/40 text-[11px] italic leading-relaxed">
-                Content detected and optimized. High quality guaranteed. 🚀
+                Multi-platform detection active. High-speed direct download enabled. 🚀
               </p>
             </div>
           </div>
