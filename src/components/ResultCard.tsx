@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  CheckCircle2, Globe, User, Sparkles, Video,
-  Download, Music, Image as ImageIcon 
+  CheckCircle2, User, Sparkles, Video,
+  Music, Image as ImageIcon 
 } from "lucide-react";
 import { DownloadResult } from "@/types";
 import { toast } from "sonner";
@@ -17,34 +17,39 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
   const [downloading, setDownloading] = useState<string | null>(null);
   const res = result as any;
 
-  // 🛠️ Separation mta3 el medias bech kol wa7da tekhou el URL el s7i7 mte3ha
   const videoMedias = (res.medias || []).filter((m: any) => m.type === "video" || m.ext === "mp4");
   const audioMedias = (res.medias || []).filter((m: any) => m.type === "audio" || m.ext === "mp3");
   const imageMedias = (res.medias || []).filter((m: any) => m.type === "image" || m.ext === "jpg" || m.ext === "png");
 
   const isVideo = videoMedias.length > 0;
   const isImage = !isVideo && (imageMedias.length > 0 || res.type === "image");
-
   const previewUrl = isVideo ? videoMedias[0]?.url : (imageMedias[0]?.url || res.url);
 
-  // 🔥 El "Force" logic mta3ek applied 3la kol chay hna
+  // 🔥 UNIVERSAL FORCE DOWNLOAD - NO NEW TABS
   const forceDownload = async (url: string, filename: string, label: string) => {
     try {
       setDownloading(url);
       toast.info(`Downloading ${label}... ⏳`);
+      
       const response = await fetch(url);
+      if (!response.ok) throw new Error("Network error");
+      
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
+      
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `${filename}_${Date.now()}`;
+      link.setAttribute("download", `${filename}_${Date.now()}`); // Force the attribute
       document.body.appendChild(link);
       link.click();
+      
+      // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
       toast.success(`${label} saved! 🚀`);
     } catch (error) {
-      // Fallback ken t-bloquat el fetch
+      console.error("Direct download failed:", error);
+      // Fallback only if fetch is blocked by CORS
       window.open(url, "_blank");
       toast.error("Redirecting to source...");
     } finally {
@@ -74,18 +79,12 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start">
-          
           <div className="relative w-full sm:w-[80%] lg:w-[360px] shrink-0">
              <div className="relative rounded-[2.2rem] overflow-hidden bg-black/40 shadow-2xl border border-white/10 group">
                 {isImage ? (
                   <img src={previewUrl} alt="Preview" className="w-full h-auto max-h-[500px] object-contain transition-transform duration-500 group-hover:scale-105" />
                 ) : (
-                  <video 
-                    key={previewUrl}
-                    src={previewUrl} 
-                    loop muted controls playsInline 
-                    className="w-full h-auto max-h-[500px] object-contain transition-transform duration-500 group-hover:scale-[1.02]" 
-                  />
+                  <video key={previewUrl} src={previewUrl} loop muted controls playsInline className="w-full h-auto max-h-[500px] object-contain transition-transform duration-500 group-hover:scale-[1.02]" />
                 )}
              </div>
           </div>
@@ -93,78 +92,57 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
           <div className="flex-1 w-full text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
               <User className="w-4 h-4 text-cyan-400" />
-              <span className="text-white font-black text-sm italic opacity-80">
-                @{res.owner?.username || res.author || "creator"}
-              </span>
+              <span className="text-white font-black text-sm italic opacity-80">@{res.owner?.username || res.author || "creator"}</span>
             </div>
 
-            <h3 className="text-xl lg:text-3xl font-extrabold mb-8 text-white italic leading-tight tracking-tight">
+            <h3 className="text-xl lg:text-3xl font-extrabold mb-8 text-white italic leading-tight tracking-tight cursor-pointer" onClick={() => setShowFullTitle(!showFullTitle)}>
               {res.title ? (showFullTitle ? res.title : res.title.slice(0, 55) + "...") : "Processing done! 🚀"}
             </h3>
 
             <div className="flex flex-col gap-4 mb-10 max-w-md mx-auto lg:mx-0">
-              {/* 🖼️ Image Force Download */}
-              {isImage && (
+              {/* VIDEO BUTTON: Forces direct blob download */}
+              {videoMedias.slice(0, 1).map((m: any, i: number) => (
                 <button
-                  onClick={() => forceDownload(previewUrl, "ViralSaver_Img", "Image")}
+                  key={`vid-${i}`}
+                  onClick={() => forceDownload(m.url, `ViralSaver_Vid`, "Video")}
                   disabled={downloading !== null}
-                  className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-pink-500/40 transition-all duration-300 shadow-lg"
+                  className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300 shadow-lg"
                 >
-                  <ImageIcon className="w-7 h-7 text-pink-400 group-hover:scale-110 transition-transform" />
-                  {downloading === previewUrl && (
-                    <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-pink-500 border-t-transparent" />
+                  <Video className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
+                  {downloading === m.url && (
+                    <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-cyan-500 border-t-transparent" />
                   )}
                 </button>
-              )}
+              ))}
 
-              {!isImage && (
-                <>
-                  {/* 🎥 Video Force Download */}
-                  {videoMedias.slice(0, 1).map((m: any, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => forceDownload(m.url, `ViralSaver_Vid`, "Video")}
-                      disabled={downloading !== null}
-                      className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-cyan-500/40 transition-all duration-300 shadow-lg"
-                    >
-                      <Video className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
-                      {downloading === m.url && (
-                        <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-cyan-500 border-t-transparent" />
-                      )}
-                    </button>
-                  ))}
-
-                  {/* 🎵 Audio Force Download (YouTube, TikTok, etc.) */}
-                  {audioMedias.length > 0 ? (
-                    audioMedias.slice(0, 1).map((m: any, i: number) => (
-                      <button
-                        key={i}
-                        onClick={() => forceDownload(m.url, "ViralSaver_Audio", "Audio")}
-                        disabled={downloading !== null}
-                        className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
-                      >
-                        <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
-                        {downloading === m.url && (
-                          <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
-                        )}
-                      </button>
-                    ))
-                  ) : (
-                    // Fallback l-audio ken el API ma rajjach audio separated (sta3mel el previewUrl)
-                    !isImage && (
-                      <button
-                        onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
-                        disabled={downloading !== null}
-                        className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
-                      >
-                        <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
-                        {downloading === previewUrl && (
-                          <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
-                        )}
-                      </button>
-                    )
-                  )}
-                </>
+              {/* AUDIO BUTTON: Now uses the same direct logic */}
+              {audioMedias.length > 0 ? (
+                audioMedias.slice(0, 1).map((m: any, i: number) => (
+                  <button
+                    key={`aud-${i}`}
+                    onClick={() => forceDownload(m.url, "ViralSaver_Audio", "Audio")}
+                    disabled={downloading !== null}
+                    className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
+                  >
+                    <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    {downloading === m.url && (
+                      <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
+                    )}
+                  </button>
+                ))
+              ) : (
+                !isImage && (
+                  <button
+                    onClick={() => forceDownload(previewUrl, "ViralSaver_Audio", "Audio")}
+                    disabled={downloading !== null}
+                    className="group relative flex items-center justify-center py-5 rounded-[1.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all duration-300 shadow-lg"
+                  >
+                    <Music className="w-7 h-7 text-emerald-400 group-hover:scale-110 transition-transform" />
+                    {downloading === previewUrl && (
+                      <div className="absolute right-6 animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
+                    )}
+                  </button>
+                )
               )}
             </div>
 
@@ -174,7 +152,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ result, platform }) => {
                 <span className="text-[10px] font-black tracking-widest uppercase italic">ViralSaver Smart Core</span>
               </div>
               <p className="text-white/40 text-[11px] italic leading-relaxed">
-                Direct Download forced for all formats. No external pages. 🚀
+                Direct Download forced. No external pages. 🚀
               </p>
             </div>
           </div>
